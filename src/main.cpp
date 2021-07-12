@@ -1,6 +1,7 @@
 #include <Arduino.h>
-#include <mcp2518fd_can_dfs.h>
+#include <SPI.h>
 #include <limits.h>
+using namespace std;
 
 //#define _MCP_FAKE_MODE_
 #define CAN_2515
@@ -43,11 +44,11 @@ unsigned char len = 0;
 unsigned char buf[8];
 
 String BuildMessage="";
-String SupportedPIDsRequested = "2,1,0,0,0,0,0,0";
-String CheckEngineLightClearRequested = "2,1,1,0,0,0,0,0";
-String CoolantTempRequested = "2,1,5,0,0,0,0,0";
-String RpmRequested = "2,1,12,0,0,0,0,0";
-String SpeedoRequested = "2,1,13,0,0,0,0,0";
+String SupportedPIDsRequested = "2,1,0,0,0,0,0,0"; // 00
+String CheckEngineLightClearRequested = "2,1,1,0,0,0,0,0"; // 01
+String CoolantTempRequested = "2,1,5,0,0,0,0,0"; // 05
+String RpmRequested = "2,1,12,0,0,0,0,0"; // 0C
+String SpeedoRequested = "2,1,13,0,0,0,0,0"; // 0D
 
 void setup() {
     Serial.begin(115200);
@@ -64,8 +65,8 @@ void setup() {
 int count = 0;
 int sendCanMessage (int dataSize, const byte *dataToSend) {
     int dataSizeBits = CHAR_BIT * dataSize;
-    Serial.println("sending data size: " + (String)dataSize);
-    Serial.println("data size in bits: " + (String)dataSizeBits);
+//    Serial.println("sending data size: " + (String)dataSize);
+//    Serial.println("data size in bits: " + (String)dataSizeBits);
     return CAN.sendMsgBuf(CAN_ID_PID, 0, dataSize, dataToSend);
 }
 
@@ -76,7 +77,7 @@ void loop()
     unsigned char rndSpeed=random(0,255);
 
     //GENERAL ROUTINE
-    unsigned char SupportedPID[4] =       {0xff,  0xff,  0xff,  0xff};
+    byte SupportedPID[7] =                {0x06,  0x41,  0x00,  B10001000, B00011000, B00000000, B00000000};
     unsigned char MilCleared[7] =         {4, 65, 63, 34, 224, 185, 147};
 
     //SENSORS
@@ -84,7 +85,7 @@ void loop()
     unsigned char rpm[7] =                {4, 65, 12, rndRPM, 224, 185, 147};
     unsigned char vspeed[7] =             {4, 65, 13, rndSpeed, 224, 185, 147};
 
-    if(CAN_MSGAVAIL == CAN.checkReceive())
+    while(CAN_MSGAVAIL == CAN.checkReceive())
     {
 
         CAN.readMsgBuf(&len, buf);
@@ -99,26 +100,29 @@ void loop()
 
         //Check which message was received.
         if(BuildMessage == SupportedPIDsRequested) {
-            Serial.println("sending supported pids!" + (String)(1 + count++) + " times.");
+//            Serial.println("sending supported pids!" + (String)(1 + count++) + " times.");
             int response = sendCanMessage(sizeof(SupportedPID), SupportedPID);
-            Serial.println("response " + (String)response + " : " + (String)CAN_FAILTX);
+//            Serial.println("response " + (String)response + " : " + (String)CAN_FAILTX);
         }
 
         if(BuildMessage == CheckEngineLightClearRequested) {
+            Serial.println("sending CIL cleared");
             sendCanMessage(sizeof(MilCleared), MilCleared);
         }
 
         //SEND SENSOR STATUSES
         if(BuildMessage == CoolantTempRequested) {
+            Serial.println("sending coolant temp" + (String)rndCoolantTemp);
             sendCanMessage(sizeof(CoolantTemp), CoolantTemp);
         }
 
         if(BuildMessage == RpmRequested){
-            Serial.println("sending rpm");
+            Serial.println("sending rpm" + (String)rndRPM);
             sendCanMessage(sizeof(rpm), rpm);
         }
 
         if(BuildMessage == SpeedoRequested){
+            Serial.println("sending speedo" + (String)rndSpeed);
             sendCanMessage(sizeof(vspeed), vspeed);
         }
         BuildMessage="";
