@@ -61,7 +61,16 @@ String RpmRequested = "2,1,12,0,0,0,0,0"; // 0C
 String SpeedoRequested = "2,1,13,0,0,0,0,0"; // 0D
 String FuelPressureControlSystemRequested = "2,1,109,0,0,0,0,0";
 
+struct {
+    int rpm;
+    byte coolantTemp;
+    byte speedInMph;
+} currentData;
+
 void setup() {
+    currentData.rpm = 0;
+    currentData.coolantTemp = 0;
+    currentData.speedInMph = 0;
     Serial.begin(115200);
     tachometer.initialize();
     speedometer.initialize();
@@ -83,14 +92,25 @@ int sendCanMessage (int dataSize, const byte *dataToSend) {
     return CAN.sendMsgBuf(CAN_ID_PID, 0, dataSize, dataToSend);
 }
 
+void newRpm() {
+    int rpmChange = random(-10, 10);
+    if (currentData.rpm + rpmChange < 0) {
+        currentData.rpm = 0;
+    } else if (currentData.rpm + rpmChange > 4000) {
+        currentData.rpm = 4000;
+    } else {
+        currentData.rpm += rpmChange;
+    }
+}
+
 __attribute__((unused)) void loop()
 {
-    unsigned char rndCoolantTemp=random(1,200);
-    int rndRPM=random(1,4000);
-    unsigned char rndSpeed=random(0,255);
+    currentData.coolantTemp = random(1,200);
+    newRpm();
+    currentData.speedInMph = random(0,255);
 
-    tachometer.SetRpms(rndRPM);
-    speedometer.SetMph(rndSpeed);
+    tachometer.SetRpms(currentData.rpm);
+    speedometer.SetMph(currentData.speedInMph);
 
     //GENERAL ROUTINE
     byte SupportedPID[8] =                {0x06,  0x41,  0x00,  B10001000, B00011000, B00000000, B00000001, 0x00};
@@ -104,9 +124,9 @@ __attribute__((unused)) void loop()
     unsigned char MilCleared[7] =         {4, 65, 63, 34, 224, 185, 147};
 
     //SENSORS
-    unsigned char CoolantTemp[7] =                  {4, 65, 5,  rndCoolantTemp, 0, 185, 147};
-    unsigned char rpm[7] =                          {4, 65, 12, highByte(rndRPM << 2), lowByte(rndRPM << 2), 0, 0 }; //224, 185, 147};
-    unsigned char vspeed[7] =                       {4, 65, 13, rndSpeed, 224, 185, 147};
+    unsigned char CoolantTemp[7] =                  {4, 65, 5,  currentData.coolantTemp, 0, 185, 147};
+    unsigned char rpms[7] =                          {4, 65, 12, highByte(currentData.rpm << 2), lowByte(currentData.rpm << 2), 0, 0 }; //224, 185, 147};
+    unsigned char vspeed[7] =                       {4, 65, 13, currentData.speedInMph, 224, 185, 147};
     unsigned char fuelPressureControlSystem[7] =    {4, 65, 109, 10, 20, 0, 0};
 
     while(CAN_MSGAVAIL == CAN.checkReceive())
@@ -125,7 +145,8 @@ __attribute__((unused)) void loop()
         //Check which message was received.
         if(BuildMessage == SupportedPIDsRequested) {
 //            Serial.println("sending supported pids!" + (String)(1 + count++) + " times.");
-            int response = sendCanMessage(sizeof(SupportedPID), SupportedPID);
+//            int response =
+                    sendCanMessage(sizeof(SupportedPID), SupportedPID);
 //            Serial.println("response " + (String)response + " : " + (String)CAN_FAILTX);
         }
 
@@ -151,17 +172,17 @@ __attribute__((unused)) void loop()
 
         //SEND SENSOR STATUSES
         if(BuildMessage == CoolantTempRequested) {
-            Serial.println("sending coolant temp" + (String)rndCoolantTemp);
+            Serial.println("sending coolant temp" + (String)currentData.coolantTemp);
             sendCanMessage(sizeof(CoolantTemp), CoolantTemp);
         }
 
         if(BuildMessage == RpmRequested){
-            Serial.println("sending rpm" + (String)rndRPM);
-            sendCanMessage(sizeof(rpm), rpm);
+            Serial.println("sending rpm" + (String)currentData.rpm);
+            sendCanMessage(sizeof(rpms), rpms);
         }
 
         if(BuildMessage == SpeedoRequested){
-            Serial.println("sending speedo" + (String)rndSpeed);
+            Serial.println("sending speedo" + (String)currentData.speedInMph);
             sendCanMessage(sizeof(vspeed), vspeed);
         }
         if(BuildMessage == FuelPressureControlSystemRequested) {
