@@ -3,6 +3,12 @@
 #include <limits.h>
 using namespace std;
 
+#include <Tachometer.h>
+#include <Speedometer.h>
+
+Tachometer tachometer = Tachometer(6, 0);
+Speedometer speedometer = Speedometer();
+
 //#define _MCP_FAKE_MODE_
 #define CAN_2515
 // #define CAN_2518FD
@@ -48,9 +54,7 @@ String SupportedPIDsRequested = "2,1,0,0,0,0,0,0"; // 00
 String SupportedPIDs21to40Requested = "2,1,32,0,0,0,0,0"; // 32
 String SupportedPIDs41to60Requested = "2,1,64,0,0,0,0,0"; // 64
 String SupportedPIDs61to80Requested = "2,1,96,0,0,0,0,0"; // 96
-//String SupportedPIDs81toA0Requested = "2,1,128,0,0,0,0,0"; // 128
-//String SupportedPIDsA1toC1Requested = "2,1,160,0,0,0,0,0"; // 160
-//String SupportedPIDsC1toE0Requested = "2,1,192,0,0,0,0,0"; // 192
+
 String CheckEngineLightClearRequested = "2,1,1,0,0,0,0,0"; // 01
 String CoolantTempRequested = "2,1,5,0,0,0,0,0"; // 05
 String RpmRequested = "2,1,12,0,0,0,0,0"; // 0C
@@ -59,6 +63,8 @@ String FuelPressureControlSystemRequested = "2,1,109,0,0,0,0,0";
 
 void setup() {
     Serial.begin(115200);
+    tachometer.initialize();
+    speedometer.initialize();
 
     while (CAN_OK != CAN.begin(CAN_500KBPS)) {
         Serial.println("CAN BUS Shield init fail");
@@ -77,11 +83,14 @@ int sendCanMessage (int dataSize, const byte *dataToSend) {
     return CAN.sendMsgBuf(CAN_ID_PID, 0, dataSize, dataToSend);
 }
 
-void loop()
+__attribute__((unused)) void loop()
 {
     unsigned char rndCoolantTemp=random(1,200);
-    unsigned char rndRPM=random(1,55);
+    int rndRPM=random(1,4000);
     unsigned char rndSpeed=random(0,255);
+
+    tachometer.SetRpms(rndRPM);
+    speedometer.SetMph(rndSpeed);
 
     //GENERAL ROUTINE
     byte SupportedPID[8] =                {0x06,  0x41,  0x00,  B10001000, B00011000, B00000000, B00000001, 0x00};
@@ -91,14 +100,12 @@ void loop()
     byte SupportedPID41to60[8] =          {0x06,  0x41,  0x40,  B00000000, B00000000, B00000000, B00000001, 0x00};
     //                                                          97-104     105-112    113-120    121-128
     byte SupportedPID61to80[8] =          {0x06,  0x41,  0x60,  B00000000, B00001000, B00000000, B00000000, 0x00};
-//    byte SupportedPID81toA0[7] =          {0x06,  0x41,  0x32,  B00000000, B00000000, B00000000, B00000000};
-//    byte SupportedPID21to40[7] =          {0x06,  0x41,  0x32,  B00000000, B00000000, B00000000, B00000001};
-//    byte SupportedPID21to40[7] =          {0x06,  0x41,  0x32,  B00000000, B00000000, B00000000, B00000001};
+
     unsigned char MilCleared[7] =         {4, 65, 63, 34, 224, 185, 147};
 
     //SENSORS
     unsigned char CoolantTemp[7] =                  {4, 65, 5,  rndCoolantTemp, 0, 185, 147};
-    unsigned char rpm[7] =                          {4, 65, 12, rndRPM, 224, 185, 147};
+    unsigned char rpm[7] =                          {4, 65, 12, highByte(rndRPM << 2), lowByte(rndRPM << 2), 0, 0 }; //224, 185, 147};
     unsigned char vspeed[7] =                       {4, 65, 13, rndSpeed, 224, 185, 147};
     unsigned char fuelPressureControlSystem[7] =    {4, 65, 109, 10, 20, 0, 0};
 
