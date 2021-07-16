@@ -21,14 +21,14 @@ void Tachometer::initialize() {
 void Tachometer::SetRpms(int _rpms) {
     this->rpms = _rpms;
     long microseconds = Tachometer::RpmToMicroseconds(this->rpms);
-    Serial.println("rpm: " + (String)this->rpms + " microseconds: " + (String)microseconds);
-    Serial.println();
+//    Serial.println("rpm: " + (String)this->rpms + " microseconds: " + (String)microseconds);
+//    Serial.println();
     Timer5.setPeriod(microseconds);
 }
 
 long Tachometer::RpmToMicroseconds(int32_t _rpms) const {
     double hertz = (double)_rpms * this->numberOfCylinders / 120;
-    Serial.println("hertz: " + (String)hertz);
+//    Serial.println("hertz: " + (String)hertz);
     long microseconds = Tachometer::HertzToMicroseconds(hertz);
     return microseconds;
 }

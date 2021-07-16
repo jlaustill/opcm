@@ -20,15 +20,15 @@ void Speedometer::initialize() const {
 void Speedometer::SetMph(int _mph) {
     this->mph = _mph;
     long microseconds = Speedometer::MphToMicroseconds(this->mph);
-    Serial.println("mph: " + (String)this->mph);
-    Serial.println("microseconds: " + (String)microseconds);
-    Serial.println();
+//    Serial.println("mph: " + (String)this->mph);
+//    Serial.println("microseconds: " + (String)microseconds);
+//    Serial.println();
     Timer4.setPeriod(microseconds);
 }
 
 long Speedometer::MphToMicroseconds(int _mph) const {
     double hertz = (double)_mph * this->clicksPerMile / 60 / 60;
-    Serial.println("hertz: " + (String)hertz);
+//    Serial.pri¿ntln("hertz: " + (String)hertz);
     long microseconds = Speedometer::HertzToMicroseconds(hertz);
     return microseconds;
 }

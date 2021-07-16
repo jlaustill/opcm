@@ -84,31 +84,42 @@ void setup() {
     Serial.println("CAN BUS Shield init ok!");
 }
 
-int count = 0;
 int sendCanMessage (int dataSize, const byte *dataToSend) {
-    int dataSizeBits = CHAR_BIT * dataSize;
+//    int dataSizeBits = CHAR_BIT * dataSize;
 //    Serial.println("sending data size: " + (String)dataSize);
 //    Serial.println("data size in bits: " + (String)dataSizeBits);
     return CAN.sendMsgBuf(CAN_ID_PID, 0, dataSize, dataToSend);
 }
 
-void newRpm() {
-    int rpmChange = random(-10, 10);
-    if (currentData.rpm + rpmChange < 0) {
-        currentData.rpm = 0;
-    } else if (currentData.rpm + rpmChange > 4000) {
-        currentData.rpm = 4000;
+long sweep = 0;
+int up = 1;
+long maxSweep = 100000;
+void newSweepValue() {
+    if (up == 1 && sweep < maxSweep) {
+        sweep++;
+    } else if (up == 1 && sweep >= maxSweep) {
+        up = 0;
+    } else if (sweep > 0) {
+        sweep--;
     } else {
-        currentData.rpm += rpmChange;
+        up = 1;
     }
+}
+
+byte mphToKph(int mph) {
+    double kph = mph * 1.60934;
+    return (byte)round(kph);
 }
 
 __attribute__((unused)) void loop()
 {
-    currentData.coolantTemp = random(1,200);
-    newRpm();
-    currentData.speedInMph = random(0,255);
+    newSweepValue();
+    currentData.coolantTemp = map(sweep, 0, maxSweep, 1, 200); // random(1,200);
+    currentData.rpm = map(sweep, 0, maxSweep, 0, 4000);
+    currentData.speedInMph = map(sweep, 0, maxSweep, 0, 200); // random(0,255);
 
+    Serial.println("sweep: " + (String)sweep);
+    Serial.println("rpm: " + (String)currentData.rpm);
     tachometer.SetRpms(currentData.rpm);
     speedometer.SetMph(currentData.speedInMph);
 
@@ -126,8 +137,8 @@ __attribute__((unused)) void loop()
     //SENSORS
     unsigned char CoolantTemp[7] =                  {4, 65, 5,  currentData.coolantTemp, 0, 185, 147};
     unsigned char rpms[7] =                          {4, 65, 12, highByte(currentData.rpm << 2), lowByte(currentData.rpm << 2), 0, 0 }; //224, 185, 147};
-    unsigned char vspeed[7] =                       {4, 65, 13, currentData.speedInMph, 224, 185, 147};
-    unsigned char fuelPressureControlSystem[7] =    {4, 65, 109, 10, 20, 0, 0};
+    unsigned char vspeed[7] =                       {4, 65, 13, mphToKph(currentData.speedInMph), 224, 185, 147};
+    unsigned char fuelPressureControlSystem[8] =    {16, 65, 209, 225, 100, 25, 50, 50};
 
     while(CAN_MSGAVAIL == CAN.checkReceive())
     {
@@ -188,8 +199,8 @@ __attribute__((unused)) void loop()
         if(BuildMessage == FuelPressureControlSystemRequested) {
             Serial.println("sending FuelPressureControlSystemRequested 50");
             sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
-            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
-            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
+//            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
+//            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
         }
         BuildMessage="";
     }
