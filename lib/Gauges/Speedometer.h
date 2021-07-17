@@ -7,7 +7,7 @@
 
 class Speedometer {
 public:
-    explicit Speedometer(int _clicksPerMile = 8000, int _pinNumber = 11);
+    explicit Speedometer(int _clicksPerMile = 8000);
     void initialize() const;
     void SetMph(int _mph);
 

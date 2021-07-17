@@ -6,9 +6,8 @@
 #include <TimerFour.h>
 #include "Speedometer.h"
 
-Speedometer::Speedometer(int _clicksPerMile, int _pinNumber) {
+Speedometer::Speedometer(int _clicksPerMile) {
     this->clicksPerMile = _clicksPerMile;
-    this->pinNumber = _pinNumber;
     this->mph = 0;
 }
 
