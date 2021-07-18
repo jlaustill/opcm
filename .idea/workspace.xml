@@ -14,8 +14,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a258aa2f-6a9d-432b-bf9b-261b0918f1b5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/Display/OBD2/OBD2.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/Display/OBD2/OBD2.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeListsUser.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeListsUser.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Gauges/Speedometer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/lib/Display/Gauges/Speedometer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Gauges/Speedometer.h" beforeDir="false" afterPath="$PROJECT_DIR$/lib/Display/Gauges/Speedometer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Gauges/Tachometer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/lib/Display/Gauges/Tachometer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Gauges/Tachometer.h" beforeDir="false" afterPath="$PROJECT_DIR$/lib/Display/Gauges/Tachometer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +66,17 @@
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="CMakeSettings" />
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/Display" />
+    </key>
+  </component>
   <component name="RunManager" selected="PlatformIO.PlatformIO Upload">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Debug" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="npcm" TARGET_NAME="Debug" CONFIG_NAME="megaatmega2560">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -99,7 +118,7 @@
       <option name="presentableId" value="Default" />
       <updated>1626236412744</updated>
       <workItem from="1626236416583" duration="7979000" />
-      <workItem from="1626558255235" duration="1528000" />
+      <workItem from="1626558255235" duration="4814000" />
     </task>
     <servers />
   </component>

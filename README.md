@@ -4,13 +4,13 @@ Have an older vehicle without a PCM?  Maybe a Fummins with a 24 valve or common 
 
 Right away I'm working on input via CCD and standard sensors.  I already have output over OBD2 and a standard Tachometer and Speedometer output working with 12 volt PWM.
 
-There is a LOT of room for improvement and I'm just getting started here.
+There is a LOT of room for improvement, and I'm just getting started here.
 
 ## Features
 ### Working
 * 12v PWM Speedometer output
 * 12v PWM Tachometer output
-* Basic OBD2 via CAN-bus
+* Basic OBD2 via CAN-BUS
 
 ### Future
 1. CCD input
