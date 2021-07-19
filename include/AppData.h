@@ -8,9 +8,11 @@
 #include <Arduino.h>
 
 struct AppData {
-    int rpm;
     byte coolantTemp;
+    int rpm;
     byte speedInMph;
+//    int transmissionPressure;
+//    byte transmissionTempF;
 };
 
 #endif //OPCM_APPDATA_H
