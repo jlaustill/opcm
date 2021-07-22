@@ -27,8 +27,9 @@ void Speedometer::SetMph(int _mph) {
 
 long Speedometer::MphToMicroseconds(int _mph) const {
     double hertz = (double)_mph * this->clicksPerMile / 60 / 60;
-//    Serial.pri¿ntln("hertz: " + (String)hertz);
+//    Serial.println("hertz: " + (String)hertz);
     long microseconds = Speedometer::HertzToMicroseconds(hertz);
+//    Serial.println("microseconds: " + (String(microseconds)));
     return microseconds;
 }
 

@@ -3,14 +3,19 @@
 #include "Display/Gauges/Tachometer.h"
 #include "Display/Gauges/Speedometer.h"
 #include "Display/OBD2/OBD2.h"
+#include "Data/Sensors/TransmissionTemperatureSensor.h"
+#include "Data/SpeedometerInput.h"
 #include <AppData.h>
 
 AppData currentData;
 
 Tachometer tachometer = Tachometer(6, 0);
 Speedometer speedometer = Speedometer();
+SpeedometerInput speedometerInput = SpeedometerInput();
 
 void setup() {
+    SpeedometerInput::initialize();
+
     currentData.rpm = 0;
     currentData.coolantTemp = 0;
     currentData.speedInMph = 0;
@@ -40,12 +45,15 @@ __attribute__((unused)) void loop()
     newSweepValue();
     currentData.coolantTemp = map(sweep, 0, maxSweep, 1, 200); // random(1,200);
     currentData.rpm = (int)map(sweep, 0, maxSweep, 0, 4000);
-    currentData.speedInMph = map(sweep, 0, maxSweep, 0, 200); // random(0,255);
+    currentData.speedInMph = SpeedometerInput::getCurrentSpeedInMph(); // map(sweep, 0, maxSweep, 0, 200); // random(0,255);
+    currentData.transmissionTempC = 40; //TransmissionTemperatureSensor::readNextValue();
 
-    Serial.println("sweep: " + (String)sweep);
-    Serial.println("rpm: " + (String)currentData.rpm);
+//    Serial.println("sweep: " + (String)sweep);
+//    Serial.println("rpm: " + (String)currentData.rpm);
     tachometer.SetRpms(currentData.rpm);
-    speedometer.SetMph(currentData.speedInMph);
+    speedometer.SetMph((int)map(sweep, 0, maxSweep, 0, 200)); // random(0,255));
+
+//    Serial.println("Mph: " + (String)currentData.speedInMph);
 
     OBD2::sendData(currentData);
 }

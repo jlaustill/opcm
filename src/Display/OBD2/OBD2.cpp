@@ -44,6 +44,8 @@ String CoolantTempRequested = "2,1,5,0,0,0,0,0"; // 05
 String RpmRequested = "2,1,12,0,0,0,0,0"; // 0C
 String SpeedoRequested = "2,1,13,0,0,0,0,0"; // 0D
 String FuelPressureControlSystemRequested = "2,1,109,0,0,0,0,0";
+//String TransmissionTemperatureRequested = "3,34,22,116,0,0,0,0";
+String TransmissionTemperatureRequested = "3,34,17,189,0,0,0,0";
 
 void OBD2::initialize() {
 
@@ -71,7 +73,6 @@ void OBD2::sendData(AppData currentData) {
     unsigned char MilCleared[7] =         {4, 65, 63, 34, 224, 185, 147};
 
     //SENSORS
-    unsigned char CoolantTemp[7] =                  {4, 65, 5,  currentData.coolantTemp, 0, 185, 147};
     unsigned char rpms[7] =                          {4, 65, 12, highByte(currentData.rpm << 2), lowByte(currentData.rpm << 2), 0, 0 }; //224, 185, 147};
     unsigned char vspeed[7] =                       {4, 65, 13, mphToKph(currentData.speedInMph), 224, 185, 147};
     unsigned char fuelPressureControlSystem[8] =    {16, 65, 209, 225, 100, 25, 50, 50};
@@ -81,13 +82,19 @@ void OBD2::sendData(AppData currentData) {
 
         CAN.readMsgBuf(&len, buf);
         canId = CAN.getCanId();
-        Serial.print("<");Serial.print(canId);Serial.print(">{");
+        if (canId != 2015) {
+            Serial.print("<");
+            Serial.print(canId);
+            Serial.print(">{");
+        }
 
         for(int i = 0; i<len; i++)
         {
             BuildMessage = BuildMessage + buf[i] + (i == len - 1 ? "" : ",");
         }
-        Serial.println(BuildMessage + "}");
+        if (canId != 2015) {
+            Serial.println(BuildMessage + "}");
+        }
 
         //Check which message was received.
         if(BuildMessage == SupportedPIDsRequested) {
@@ -119,17 +126,26 @@ void OBD2::sendData(AppData currentData) {
 
         //SEND SENSOR STATUSES
         if(BuildMessage == CoolantTempRequested) {
-            Serial.println("sending coolant temp" + (String)currentData.coolantTemp);
+            unsigned char CoolantTemp[7] = {4, 65, 5,  currentData.coolantTemp, 0, 185, 147};
+            Serial.println("sending coolant temp " + (String)currentData.coolantTemp);
+            Serial.println("message received " + CoolantTempRequested);
             sendCanMessage(sizeof(CoolantTemp), CoolantTemp);
         }
 
+        if(BuildMessage == TransmissionTemperatureRequested) {
+//            unsigned char TransmissionTemperatureData[7] = {5,98,22,116,5,5,0}; // doesn't work :(
+            unsigned char TransmissionTemperatureData[7] = {5,98,17,189,5,5,0}; // doesn't work :(
+            Serial.println("Sending Transmission Temperature " + (String)currentData.transmissionTempC + " " + sizeof(TransmissionTemperatureData));
+            sendCanMessage(7, TransmissionTemperatureData);
+        }
+
         if(BuildMessage == RpmRequested){
-            Serial.println("sending rpm" + (String)currentData.rpm);
+//            Serial.println("sending rpm " + (String)currentData.rpm);
             sendCanMessage(sizeof(rpms), rpms);
         }
 
         if(BuildMessage == SpeedoRequested){
-            Serial.println("sending speedo" + (String)currentData.speedInMph);
+            Serial.println("sending speedo " + (String)currentData.speedInMph);
             sendCanMessage(sizeof(vspeed), vspeed);
         }
         if(BuildMessage == FuelPressureControlSystemRequested) {

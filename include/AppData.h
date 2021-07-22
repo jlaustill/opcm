@@ -12,7 +12,7 @@ struct AppData {
     int rpm;
     byte speedInMph;
 //    int transmissionPressure;
-//    byte transmissionTempF;
+    byte transmissionTempC;
 };
 
 #endif //OPCM_APPDATA_H

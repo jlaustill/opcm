@@ -33,7 +33,7 @@ This makes the hardware I'm currently using 100.29USD, not to shabby!  In the fu
 
 ### Pins
 #### Analog
-0.
+0. Transmission Temperature Sensor
 1. 
 2.
 3.
@@ -69,7 +69,7 @@ This makes the hardware I'm currently using 100.29USD, not to shabby!  In the fu
 15.
 16.
 17.
-18.
+18. Speedometer Input (pwm)
 19.
 20.
 21.
