@@ -1,15 +1,17 @@
 //
 // Created by jlaustill on 7/4/21.
 //
+#include "../../Configuration.h"
+#ifdef TACHOMETER_OUTPUT
 
 #include <Arduino.h>
 #include <TimerFive.h>
 
 #include "Tachometer.h"
 
-Tachometer::Tachometer(int _numberOfCylinders, int _initialRpms, int _pinNumber) {
-    this->numberOfCylinders = _numberOfCylinders;
-    this->rpms = _initialRpms;
+Tachometer::Tachometer(int _pinNumber) {
+    this->numberOfCylinders = TACHOMETER_OUTPUT_CYLINDER_COUNT;
+    this->rpms = TACHOMETER_OUTPUT_INITIAL_RPMS;
     this->pinNumber = _pinNumber;
 }
 
@@ -38,3 +40,5 @@ long Tachometer::HertzToMicroseconds(double _hz) {
     duration = 1.000000000 / _hz;
     return (long)(duration * 1000000.0);
 }
+
+#endif
