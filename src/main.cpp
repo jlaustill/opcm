@@ -1,10 +1,18 @@
 #include <Arduino.h>
 #include "Configuration.h"
 
-#ifdef TACHOMETER_OUTPUT
-#include "Display/Gauges/Tachometer.h"
+#ifdef SPEEDOMETER_INPUT
+    #include "Data/SpeedometerInput.h"
 #endif
-#include "Display/Gauges/Speedometer.h"
+
+#ifdef TACHOMETER_OUTPUT
+    #include "Display/Gauges/Tachometer.h"
+#endif
+#ifdef SPEEDOMETER_OUTPUT
+    #include "Display/Gauges/Speedometer.h"
+#endif
+
+
 #include "Display/OBD2/OBD2.h"
 #include "Data/Sensors/TransmissionTemperatureSensor.h"
 #include "Data/SpeedometerInput.h"
@@ -13,13 +21,19 @@
 AppData currentData;
 
 #ifdef TACHOMETER_OUTPUT
-Tachometer tachometer = Tachometer();
+    Tachometer tachometer = Tachometer();
 #endif
-Speedometer speedometer = Speedometer();
-SpeedometerInput speedometerInput = SpeedometerInput();
+#ifdef SPEEDOMETER_OUTPUT
+    Speedometer speedometer = Speedometer();
+#endif
+#ifdef SPEEDOMETER_INPUT
+    SpeedometerInput speedometerInput = SpeedometerInput();
+#endif
 
 void setup() {
+#ifdef SPEEDOMETER_INPUT
     SpeedometerInput::initialize();
+#endif
 
     currentData.rpm = 0;
     currentData.coolantTemp = 0;
@@ -28,7 +42,9 @@ void setup() {
 #ifdef TACHOMETER_OUTPUT
     tachometer.initialize();
 #endif
+#ifdef SPEEDOMETER_OUTPUT
     speedometer.initialize();
+#endif
     OBD2::initialize();
 }
 
@@ -54,17 +70,19 @@ __attribute__((unused)) void loop()
 #ifdef TACHOMETER_OUTPUT
     currentData.rpm = (int)map(sweep, 0, maxSweep, 0, 4000);
 #endif
+
+#ifdef SPEEDOMETER_INPUT
     currentData.speedInMph = SpeedometerInput::getCurrentSpeedInMph(); // map(sweep, 0, maxSweep, 0, 200); // random(0,255);
+#endif
+
     currentData.transmissionTempC = 40; //TransmissionTemperatureSensor::readNextValue();
 
-//    Serial.println("sweep: " + (String)sweep);
-//    Serial.println("rpm: " + (String)currentData.rpm);
 #ifdef TACHOMETER_OUTPUT
     tachometer.SetRpms(currentData.rpm);
 #endif
-//    speedometer.SetMph((int)map(sweep, 0, maxSweep, 0, 115)); // random(0,255));
-speedometer.SetMph(25);
-//    Serial.println("Mph: " + (String)currentData.speedInMph);
+#ifdef SPEEDOMETER_OUTPUT
+    speedometer.SetMph(25);
+#endif
 
     OBD2::sendData(currentData);
 }

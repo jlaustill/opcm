@@ -2,6 +2,10 @@
 // Created by jlaustill on 7/6/21.
 //
 
+#include "../../Configuration.h"
+
+#ifdef SPEEDOMETER_OUTPUT
+
 #include <Arduino.h>
 #include <TimerFour.h>
 #include "Speedometer.h"
@@ -38,3 +42,5 @@ long Speedometer::HertzToMicroseconds(double _hz) {
     duration = 1.000000000 / _hz;
     return (long)(duration * 1000000.0);
 }
+
+#endif
