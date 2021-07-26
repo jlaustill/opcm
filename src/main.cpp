@@ -15,7 +15,6 @@
 
 #include "Display/OBD2/OBD2.h"
 #include "Data/Sensors/TransmissionTemperatureSensor.h"
-#include "Data/SpeedometerInput.h"
 #include <AppData.h>
 
 AppData currentData;
@@ -25,9 +24,6 @@ AppData currentData;
 #endif
 #ifdef SPEEDOMETER_OUTPUT
     Speedometer speedometer = Speedometer();
-#endif
-#ifdef SPEEDOMETER_INPUT
-    SpeedometerInput speedometerInput = SpeedometerInput();
 #endif
 
 void setup() {
