@@ -69,6 +69,7 @@ __attribute__((unused)) void loop()
 
 #ifdef SPEEDOMETER_INPUT
     currentData.speedInMph = SpeedometerInput::getCurrentSpeedInMph(); // map(sweep, 0, maxSweep, 0, 200); // random(0,255);
+    Serial.println("speedInMph? " + (String)currentData.speedInMph);
 #endif
 
     currentData.transmissionTempC = 40; //TransmissionTemperatureSensor::readNextValue();
@@ -77,7 +78,7 @@ __attribute__((unused)) void loop()
     tachometer.SetRpms(currentData.rpm);
 #endif
 #ifdef SPEEDOMETER_OUTPUT
-    speedometer.SetMph(25);
+    speedometer.SetMph(currentData.speedInMph);
 #endif
 
     OBD2::sendData(currentData);

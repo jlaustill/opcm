@@ -32,11 +32,13 @@ double MicrosecondsToHertz(unsigned long _microseconds) {
 
 int MicrosecondsToMph(unsigned long _microseconds) {
     double hertz = MicrosecondsToHertz(_microseconds);
-    return (int)((hertz * 60 * 60) / SPEEDOMETER_INPUT_CLICKS_PER_MILE);
+    hertz = (hertz * 60 * 60) / SPEEDOMETER_INPUT_CLICKS_PER_MILE;
+    return (int)(hertz > 1 ? hertz : 0);
 }
 
 int SpeedometerInput::getCurrentSpeedInMph() {
-    return MicrosecondsToMph(pwm_value);
+    Serial.println("pwn_value? " + (String)pwm_value);
+    return MicrosecondsToMph(pwm_value < 220000 ? pwm_value : 0);
 }
 
 #endif

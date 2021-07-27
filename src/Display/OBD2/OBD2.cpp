@@ -156,8 +156,10 @@ void OBD2::sendData(AppData currentData) {
         }
         BuildMessage="";
     }
-    if(CAN.checkError() != 0){
-        Serial.print("CAN.checkError != 0");
+
+    byte canCheckError = CAN.checkError();
+    if(canCheckError != 0){
+        Serial.println("CAN.checkError != 0" + (String)canCheckError);
     }
 
 }

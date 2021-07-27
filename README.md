@@ -8,13 +8,16 @@ There is a LOT of room for improvement, and I'm just getting started here.
 
 ## Features
 ### Working
-* 12v PWM Speedometer output
-* 12v PWM Tachometer output
+* 12v PWM Speedometer input (with optoisolator)
+* 12v PWM Speedometer output (with optoisolator)
+* 12v PWM Tachometer output (with optoisolator, needs input)
 * Basic OBD2 via CAN-BUS
 
+### In Progress
+* configuration via configuration.h (modeled after Merlin for 3d printers)
+
 ### Future
-1. CCD input
-2. configuration via configuration.h (modeled after Merlin for 3d printers)
+1. cummins bus input?
 3. 5v sensor inputs
 4. Suggestions?
 
