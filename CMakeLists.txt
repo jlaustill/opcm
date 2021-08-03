@@ -30,4 +30,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(Z_DUMMY_TARGET ${SRC_LIST} src/Display/OBD2/OBD2.cpp src/Display/OBD2/OBD2.h include/AppData.h src/Data/Sensors/TransmissionTemperatureSensor.cpp src/Data/Sensors/TransmissionTemperatureSensor.h src/Data/SpeedometerInput.cpp src/Data/SpeedometerInput.h src/Configuration.h)
+add_executable(Z_DUMMY_TARGET ${SRC_LIST} src/Display/OBD2/OBD2.cpp src/Display/OBD2/OBD2.h include/AppData.h src/Data/Sensors/TransmissionTemperatureSensor.cpp src/Data/Sensors/TransmissionTemperatureSensor.h src/Data/SpeedometerInput.cpp src/Data/SpeedometerInput.h src/Configuration.h src/Data/TachometerInput60Minus2.cpp src/Data/TachometerInput60Minus2.h)

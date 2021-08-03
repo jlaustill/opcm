@@ -18,6 +18,9 @@
     #define SPEEDOMETER_INPUT_CLICKS_PER_MILE 8000
 #endif
 
+// This is the setup on a 24 valve cummins using a camshaft sensor, so it assumes the gear is running at 1/2 the speed of the crankshaft
+#define TACHOMETER_INPUT_60_MINUS_2
+
 
 /*
  * Outputs configuration

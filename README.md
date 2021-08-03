@@ -9,15 +9,17 @@ There is a LOT of room for improvement, and I'm just getting started here.
 ## Features
 ### Working
 * 12v PWM Speedometer input (with optoisolator)
+* 5-24v 60-2 camshaft sensor tachometer input (with optoisolator)
 * 12v PWM Speedometer output (with optoisolator)
 * 12v PWM Tachometer output (with optoisolator, needs input)
-* Basic OBD2 via CAN-BUS
+* Basic OBD2 via CAN-BUS output (speedometer and tachometer)
 
 ### In Progress
 * configuration via configuration.h (modeled after Merlin for 3d printers)
 
 ### Future
 1. cummins bus input?
+2. SCI input?
 3. 5v sensor inputs
 4. Suggestions?
 
@@ -73,7 +75,7 @@ This makes the hardware I'm currently using 100.29USD, not to shabby!  In the fu
 16.
 17.
 18. Speedometer Input (pwm)
-19.
+19. Tachometer Input
 20.
 21.
 22.

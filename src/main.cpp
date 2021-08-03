@@ -4,6 +4,9 @@
 #ifdef SPEEDOMETER_INPUT
     #include "Data/SpeedometerInput.h"
 #endif
+#ifdef TACHOMETER_INPUT_60_MINUS_2
+    #include "Data/TachometerInput60Minus2.h"
+#endif
 
 #ifdef TACHOMETER_OUTPUT
     #include "Display/Gauges/Tachometer.h"
@@ -29,6 +32,9 @@ AppData currentData;
 void setup() {
 #ifdef SPEEDOMETER_INPUT
     SpeedometerInput::initialize();
+#endif
+#ifdef TACHOMETER_INPUT_60_MINUS_2
+    TachometerInput60Minus2::initialize();
 #endif
 
     currentData.rpm = 0;
@@ -63,13 +69,13 @@ __attribute__((unused)) void loop()
 {
     newSweepValue();
     currentData.coolantTemp = map(sweep, 0, maxSweep, 1, 200); // random(1,200);
-#ifdef TACHOMETER_OUTPUT
-    currentData.rpm = (int)map(sweep, 0, maxSweep, 0, 4000);
+#ifdef TACHOMETER_INPUT_60_MINUS_2
+    currentData.rpm = TachometerInput60Minus2::getCurrentRpm();
 #endif
 
 #ifdef SPEEDOMETER_INPUT
     currentData.speedInMph = SpeedometerInput::getCurrentSpeedInMph(); // map(sweep, 0, maxSweep, 0, 200); // random(0,255);
-    Serial.println("speedInMph? " + (String)currentData.speedInMph);
+//    Serial.println("speedInMph? " + (String)currentData.speedInMph);
 #endif
 
     currentData.transmissionTempC = 40; //TransmissionTemperatureSensor::readNextValue();

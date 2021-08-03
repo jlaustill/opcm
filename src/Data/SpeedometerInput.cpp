@@ -37,7 +37,7 @@ int MicrosecondsToMph(unsigned long _microseconds) {
 }
 
 int SpeedometerInput::getCurrentSpeedInMph() {
-    Serial.println("pwn_value? " + (String)pwm_value);
+//    Serial.println("pwn_value? " + (String)pwm_value);
     return MicrosecondsToMph(pwm_value < 220000 ? pwm_value : 0);
 }
 

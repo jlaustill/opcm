@@ -60,7 +60,7 @@ void OBD2::initialize() {
 }
 
 void OBD2::sendData(AppData currentData) {
-
+//    Serial.println("sendData getting called?");
     //GENERAL ROUTINE
     byte SupportedPID[8] =                {0x06,  0x41,  0x00,  B10001000, B00011000, B00000000, B00000001, 0x00};
     //                                                          33-40      41-48      49-56      57-64
@@ -79,7 +79,7 @@ void OBD2::sendData(AppData currentData) {
 
     while(CAN_MSGAVAIL == CAN.checkReceive())
     {
-
+//        Serial.println("CAN_MSGAVAIL");
         CAN.readMsgBuf(&len, buf);
         canId = CAN.getCanId();
         if (canId != 2015) {
@@ -98,7 +98,7 @@ void OBD2::sendData(AppData currentData) {
 
         //Check which message was received.
         if(BuildMessage == SupportedPIDsRequested) {
-//            Serial.println("sending supported pids!" + (String)(1 + count++) + " times.");
+            Serial.println("sending supported pids!");
 //            int response =
             sendCanMessage(sizeof(SupportedPID), SupportedPID);
 //            Serial.println("response " + (String)response + " : " + (String)CAN_FAILTX);
@@ -127,15 +127,15 @@ void OBD2::sendData(AppData currentData) {
         //SEND SENSOR STATUSES
         if(BuildMessage == CoolantTempRequested) {
             unsigned char CoolantTemp[7] = {4, 65, 5,  currentData.coolantTemp, 0, 185, 147};
-            Serial.println("sending coolant temp " + (String)currentData.coolantTemp);
-            Serial.println("message received " + CoolantTempRequested);
+//            Serial.println("sending coolant temp " + (String)currentData.coolantTemp);
+//            Serial.println("message received " + CoolantTempRequested);
             sendCanMessage(sizeof(CoolantTemp), CoolantTemp);
         }
 
         if(BuildMessage == TransmissionTemperatureRequested) {
 //            unsigned char TransmissionTemperatureData[7] = {5,98,22,116,5,5,0}; // doesn't work :(
             unsigned char TransmissionTemperatureData[7] = {5,98,17,189,5,5,0}; // doesn't work :(
-            Serial.println("Sending Transmission Temperature " + (String)currentData.transmissionTempC + " " + sizeof(TransmissionTemperatureData));
+//            Serial.println("Sending Transmission Temperature " + (String)currentData.transmissionTempC + " " + sizeof(TransmissionTemperatureData));
             sendCanMessage(7, TransmissionTemperatureData);
         }
 
@@ -145,11 +145,11 @@ void OBD2::sendData(AppData currentData) {
         }
 
         if(BuildMessage == SpeedoRequested){
-            Serial.println("sending speedo " + (String)currentData.speedInMph);
+//            Serial.println("sending speedo " + (String)currentData.speedInMph);
             sendCanMessage(sizeof(vspeed), vspeed);
         }
         if(BuildMessage == FuelPressureControlSystemRequested) {
-            Serial.println("sending FuelPressureControlSystemRequested 50");
+//            Serial.println("sending FuelPressureControlSystemRequested 50");
             sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
 //            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
 //            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
