@@ -16,18 +16,16 @@
 
 #include <AppData.h>
 
-#define coolantsensorDivider 2670   //defines the resistor value that is in series in the voltage divider
-#define coolantsensorPin A0         //defines the analog pin of the input voltage from the voltage divider
 #define NUMSAMPLES 5                //defines the number of samples to be taken for a smooth average
 
-
-const float steinconstA = 0.00132774106461327;        //steinhart equation constant A, determined from wikipedia equations
-const float steinconstB = 0.000254470874104285;       //steinhart equation constant B, determined from wikipedia equations
-const float steinconstC = 0.000000101216538378909;    //steinhart equation constant C, determined from wikipedia equations
+const float steinconstA = 0.00151112945783133000000;        //steinhart equation constant A, determined from wikipedia equations
+const float steinconstB = 0.00024970791159181300000;       //steinhart equation constant B, determined from wikipedia equations
+const float steinconstC = -0.00000000396736560579918;    //steinhart equation constant C, determined from wikipedia equations
 
 class TransmissionTemperatureSensor {
 public:
-    static byte readNextValue();
+    static byte getTransmissionTemperatureInCelcius();
+
 };
 
 

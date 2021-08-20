@@ -2,8 +2,6 @@
 
 Have an older vehicle without a PCM?  Maybe a Fummins with a 24 valve or common rail swap. This project aims to add OBD2 over CAN-bus to any vehicle, and support different combinations of inputs and outputs over time.
 
-Right away I'm working on input via CCD and standard sensors.  I already have output over OBD2 and a standard Tachometer and Speedometer output working with 12 volt PWM.
-
 There is a LOT of room for improvement, and I'm just getting started here.
 
 ## Features
@@ -16,12 +14,14 @@ There is a LOT of room for improvement, and I'm just getting started here.
 
 ### In Progress
 * configuration via configuration.h (modeled after Merlin for 3d printers)
+* Cummins-bus input (24v cummins)
+* Torque Control for shifting (Via Cummins-bus)
+* Transmission Temperature Sensor
+* Transmission Pressure Sensor
 
 ### Future
-1. cummins bus input?
-2. SCI input?
-3. 5v sensor inputs
-4. Suggestions?
+1. 5v sensor inputs
+2. Suggestions?
 
 ## Hardware
 This project currently uses an Arduino Mega, Seeedstudio CAN-bus shield, and a few optoboards
@@ -39,7 +39,7 @@ This makes the hardware I'm currently using 100.29USD, not to shabby!  In the fu
 ### Pins
 #### Analog
 0. Transmission Temperature Sensor
-1. 
+1. Transmission Pressure Sensor
 2.
 3.
 4.
@@ -58,14 +58,14 @@ This makes the hardware I'm currently using 100.29USD, not to shabby!  In the fu
 #### Digital
 0.
 1.
-2. CAN-BUS Shield INT
-3.
+2. CAN-BUS Shield INT (Output)
+3. CAN-BUS INT (Cummins Bus)
 4.
 5.
-6.
+6. 
 7.
 8. Speedometer Output
-9. CAN-BUS Shield CS
+9. CAN-BUS Shield CS (Output)
 10.
 11. 
 12. 
@@ -75,7 +75,7 @@ This makes the hardware I'm currently using 100.29USD, not to shabby!  In the fu
 16.
 17.
 18. Speedometer Input (pwm)
-19. Tachometer Input
+19. Tachometer Input (pwm)
 20.
 21.
 22.
@@ -112,6 +112,6 @@ This makes the hardware I'm currently using 100.29USD, not to shabby!  In the fu
 53.
 
 ICSP Pins
-* CAN-BUS Shield MOSI
-* CAN-BUS Shield MISO
-* CAN-BUS Shield SCK
+* CAN-BUS Shield MOSI (Output)
+* CAN-BUS Shield MISO (Output)
+* CAN-BUS Shield SCK (Output)

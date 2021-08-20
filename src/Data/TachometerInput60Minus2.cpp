@@ -2,6 +2,7 @@
 // Created by jlaustill on 8/2/21.
 //
 #include <Arduino.h>
+//#include <CircularList.h>
 #include "../Configuration.h"
 #include "TachometerInput60Minus2.h"
 
@@ -17,6 +18,46 @@ volatile bool synced = false;
 volatile uint8_t tooth = 1;
 
 #define MICROSECONDS_IN_ONE_MINUTE 60000000
+
+template <typename T>
+class CircularList {
+private:
+    T* data;
+    uint8_t size;
+    uint8_t index = 0;
+
+public:
+    explicit CircularList(uint8_t _size);
+    void next(T _next);
+    T average();
+};
+template<typename T>
+CircularList<T>::CircularList(uint8_t _size) {
+    this->data = new T[_size];
+    this->size = _size;
+}
+
+template<typename T>
+void CircularList<T>::next(T _next) {
+    this->data[this->index] = _next;
+
+    if (++this->index >= this->size) {
+        this->index = 0;
+    }
+}
+
+template<typename T>
+T CircularList<T>::average() {
+    unsigned long sum = 0;
+
+    for (uint8_t i = 0; i < size; i++) {
+        sum += this->data[i];
+    }
+
+    return sum / size;
+}
+
+CircularList<int> smoothingBuffer(6);
 
 int rpmFromMicroseconds(unsigned long microseconds) {
     return MICROSECONDS_IN_ONE_MINUTE / (microseconds * 60) * 2;
@@ -46,7 +87,11 @@ void TachometerInput60Minus2::initialize() {
 
 int TachometerInput60Minus2::getCurrentRpm() {
 //    Serial.println("sending rpms: " + (String)rpms);
-    return rpms;
+    smoothingBuffer.next(rpms);
+    int smoothedRpm = smoothingBuffer.average();
+    Serial.println("smoothed RPM: " + (String)smoothedRpm);
+    return smoothedRpm;
+//return rpms;
 }
 
 #endif

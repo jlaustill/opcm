@@ -14,14 +14,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a258aa2f-6a9d-432b-bf9b-261b0918f1b5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Data/TachometerInput60Minus2.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Data/TachometerInput60Minus2.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/CircularList/CircularList.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/CircularList/CircularList.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Data/Sensors/TransmissionPressureSensor.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Data/Sensors/TransmissionPressureSensor.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/serialmonitor_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/serialmonitor_settings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeListsUser.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeListsUser.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/AppData.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/AppData.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Configuration.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Configuration.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Data/SpeedometerInput.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/SpeedometerInput.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Display/OBD2/OBD2.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Display/OBD2/OBD2.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Data/Sensors/TransmissionTemperatureSensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/Sensors/TransmissionTemperatureSensor.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Data/Sensors/TransmissionTemperatureSensor.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/Sensors/TransmissionTemperatureSensor.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Data/TachometerInput60Minus2.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/TachometerInput60Minus2.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -62,7 +68,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="CMakeSettings" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -123,6 +129,11 @@
       <workItem from="1627322472313" duration="6713000" />
       <workItem from="1627868937416" duration="1199000" />
       <workItem from="1627939896660" duration="3679000" />
+      <workItem from="1628281272458" duration="3530000" />
+      <workItem from="1628389880300" duration="1145000" />
+      <workItem from="1628554869868" duration="610000" />
+      <workItem from="1629081882713" duration="2821000" />
+      <workItem from="1629398429109" duration="4170000" />
     </task>
     <servers />
   </component>

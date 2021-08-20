@@ -7,6 +7,12 @@
 #ifdef TACHOMETER_INPUT_60_MINUS_2
     #include "Data/TachometerInput60Minus2.h"
 #endif
+#ifdef TRANSMISSION_PRESSURE_INPUT
+    #include "Data/Sensors/TransmissionPressureSensor.h"
+#endif
+#ifdef TRANSMISSION_TEMPERATURE_INPUT
+    #include "Data/Sensors/TransmissionTemperatureSensor.h"
+#endif
 
 #ifdef TACHOMETER_OUTPUT
     #include "Display/Gauges/Tachometer.h"
@@ -17,7 +23,6 @@
 
 
 #include "Display/OBD2/OBD2.h"
-#include "Data/Sensors/TransmissionTemperatureSensor.h"
 #include <AppData.h>
 
 AppData currentData;
@@ -40,6 +45,10 @@ void setup() {
     currentData.rpm = 0;
     currentData.coolantTemp = 0;
     currentData.speedInMph = 0;
+    currentData.transmissionPressure = 0;
+#ifdef TRANSMISSION_TEMPERATURE_INPUT
+    currentData.transmissionTempC = 0;
+#endif
     Serial.begin(115200);
 #ifdef TACHOMETER_OUTPUT
     tachometer.initialize();
@@ -78,7 +87,13 @@ __attribute__((unused)) void loop()
 //    Serial.println("speedInMph? " + (String)currentData.speedInMph);
 #endif
 
-    currentData.transmissionTempC = 40; //TransmissionTemperatureSensor::readNextValue();
+#ifdef TRANSMISSION_PRESSURE_INPUT
+    currentData.transmissionPressure = TransmissionPressureSensor::getTransmissionPressureInPsi();
+#endif
+
+#ifdef TRANSMISSION_TEMPERATURE_INPUT
+    currentData.transmissionTempC = TransmissionTemperatureSensor::getTransmissionTemperatureInCelcius();
+#endif
 
 #ifdef TACHOMETER_OUTPUT
     tachometer.SetRpms(currentData.rpm);

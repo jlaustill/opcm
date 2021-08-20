@@ -21,6 +21,20 @@
 // This is the setup on a 24 valve cummins using a camshaft sensor, so it assumes the gear is running at 1/2 the speed of the crankshaft
 #define TACHOMETER_INPUT_60_MINUS_2
 
+#define TRANSMISSION_PRESSURE_INPUT
+#ifdef TRANSMISSION_PRESSURE_INPUT
+    #define TRANSMISSION_PRESSURE_INPUT_PIN A1
+    #define TRANSMISSION_PRESSURE_INPUT_RAW_ZERO 105.0
+    #define TRANSMISSION_PRESSURE_INPUT_RAW_MAX 921.6
+    #define TRANSMISSION_PRESSURE_INPUT_PSI_MAX 500.0
+#endif
+
+#define TRANSMISSION_TEMPERATURE_INPUT
+#ifdef TRANSMISSION_TEMPERATURE_INPUT
+    #define TRANSMISSION_TEMPERATURE_INPUT_PIN A0 //defines the resistor value that is in series in the voltage divider
+    #define TRANSMISSION_TEMPERATURE_INPUT_DIVIDER 2150 //defines the analog pin of the input voltage from the voltage divider
+#endif
+
 
 /*
  * Outputs configuration
