@@ -1,6 +1,12 @@
 #include <Arduino.h>
 #include "Configuration.h"
 
+#ifdef CAN_BUS
+    #include "Display/CanBus.h"
+#endif
+#ifdef CUMMINS_BUS_INPUT
+    #include "Data/CumminsBus.h"
+#endif
 #ifdef SPEEDOMETER_INPUT
     #include "Data/SpeedometerInput.h"
 #endif
@@ -21,11 +27,20 @@
     #include "Display/Gauges/Speedometer.h"
 #endif
 
+#ifdef ODB2
+    #include "Display/OBD2/OBD2.h"
+#endif
 
-#include "Display/OBD2/OBD2.h"
+#ifdef NEXTION
+    #include "Display/Nextion.h"
+#endif
+
 #include <AppData.h>
 
 AppData currentData;
+unsigned long count;
+unsigned long lastMillis;
+unsigned long thisMillis;
 
 #ifdef TACHOMETER_OUTPUT
     Tachometer tachometer = Tachometer();
@@ -35,6 +50,19 @@ AppData currentData;
 #endif
 
 void setup() {
+    Serial.begin(115200);
+    count = 0;
+    lastMillis = millis();
+    thisMillis = millis();
+
+#ifdef CAN_BUS
+    CanBus::initialize();
+#endif
+
+#ifdef CUMMINS_BUS_INPUT
+    Serial.println("CUMMINS_BUS_INPUT defined");
+    CumminsBus::initialize();
+#endif
 #ifdef SPEEDOMETER_INPUT
     SpeedometerInput::initialize();
 #endif
@@ -46,17 +74,24 @@ void setup() {
     currentData.coolantTemp = 0;
     currentData.speedInMph = 0;
     currentData.transmissionPressure = 0;
+    currentData.oilPressureInPsi = 0;
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     currentData.transmissionTempC = 0;
 #endif
-    Serial.begin(115200);
 #ifdef TACHOMETER_OUTPUT
     tachometer.initialize();
 #endif
 #ifdef SPEEDOMETER_OUTPUT
     speedometer.initialize();
 #endif
+
+#ifdef ODB2
     OBD2::initialize();
+#endif
+
+#ifdef NEXTION
+    Nextion::initialize();
+#endif
 }
 
 long sweep = 0;
@@ -76,8 +111,15 @@ void newSweepValue() {
 
 __attribute__((unused)) void loop()
 {
+    thisMillis = millis();
+    count++;
     newSweepValue();
-    currentData.coolantTemp = map(sweep, 0, maxSweep, 1, 200); // random(1,200);
+#ifdef CUMMINS_BUS_INPUT
+    currentData.rpm = CumminsBus::getCurrentRpms();
+    currentData.coolantTemp = CumminsBus::getCurrentWaterTemp();
+    currentData.oilPressureInPsi = CumminsBus::getCurrentOilPressure();
+//    Serial.println("RPM: " + (String)currentData.rpm);
+#endif
 #ifdef TACHOMETER_INPUT_60_MINUS_2
     currentData.rpm = TachometerInput60Minus2::getCurrentRpm();
 #endif
@@ -102,5 +144,26 @@ __attribute__((unused)) void loop()
     speedometer.SetMph(currentData.speedInMph);
 #endif
 
-    OBD2::sendData(currentData);
-}
+#ifdef ODB2
+//    OBD2::sendData(currentData);
+#endif
+#ifdef CAN_BUS
+//    if (count % 100 == 0)
+//    CanBus::sendRpms(currentData.rpm);
+    CanBus::setRpms(currentData.rpm);
+    CanBus::setMph(currentData.speedInMph);
+    CanBus::setCoolantTemp(currentData.coolantTemp);
+    if (thisMillis - lastMillis > 50) {
+        // send unpolled data
+        CanBus::sendOilPressure(currentData.oilPressureInPsi);
+//        Serial.println("Sending Oil Pressure: " + (String)currentData.oilPressureInPsi);
+        lastMillis = thisMillis;
+    }
+#endif
+
+#ifdef NEXTION
+    Nextion::updateDisplayData(currentData);
+#endif
+
+    if (count > 50000 && count % 50000 == 0) Serial.println("Average Microseconds Per Loop: " + (String)(micros() / count));
+};

@@ -18,10 +18,6 @@
 
 #define NUMSAMPLES 5                //defines the number of samples to be taken for a smooth average
 
-const float steinconstA = 0.00151112945783133000000;        //steinhart equation constant A, determined from wikipedia equations
-const float steinconstB = 0.00024970791159181300000;       //steinhart equation constant B, determined from wikipedia equations
-const float steinconstC = -0.00000000396736560579918;    //steinhart equation constant C, determined from wikipedia equations
-
 class TransmissionTemperatureSensor {
 public:
     static byte getTransmissionTemperatureInCelcius();

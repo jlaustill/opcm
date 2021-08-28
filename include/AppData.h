@@ -11,6 +11,7 @@ struct AppData {
     byte coolantTemp;
     int rpm;
     byte speedInMph;
+    byte oilPressureInPsi;
     int transmissionPressure;
     byte transmissionTempC;
 };

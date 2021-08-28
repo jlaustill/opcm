@@ -1,7 +1,8 @@
 //
 // Created by jlaustill on 7/18/21.
 //
-
+#include "Configuration.h"
+#ifdef ODB2
 #include "OBD2.h"
 
 #ifdef CAN_2518FD
@@ -11,16 +12,16 @@ mcp2518fd CAN(SPI_CS_PIN); // Set CS pin
 
 #ifdef CAN_2515
 #include "mcp2515_can.h"
-mcp2515_can CAN(SPI_CS_PIN); // Set CS pin
+mcp2515_can CAN(ODB2_CS_PIN); // Set CS pin
 #endif                                    // CAN_2515
 
 #define CAN_ID_PID          0x7E8
 
-int sendCanMessage (int dataSize, const byte *dataToSend) {
+void sendCanMessage (int dataSize, const byte *dataToSend) {
 //    int dataSizeBits = CHAR_BIT * dataSize;
 //    Serial.println("sending data size: " + (String)dataSize);
 //    Serial.println("data size in bits: " + (String)dataSizeBits);
-    return CAN.sendMsgBuf(CAN_ID_PID, 0, dataSize, dataToSend);
+    CAN.sendMsgBuf(CAN_ID_PID, 0, dataSize, dataToSend);
 }
 
 byte mphToKph(int mph) {
@@ -47,119 +48,123 @@ String FuelPressureControlSystemRequested = "2,1,109,0,0,0,0,0";
 //String TransmissionTemperatureRequested = "3,34,22,116,0,0,0,0";
 String TransmissionTemperatureRequested = "3,34,17,189,0,0,0,0";
 
+//GENERAL ROUTINE
+byte SupportedPID[8] =                {0x06,  0x41,  0x00,  B10001000, B00011000, B00000000, B00000001, 0x00};
+//                                                          33-40      41-48      49-56      57-64
+byte SupportedPID21to40[8] =          {0x06,  0x41,  0x20,  B00000000, B00010000, B00000000, B00000001, 0x00};
+//                                                          65-72      73-80      81-88      89-96
+byte SupportedPID41to60[8] =          {0x06,  0x41,  0x40,  B00000000, B00000000, B00000000, B00000001, 0x00};
+//                                                          97-104     105-112    113-120    121-128
+byte SupportedPID61to80[8] =          {0x06,  0x41,  0x60,  B00000000, B00001000, B00000000, B00000000, 0x00};
+
+unsigned char MilCleared[7] =         {4, 65, 63, 34, 224, 185, 147};
+
+unsigned char rpmMessage[7] = {4, 65, 12, 0, 0, 0, 0 };
+unsigned char vspeedMessage[7] = {4, 65, 13, 0, 224, 185, 147};
+
 void OBD2::initialize() {
 
-    while (CAN_OK != CAN.begin(CAN_500KBPS)) {
-        Serial.println("CAN BUS Shield init fail");
-        Serial.println("Init CAN BUS Shield again");
+    while (CAN_OK != CAN.begin(CAN_500KBPS, MCP_CLOCK_T::MCP_8MHz)) {
+        Serial.println("OBD2 CAN BUS Shield init fail");
+        Serial.println("OBD2 Init CAN BUS Shield again");
         delay(100);
     }
 
-    Serial.println("CAN BUS Shield init ok!");
+    Serial.println("OBD2 CAN BUS Shield init ok!");
 
 }
-
+int only16 = 0;
 void OBD2::sendData(AppData currentData) {
-//    Serial.println("sendData getting called?");
-    //GENERAL ROUTINE
-    byte SupportedPID[8] =                {0x06,  0x41,  0x00,  B10001000, B00011000, B00000000, B00000001, 0x00};
-    //                                                          33-40      41-48      49-56      57-64
-    byte SupportedPID21to40[8] =          {0x06,  0x41,  0x20,  B00000000, B00010000, B00000000, B00000001, 0x00};
-    //                                                          65-72      73-80      81-88      89-96
-    byte SupportedPID41to60[8] =          {0x06,  0x41,  0x40,  B00000000, B00000000, B00000000, B00000001, 0x00};
-    //                                                          97-104     105-112    113-120    121-128
-    byte SupportedPID61to80[8] =          {0x06,  0x41,  0x60,  B00000000, B00001000, B00000000, B00000000, 0x00};
-
-    unsigned char MilCleared[7] =         {4, 65, 63, 34, 224, 185, 147};
-
-    //SENSORS
-    unsigned char rpms[7] =                          {4, 65, 12, highByte(currentData.rpm << 2), lowByte(currentData.rpm << 2), 0, 0 }; //224, 185, 147};
-    unsigned char vspeed[7] =                       {4, 65, 13, mphToKph(currentData.speedInMph), 224, 185, 147};
-    unsigned char fuelPressureControlSystem[8] =    {16, 65, 209, 225, 100, 25, 50, 50};
-
-    while(CAN_MSGAVAIL == CAN.checkReceive())
+//    //SENSORS
+//    unsigned char fuelPressureControlSystem[8] =    {16, 65, 209, 225, 100, 25, 50, 50};
+//
+    while(CAN_MSGAVAIL == CAN.checkReceive() && only16++ < 16)
     {
-//        Serial.println("CAN_MSGAVAIL");
+////        Serial.println("CAN_MSGAVAIL");
         CAN.readMsgBuf(&len, buf);
         canId = CAN.getCanId();
-        if (canId != 2015) {
-            Serial.print("<");
-            Serial.print(canId);
-            Serial.print(">{");
-        }
-
+//        if (canId != 2015) {
+//            Serial.print("<");
+//            Serial.print(canId);
+//            Serial.print(">{");
+//        }
+//
         for(int i = 0; i<len; i++)
         {
             BuildMessage = BuildMessage + buf[i] + (i == len - 1 ? "" : ",");
         }
-        if (canId != 2015) {
-            Serial.println(BuildMessage + "}");
-        }
-
+//        if (canId != 2015) {
+//            Serial.println(BuildMessage + "}");
+//        }
+//
+//        Serial.println(BuildMessage);
         //Check which message was received.
         if(BuildMessage == SupportedPIDsRequested) {
-            Serial.println("sending supported pids!");
-//            int response =
+            Serial.println("PIDs requested");
             sendCanMessage(sizeof(SupportedPID), SupportedPID);
-//            Serial.println("response " + (String)response + " : " + (String)CAN_FAILTX);
         }
-
+//
         if(BuildMessage == SupportedPIDs21to40Requested) {
-            Serial.println("requested the 21 to 40!!!!!");
+//            Serial.println("requested the 21 to 40!!!!!");
             sendCanMessage(sizeof(SupportedPID21to40), SupportedPID21to40);
         }
-
+//
         if(BuildMessage == SupportedPIDs41to60Requested) {
-            Serial.println("requested the 41 to 60!!!!!");
+//            Serial.println("requested the 41 to 60!!!!!");
             sendCanMessage(sizeof(SupportedPID41to60), SupportedPID41to60);
         }
-
+//
         if(BuildMessage == SupportedPIDs61to80Requested) {
             Serial.println("requested the 61 to 80!!!!!");
             sendCanMessage(sizeof(SupportedPID61to80), SupportedPID61to80);
         }
-
+//
         if(BuildMessage == CheckEngineLightClearRequested) {
             Serial.println("sending CIL cleared");
             sendCanMessage(sizeof(MilCleared), MilCleared);
         }
-
-        //SEND SENSOR STATUSES
-        if(BuildMessage == CoolantTempRequested) {
-            unsigned char CoolantTemp[7] = {4, 65, 5,  currentData.coolantTemp, 0, 185, 147};
-//            Serial.println("sending coolant temp " + (String)currentData.coolantTemp);
-//            Serial.println("message received " + CoolantTempRequested);
-            sendCanMessage(sizeof(CoolantTemp), CoolantTemp);
-        }
-
-        if(BuildMessage == TransmissionTemperatureRequested) {
-//            unsigned char TransmissionTemperatureData[7] = {5,98,22,116,5,5,0}; // doesn't work :(
-            unsigned char TransmissionTemperatureData[7] = {5,98,17,189,5,5,0}; // doesn't work :(
-//            Serial.println("Sending Transmission Temperature " + (String)currentData.transmissionTempC + " " + sizeof(TransmissionTemperatureData));
-            sendCanMessage(7, TransmissionTemperatureData);
-        }
-
+//
+//        //SEND SENSOR STATUSES
+//        if(BuildMessage == CoolantTempRequested) {
+//            unsigned char CoolantTemp[7] = {4, 65, 5,  currentData.coolantTemp, 0, 185, 147};
+////            Serial.println("sending coolant temp " + (String)currentData.coolantTemp);
+////            Serial.println("message received " + CoolantTempRequested);
+//            sendCanMessage(sizeof(CoolantTemp), CoolantTemp);
+//        }
+//
+//        if(BuildMessage == TransmissionTemperatureRequested) {
+////            unsigned char TransmissionTemperatureData[7] = {5,98,22,116,5,5,0}; // doesn't work :(
+//            unsigned char TransmissionTemperatureData[7] = {5,98,17,189,5,5,0}; // doesn't work :(
+////            Serial.println("Sending Transmission Temperature " + (String)currentData.transmissionTempC + " " + sizeof(TransmissionTemperatureData));
+//            sendCanMessage(7, TransmissionTemperatureData);
+//        }
+//
         if(BuildMessage == RpmRequested){
-//            Serial.println("sending rpm " + (String)currentData.rpm);
-            sendCanMessage(sizeof(rpms), rpms);
+            Serial.println("RPM requested via ODB2");
+            rpmMessage[3] = highByte(currentData.rpm << 2);
+            rpmMessage[4] = lowByte(currentData.rpm << 2);
+            sendCanMessage(sizeof(rpmMessage), rpmMessage);
         }
-
+//
         if(BuildMessage == SpeedoRequested){
 //            Serial.println("sending speedo " + (String)currentData.speedInMph);
-            sendCanMessage(sizeof(vspeed), vspeed);
+
+            vspeedMessage[3] = mphToKph(currentData.speedInMph);
+            sendCanMessage(sizeof(vspeedMessage), vspeedMessage);
         }
-        if(BuildMessage == FuelPressureControlSystemRequested) {
-//            Serial.println("sending FuelPressureControlSystemRequested 50");
-            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
+//        if(BuildMessage == FuelPressureControlSystemRequested) {
+////            Serial.println("sending FuelPressureControlSystemRequested 50");
 //            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
-//            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
-        }
+////            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
+////            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
+//        }
         BuildMessage="";
     }
-
-    byte canCheckError = CAN.checkError();
-    if(canCheckError != 0){
-        Serial.println("CAN.checkError != 0" + (String)canCheckError);
-    }
-
+//
+//    byte canCheckError = CAN.checkError();
+//    if(canCheckError != 0){
+//        Serial.println("CAN.checkError != 0" + (String)canCheckError);
+//    }
+only16 = 0;
 }
+#endif

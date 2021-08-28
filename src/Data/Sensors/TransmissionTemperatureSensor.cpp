@@ -32,18 +32,11 @@ byte TransmissionTemperatureSensor::getTransmissionTemperatureInCelcius() {
 //    Serial.print("Coolant Sensor Resistance = ");
 //    Serial.println(average);
 
-    float steinhart;                              //steinhart equation to estimate temperature value at any resistance from curve of thermistor sensor
-    steinhart = log(average);                     //lnR
-    steinhart = pow(steinhart,3);                 //(lnR)^3
-    steinhart *= steinconstC;                     //C*((lnR)^3)
-    steinhart += (steinconstB*(log(average)));    //B*(lnR) + C*((lnR)^3)
-    steinhart += steinconstA;                     //Complete equation, 1/T=A+BlnR+C(lnR)^3
-    steinhart = 1.0/steinhart;                    //Inverse to isolate for T
-    steinhart -= 273.15;                          //Conversion from kelvin to celcius
+    average = 4918.83 - 4663.82 * pow(average, 0.00672081);                       //Conversion from resistance to C
 //
 //    Serial.print("Temperature = ");
-//    Serial.print(steinhart);                      //prints final temp in celcius
+//    Serial.print(average);                      //prints final temp in celcius
 //    Serial.println(" *C");
 
-    return (byte)steinhart; // does odb2 use F|C?
+    return (byte)average; // does odb2 use F|C?
 }

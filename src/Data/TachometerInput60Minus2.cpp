@@ -89,7 +89,7 @@ int TachometerInput60Minus2::getCurrentRpm() {
 //    Serial.println("sending rpms: " + (String)rpms);
     smoothingBuffer.next(rpms);
     int smoothedRpm = smoothingBuffer.average();
-    Serial.println("smoothed RPM: " + (String)smoothedRpm);
+//    Serial.println("smoothed RPM: " + (String)smoothedRpm);
     return smoothedRpm;
 //return rpms;
 }

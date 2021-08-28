@@ -13,13 +13,29 @@
  *
  * */
 
+#define ODB2
+#ifdef ODB2
+    #define ODB2_INT_PIN 2
+    #define ODB2_CS_PIN 5
+#endif
+#define CAN_BUS
+#ifdef CAN_BUS
+    #define CAN_BUS_INT_PIN 2
+    #define CAN_BUS_CS_PIN 5
+#endif
+// The Cummins bus provides rpms, so don't enable both at the same time
+#define CUMMINS_BUS_INPUT
+#ifdef CUMMINS_BUS_INPUT
+    #define CUMMINS_BUS_INPUT_INT_PIN 3
+    #define CUMMINS_BUS_INPUT_CS_PIN 6
+#endif
+// This is the setup on a 24 valve cummins using a camshaft sensor, so it assumes the gear is running at 1/2 the speed of the crankshaft
+//#define TACHOMETER_INPUT_60_MINUS_2
+
 #define SPEEDOMETER_INPUT
 #ifdef SPEEDOMETER_INPUT
     #define SPEEDOMETER_INPUT_CLICKS_PER_MILE 8000
 #endif
-
-// This is the setup on a 24 valve cummins using a camshaft sensor, so it assumes the gear is running at 1/2 the speed of the crankshaft
-#define TACHOMETER_INPUT_60_MINUS_2
 
 #define TRANSMISSION_PRESSURE_INPUT
 #ifdef TRANSMISSION_PRESSURE_INPUT
@@ -51,4 +67,11 @@
 #define SPEEDOMETER_OUTPUT
 #ifdef SPEEDOMETER_OUTPUT
     #define SPEEDOMETER_OUTPUT_CLICKS_PER_MILE 8000
+#endif
+
+#define NEXTION
+#ifdef NEXTION
+    #define nexSer Serial3 // Controlling the Nextion HMI using Serial1 (pin18 of the Arduino Mega) to prevent interfering with code upload
+    #define dbgSer Serial  // Debug using default Serial over USB towards Arduino Serial Monitor
+    #define DEBUG          // Comment this out if you don't need to see what happens in the Serial Monitor
 #endif

@@ -59,10 +59,10 @@ This makes the hardware I'm currently using 100.29USD, not to shabby!  In the fu
 0.
 1.
 2. CAN-BUS Shield INT (Output)
-3. CAN-BUS INT (Cummins Bus)
+3. CAN-BUS INT (Cummins Bus Interrupt)
 4.
 5.
-6. 
+6. CS (Cummins Bus Chip Select)
 7.
 8. Speedometer Output
 9. CAN-BUS Shield CS (Output)
@@ -70,8 +70,8 @@ This makes the hardware I'm currently using 100.29USD, not to shabby!  In the fu
 11. 
 12. 
 13. 
-14.
-15.
+14. Nextion TX
+15. Nextion RX
 16.
 17.
 18. Speedometer Input (pwm)
@@ -106,10 +106,10 @@ This makes the hardware I'm currently using 100.29USD, not to shabby!  In the fu
 47.
 48.
 49.
-50.
-51.
-52.
-53.
+50. MISO (Master In Slave Out Cummins Bus)
+51. MOSI (Master Out Slave In Cummins Bus)
+52. SCK (Serial Clock Cummins Bus)
+53. SS (Slave Select Cummins Bus)
 
 ICSP Pins
 * CAN-BUS Shield MOSI (Output)

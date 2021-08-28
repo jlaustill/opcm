@@ -14,20 +14,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a258aa2f-6a9d-432b-bf9b-261b0918f1b5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/CircularList/CircularList.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/CircularList/CircularList.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Data/Sensors/TransmissionPressureSensor.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Data/Sensors/TransmissionPressureSensor.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/serialmonitor_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/serialmonitor_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Data/CumminsBus.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Data/CumminsBus.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Display/CanBus.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Display/CanBus.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Display/Nextion.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Display/Nextion.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/temp1.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsUser.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeListsUser.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/AppData.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/AppData.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Configuration.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Configuration.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Data/Sensors/TransmissionTemperatureSensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/Sensors/TransmissionTemperatureSensor.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Data/Sensors/TransmissionTemperatureSensor.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/Sensors/TransmissionTemperatureSensor.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Data/TachometerInput60Minus2.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/TachometerInput60Minus2.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Display/OBD2/OBD2.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Display/OBD2/OBD2.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -77,11 +79,6 @@
     </key>
   </component>
   <component name="RunManager" selected="PlatformIO.PlatformIO Upload">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="Debug" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="npcm" TARGET_NAME="Debug" CONFIG_NAME="megaatmega2560">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -95,11 +92,6 @@
     <configuration name="Z_DUMMY_TARGET" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="npcm" TARGET_NAME="Z_DUMMY_TARGET" CONFIG_NAME="megaatmega2560" RUN_TARGET_PROJECT_NAME="npcm" RUN_TARGET_NAME="Z_DUMMY_TARGET">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <configuration name="PlatformIO Upload" type="platformio" factoryName="PlatformIO Upload" nameIsGenerated="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="npcm" TARGET_NAME="Production" CONFIG_NAME="megaatmega2560">
@@ -133,7 +125,14 @@
       <workItem from="1628389880300" duration="1145000" />
       <workItem from="1628554869868" duration="610000" />
       <workItem from="1629081882713" duration="2821000" />
-      <workItem from="1629398429109" duration="4170000" />
+      <workItem from="1629398429109" duration="37052000" />
+      <workItem from="1629639001066" duration="17039000" />
+      <workItem from="1629764642131" duration="6365000" />
+      <workItem from="1629809732452" duration="599000" />
+      <workItem from="1629899068043" duration="3983000" />
+      <workItem from="1630098765231" duration="2120000" />
+      <workItem from="1630107293706" duration="279000" />
+      <workItem from="1630108017940" duration="3054000" />
     </task>
     <servers />
   </component>
