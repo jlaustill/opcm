@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "Configuration.h"
+#include <EEPROM.h>
 
 #ifdef CAN_BUS
     #include "Display/CanBus.h"
@@ -41,6 +42,14 @@ AppData currentData;
 unsigned long count;
 unsigned long lastMillis;
 unsigned long thisMillis;
+unsigned long thisDuration;
+float thisMileage;
+
+float roundToTwo(float var)
+{
+    float value = (int)(var * 100 + .5);
+    return (float)value / 100.0;
+}
 
 #ifdef TACHOMETER_OUTPUT
     Tachometer tachometer = Tachometer();
@@ -54,6 +63,8 @@ void setup() {
     count = 0;
     lastMillis = millis();
     thisMillis = millis();
+    thisDuration = 0;
+    thisMileage = 0;
 
 #ifdef CAN_BUS
     CanBus::initialize();
@@ -75,6 +86,16 @@ void setup() {
     currentData.speedInMph = 0;
     currentData.transmissionPressure = 0;
     currentData.oilPressureInPsi = 0;
+
+    EEPROM.get(0, currentData.odometer);
+    EEPROM.get(4, currentData.tripA);
+    EEPROM.get(8, currentData.tripB);
+    EEPROM.get(12, currentData.odometerSaveCount);
+
+
+
+
+
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     currentData.transmissionTempC = 0;
 #endif
@@ -112,6 +133,7 @@ void newSweepValue() {
 __attribute__((unused)) void loop()
 {
     thisMillis = millis();
+    thisDuration = thisMillis - lastMillis;
     count++;
     newSweepValue();
 #ifdef CUMMINS_BUS_INPUT
@@ -126,7 +148,32 @@ __attribute__((unused)) void loop()
 
 #ifdef SPEEDOMETER_INPUT
     currentData.speedInMph = SpeedometerInput::getCurrentSpeedInMph(); // map(sweep, 0, maxSweep, 0, 200); // random(0,255);
-//    Serial.println("speedInMph? " + (String)currentData.speedInMph);
+    thisMileage += ((float)currentData.speedInMph / 3600000.0f * (float)thisDuration);
+//    Serial.println("thisMileage? " + (String)thisMileage);
+
+    if (thisMileage >= 0.1 || currentData.speedInMph <= 0) {
+        currentData.odometer += thisMileage;
+        currentData.tripA += thisMileage;
+        currentData.tripB += thisMileage;
+//        Serial.println("odometer: " + (String)currentData.odometer + " tripA: " + (String)currentData.tripA + " tripB: " + (String)currentData.tripB);
+        thisMileage = 0;
+    }
+    // We only want to save if data has changed and we have come to a stop
+    if (currentData.speedInMph <= 0) {
+        double storedOdometer;
+        double storedTripA;
+        double storedTripB;
+        EEPROM.get(0, storedOdometer);
+        EEPROM.get(4, storedTripA);
+        EEPROM.get(8, storedTripB);
+        if (storedOdometer != currentData.odometer || storedTripA != currentData.tripA || storedTripB != storedTripB) {
+            EEPROM.put(0, currentData.odometer);
+            EEPROM.put(4, currentData.tripA);
+            EEPROM.put(8, currentData.tripB);
+            EEPROM.put(12, ++currentData.odometerSaveCount);
+        }
+//        Serial.println("odometer: " + (String)currentData.odometer + " tripA: " + (String)currentData.tripA + " tripB: " + (String)currentData.tripB + " saveCount: " + (String)currentData.odometerSaveCount);
+    }
 #endif
 
 #ifdef TRANSMISSION_PRESSURE_INPUT
@@ -135,6 +182,7 @@ __attribute__((unused)) void loop()
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     currentData.transmissionTempC = TransmissionTemperatureSensor::getTransmissionTemperatureInCelcius();
+//    Serial.println("Trans temp in C? " + (String)currentData.transmissionTempC);
 #endif
 
 #ifdef TACHOMETER_OUTPUT
@@ -153,11 +201,10 @@ __attribute__((unused)) void loop()
     CanBus::setRpms(currentData.rpm);
     CanBus::setMph(currentData.speedInMph);
     CanBus::setCoolantTemp(currentData.coolantTemp);
-    if (thisMillis - lastMillis > 50) {
+    if (thisDuration > 50) {
         // send unpolled data
         CanBus::sendOilPressure(currentData.oilPressureInPsi);
 //        Serial.println("Sending Oil Pressure: " + (String)currentData.oilPressureInPsi);
-        lastMillis = thisMillis;
     }
 #endif
 
@@ -165,5 +212,6 @@ __attribute__((unused)) void loop()
     Nextion::updateDisplayData(currentData);
 #endif
 
+    lastMillis = thisMillis;
     if (count > 50000 && count % 50000 == 0) Serial.println("Average Microseconds Per Loop: " + (String)(micros() / count));
 };

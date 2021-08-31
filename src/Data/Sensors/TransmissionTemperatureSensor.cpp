@@ -19,10 +19,10 @@ byte TransmissionTemperatureSensor::getTransmissionTemperatureInCelcius() {
 
     average = 0;
 //    Serial.print("Samples: ");
-//    for (i=0; i< NUMSAMPLES; i++) {
+    for (int i=0; i< NUMSAMPLES; i++) {
 //        Serial.print((String)samples[i] + " ");
-//        average += samples[i];                            //adds all number of samples together
-//    }
+        average += samples[i];                            //adds all number of samples together
+    }
 //    Serial.println();
     average /= NUMSAMPLES;                              //divides by number of samples to output the average
 

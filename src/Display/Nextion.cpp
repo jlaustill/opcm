@@ -31,20 +31,87 @@ void Nextion::initialize() {
     sendCmd(""); // clear the buffer
 }
 
+String formatNumber(double number) {
+    String finalText = "";    /* String to contain formatted output text */
+    char buffer[11];        /* Temporary string buffer to perform formatting operations */
+    int index = 0;            /* Index counter for position in output text string */
+
+    /* Convert the input number to a formatted string */
+    dtostrf(number, 1, 1, buffer);
+
+    /* Calculate the number of digits before the decimal point */
+    int periodIndex = 0;
+    int numDigits = 0;
+    int i, distance;
+
+    for (i = 0; i < 11; i++) {
+        if (buffer[i] == '.') {
+            periodIndex = i;
+            i = 99;
+        }
+    }
+
+    for (i = 0; i < periodIndex; i++) {
+        if (buffer[i] == '0'
+            || buffer[i] == '1'
+               || buffer[i] == '2'
+                  || buffer[i] == '3'
+                     || buffer[i] == '4'
+                        || buffer[i] == '5'
+                           || buffer[i] == '6'
+                              || buffer[i] == '7'
+                                 || buffer[i] == '8'
+                                    || buffer[i] == '9'
+            ) {
+            numDigits++;
+        }
+    }
+    /* Loop through the input string and copy each number to the
+      outputText string, inserting commas along the way */
+    for (i = 0; i < periodIndex; i++) {
+        /* Copy character from the input string to the output string */
+        finalText += buffer[i];
+        index++;
+
+        /* Decrease the distance from the decimal point */
+        distance = numDigits - i - 1;
+
+        /* Insert a comma every three decimal positions away from the decimal point */
+        if ((distance > 0) && (distance % 3 == 0)) {
+            finalText += ',';
+            index++;
+        }
+    }
+    finalText += '.';
+    finalText += buffer[periodIndex + 1];
+
+//    Serial.println("buffer: " + (String)buffer + " periodIndex: " + (String)periodIndex + " numDigits: " + (String)numDigits + " index: " + (String)index + " finalText: " + finalText);
+    return finalText;
+}
+
 void Nextion::updateDisplayData(AppData currentData) {
-    double speedDegrees = (double)currentData.speedInMph * 170 / 90;
+    double speedDegrees = (double)currentData.speedInMph * 2;
     sendCmd("speedometer.val=" + (String)(int)speedDegrees);
+    sendCmd("mphText.txt=\"" + (String)currentData.speedInMph + "\"");
+    sendCmd("odometer.txt=\"" + formatNumber(currentData.odometer) + "\"");
+    sendCmd("tripA.txt=\"" + formatNumber(currentData.tripA) + "\"");
+
+    double transPressureDegrees = 360.0 - (double)currentData.transmissionPressure * 30 / 400;
+    sendCmd("tranpresgauge.val=" + (String)(int)transPressureDegrees);
+    sendCmd("transprestxt.txt=\"" + (String)currentData.transmissionPressure + " PSI\"");
 
     double waterTempDegrees = (((double)currentData.coolantTemp * 9 / 5 + 32)  * 50) / 250;
     sendCmd("watertemp.val=" + (String)(int)waterTempDegrees);
 
     double rpmDegrees = ((double)currentData.rpm * 33) / 4000;
-    Serial.println("rpmDegrees: " + (String)rpmDegrees);
+//    Serial.println("rpmDegrees: " + (String)rpmDegrees);
     sendCmd("tachometer.val=" + (String)(int)rpmDegrees);
 
-    double transmissionTemperateDegrees = 360 - (((double)currentData.transmissionTempC * 9 / 5) + 32) * 45 / 250;
+    double transmissionTemperateDegrees = 360 - (((double)currentData.transmissionTempC * 9 / 5) + 32) * 39 / 250;
 //    sendCmd("transtemp.val=" + (String)(int)transmissionTemperateDegrees);
-    sendCmd("transtemp.val=0");
+//    Serial.println("transmissionTemperateDegrees " + (String)transmissionTemperateDegrees);
+    sendCmd("transtemp.val=" + (String)(int)transmissionTemperateDegrees);
+    sendCmd("transtemptxt.txt=\"" + (String)(int)(((double)currentData.transmissionTempC * 9 / 5) + 32) + " F\"");
 
     double oilPressureDegrees = 360 - (double)currentData.oilPressureInPsi * 40 / 100;
     sendCmd("oilpres.val=" + (String)(int)oilPressureDegrees);

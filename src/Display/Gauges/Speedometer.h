@@ -13,11 +13,10 @@ public:
     explicit Speedometer(int _clicksPerMile = SPEEDOMETER_OUTPUT_CLICKS_PER_MILE);
     void initialize() const;
     void SetMph(int _mph);
+    static long MphToMicroseconds(int _mph);
 
 private:
-    long MphToMicroseconds(int _mph) const;
     static long HertzToMicroseconds(double _hz);
-    int clicksPerMile;
     int mph;
 };
 #endif

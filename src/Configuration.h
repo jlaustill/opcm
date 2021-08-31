@@ -72,6 +72,5 @@
 #define NEXTION
 #ifdef NEXTION
     #define nexSer Serial3 // Controlling the Nextion HMI using Serial1 (pin18 of the Arduino Mega) to prevent interfering with code upload
-    #define dbgSer Serial  // Debug using default Serial over USB towards Arduino Serial Monitor
-    #define DEBUG          // Comment this out if you don't need to see what happens in the Serial Monitor
+//    #define DEBUG          // Comment this out if you don't need to see what happens in the Serial Monitor
 #endif

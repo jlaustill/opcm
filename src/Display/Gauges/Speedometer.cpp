@@ -11,7 +11,6 @@
 #include "Speedometer.h"
 
 Speedometer::Speedometer(int _clicksPerMile) {
-    this->clicksPerMile = _clicksPerMile;
     this->mph = 0;
 }
 
@@ -29,8 +28,8 @@ void Speedometer::SetMph(int _mph) {
     Timer4.setPeriod(microseconds);
 }
 
-long Speedometer::MphToMicroseconds(int _mph) const {
-    double hertz = (double)_mph * this->clicksPerMile / 60 / 60;
+long Speedometer::MphToMicroseconds(int _mph) {
+    double hertz = (double)_mph * SPEEDOMETER_INPUT_CLICKS_PER_MILE / 60 / 60;
 //    Serial.println("hertz: " + (String)hertz);
     long microseconds = Speedometer::HertzToMicroseconds(hertz);
 //    Serial.println("microseconds: " + (String(microseconds)));

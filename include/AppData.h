@@ -14,6 +14,10 @@ struct AppData {
     byte oilPressureInPsi;
     int transmissionPressure;
     byte transmissionTempC;
+    double odometer;
+    unsigned long odometerSaveCount;
+    double tripA;
+    double tripB;
 };
 
 #endif //OPCM_APPDATA_H

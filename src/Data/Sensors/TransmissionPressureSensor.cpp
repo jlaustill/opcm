@@ -10,6 +10,7 @@ float TransmissionPressureSensor::currentRawValue = 0.0f;
 
 int TransmissionPressureSensor::getTransmissionPressureInPsi() {
     TransmissionPressureSensor::currentRawValue = (float)analogRead(TRANSMISSION_PRESSURE_INPUT_PIN);
+//    Serial.println(TransmissionPressureSensor::currentRawValue);
     return
             (int)((TransmissionPressureSensor::currentRawValue - TRANSMISSION_PRESSURE_INPUT_RAW_ZERO) *
             TRANSMISSION_PRESSURE_INPUT_PSI_MAX /
