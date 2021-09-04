@@ -80,14 +80,14 @@ This makes the hardware I'm currently using 100.29USD, not to shabby!  In the fu
 21.
 22.
 23.
-24.
-25.
-26.
-27.
-28.
-29.
-30.
-31.
+24. Left Blinker
+25. Right Blinker
+26. High Beams
+27. Wait To Start
+28. 4x4
+29. Seat Belt Warning
+30. Door Ajar Warning
+31. Brake Light
 32.
 33.
 34.

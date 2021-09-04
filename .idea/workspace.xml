@@ -15,13 +15,9 @@
   <component name="ChangeListManager">
     <list default="true" id="a258aa2f-6a9d-432b-bf9b-261b0918f1b5" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/AppData.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/AppData.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Configuration.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Configuration.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Data/Sensors/TransmissionPressureSensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/Sensors/TransmissionPressureSensor.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Data/Sensors/TransmissionTemperatureSensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/Sensors/TransmissionTemperatureSensor.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Data/SpeedometerInput.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/SpeedometerInput.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Display/Gauges/Speedometer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Display/Gauges/Speedometer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Display/Gauges/Speedometer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Display/Gauges/Speedometer.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Display/Nextion.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Display/Nextion.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
@@ -129,7 +125,11 @@
       <workItem from="1630174736250" duration="12059000" />
       <workItem from="1630243193890" duration="3492000" />
       <workItem from="1630249565536" duration="4944000" />
-      <workItem from="1630354210702" duration="2898000" />
+      <workItem from="1630354210702" duration="3517000" />
+      <workItem from="1630537537344" duration="1074000" />
+      <workItem from="1630544386420" duration="2582000" />
+      <workItem from="1630611045192" duration="1426000" />
+      <workItem from="1630682822859" duration="684000" />
     </task>
     <servers />
   </component>

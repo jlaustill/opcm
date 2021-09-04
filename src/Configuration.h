@@ -31,6 +31,7 @@
 #endif
 // This is the setup on a 24 valve cummins using a camshaft sensor, so it assumes the gear is running at 1/2 the speed of the crankshaft
 //#define TACHOMETER_INPUT_60_MINUS_2
+//#define TACHOMETER_INPUT_2
 
 #define SPEEDOMETER_INPUT
 #ifdef SPEEDOMETER_INPUT
@@ -51,6 +52,14 @@
     #define TRANSMISSION_TEMPERATURE_INPUT_DIVIDER 2150 //defines the analog pin of the input voltage from the voltage divider
 #endif
 
+#define LEFT_BLINKER_PIN 24
+#define RIGHT_BLINKER_PIN 25
+#define HIGH_BEAMS_PIN 26
+#define WAIT_TO_START_PIN 27
+#define FOUR_BY_FOUR_PIN 28
+#define SEAT_BELT_WARNING_PIN 29
+#define DOOR_AJAR_WARNING_PIN 30
+#define BRAKE_LIGHT_PIN 31
 
 /*
  * Outputs configuration

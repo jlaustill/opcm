@@ -18,6 +18,14 @@ struct AppData {
     unsigned long odometerSaveCount;
     double tripA;
     double tripB;
+    boolean leftBlinker;
+    boolean rightBlinker;
+    boolean highBeams;
+    boolean waitToStart;
+    boolean fourByFour;
+    boolean seatBeltWarning;
+    boolean doorAjarWarning;
+    boolean brakeLightWarning;
 };
 
 #endif //OPCM_APPDATA_H
