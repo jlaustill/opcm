@@ -94,6 +94,7 @@ void setup() {
     currentData.speedInMph = 0;
     currentData.transmissionPressure = 0;
     currentData.oilPressureInPsi = 0;
+    currentData.fuelTempF = 0;
 
     EEPROM.get(0, currentData.odometer);
     EEPROM.get(4, currentData.tripA);
@@ -159,6 +160,7 @@ __attribute__((unused)) void loop()
     currentData.rpm = CumminsBus::getCurrentRpms();
     currentData.coolantTemp = CumminsBus::getCurrentWaterTemp();
     currentData.oilPressureInPsi = CumminsBus::getCurrentOilPressure();
+    currentData.fuelTempF = CumminsBus::getCurrentFuelTemp();
 //    Serial.println("RPM: " + (String)currentData.rpm);
 #endif
 #ifdef TACHOMETER_INPUT_60_MINUS_2

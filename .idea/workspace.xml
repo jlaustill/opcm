@@ -15,9 +15,9 @@
   <component name="ChangeListManager">
     <list default="true" id="a258aa2f-6a9d-432b-bf9b-261b0918f1b5" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/AppData.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/AppData.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Configuration.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Configuration.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Data/CumminsBus.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/CumminsBus.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Data/CumminsBus.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/CumminsBus.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Display/Nextion.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Display/Nextion.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
@@ -129,7 +129,8 @@
       <workItem from="1630537537344" duration="1074000" />
       <workItem from="1630544386420" duration="2582000" />
       <workItem from="1630611045192" duration="1426000" />
-      <workItem from="1630682822859" duration="684000" />
+      <workItem from="1630682822859" duration="755000" />
+      <workItem from="1630787382272" duration="1122000" />
     </task>
     <servers />
   </component>

@@ -128,10 +128,10 @@ void ISR_trig0(){
         updateMessage(&x22Message, id);
 
 //        // Compute Fuel Temperature
-//        fuelTemp = (x22Message.data[7] << 8) | x22Message.data[6]; // Raw
-//        fuelTemp = fuelTemp / 16; // Kelvin
-//        fuelTemp = fuelTemp - 273.15; // Celsius
-//        fuelTemp = ((fuelTemp * 9) / 5) + 32; // Fahrenheit
+        fuelTemp = (x22Message.data[7] << 8) | x22Message.data[6]; // Raw
+        fuelTemp = fuelTemp / 16; // Kelvin
+        fuelTemp = fuelTemp - 273.15; // Celsius
+        fuelTemp = ((fuelTemp * 9) / 5) + 32; // Fahrenheit
     } else if (id == 256) {
         updateMessage(&x20Message, id);
 
@@ -173,6 +173,10 @@ byte CumminsBus::getCurrentOilPressure() {
     // Compute Oil Pressure
     oilPressure = C7FAEFMessage.data[3] * 4 / 6.895;
     return (byte)oilPressure;
+}
+
+int CumminsBus::getCurrentFuelTemp() {
+    return fuelTemp;
 }
 
 void CumminsBus::initialize() {

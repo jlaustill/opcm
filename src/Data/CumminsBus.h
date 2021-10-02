@@ -12,6 +12,7 @@ public:
     static int getCurrentRpms();
     static int getCurrentWaterTemp();
     static byte getCurrentOilPressure();
+    static int getCurrentFuelTemp();
 };
 
 

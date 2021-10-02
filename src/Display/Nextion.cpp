@@ -93,6 +93,7 @@ void Nextion::updateDisplayData(AppData currentData) {
     sendCmd("mph.val=" + (String)currentData.speedInMph);
     sendCmd("odometer.txt=\"" + formatNumber(currentData.odometer) + "\"");
     sendCmd("tripA.txt=\"" + formatNumber(currentData.tripA) + "\"");
+    sendCmd("tripB.txt=\"" + formatNumber(currentData.tripB) + "\"");
 
     sendCmd("leftturn.aph=" + (String)(currentData.leftBlinker ? "127" : "0"));
     sendCmd("rightturn.aph=" + (String)(currentData.rightBlinker ? "127" : "0"));
@@ -107,8 +108,10 @@ void Nextion::updateDisplayData(AppData currentData) {
     sendCmd("tranpresgauge.val=" + (String)(int)transPressureDegrees);
     sendCmd("transprestxt.txt=\"" + (String)currentData.transmissionPressure + " PSI\"");
 
-    double waterTempDegrees = (((double)currentData.coolantTemp * 9 / 5 + 32)  * 50) / 250;
-    sendCmd("watertemp.val=" + (String)(int)waterTempDegrees);
+    double coolTempF = ((double)currentData.coolantTemp * 9 / 5) + 32;
+    sendCmd("h20t.val=" + (String)(int)coolTempF);
+
+    sendCmd("fueltmp.val=" + (String)currentData.fuelTempF);
 
     double rpmDegrees = ((double)currentData.rpm * 33) / 4000;
 //    Serial.println("rpmDegrees: " + (String)rpmDegrees);

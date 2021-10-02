@@ -11,13 +11,14 @@ There is a LOT of room for improvement, and I'm just getting started here.
 * 12v PWM Speedometer output (with optoisolator)
 * 12v PWM Tachometer output (with optoisolator, needs input)
 * Basic OBD2 via CAN-BUS output (speedometer and tachometer)
+* Transmission Temperature Sensor
+* Transmission Pressure Sensor
+* Nextion output (custom displays)
 
 ### In Progress
 * configuration via configuration.h (modeled after Merlin for 3d printers)
 * Cummins-bus input (24v cummins)
 * Torque Control for shifting (Via Cummins-bus)
-* Transmission Temperature Sensor
-* Transmission Pressure Sensor
 
 ### Future
 1. 5v sensor inputs
@@ -35,6 +36,8 @@ This project currently uses an Arduino Mega, Seeedstudio CAN-bus shield, and a f
 [Optocoupler Isolation Board (6.99USD)](https://www.amazon.com/gp/product/B07GMHLL2M/ref=ppx_yo_dt_b_asin_title_o09_s00?ie=UTF8&psc=1)
 
 This makes the hardware I'm currently using 100.29USD, not to shabby!  In the future it would be nice to have a custom PCM that combine all these things onto one board, but baby steps.
+
+Also, a Nextion display can be as much as 150USD, but totally worth it for me :)
 
 ### Pins
 #### Analog
