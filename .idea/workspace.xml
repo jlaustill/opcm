@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
       <config projectName="npcm" targetName="Z_DUMMY_TARGET" />
@@ -15,9 +18,6 @@
   <component name="ChangeListManager">
     <list default="true" id="a258aa2f-6a9d-432b-bf9b-261b0918f1b5" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsUser.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeListsUser.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/AppData.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/AppData.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Configuration.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Configuration.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Display/Nextion.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Display/Nextion.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
@@ -73,11 +73,6 @@
     </key>
   </component>
   <component name="RunManager" selected="PlatformIO.PlatformIO Upload">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="Debug" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="npcm" TARGET_NAME="Debug" CONFIG_NAME="megaatmega2560">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -151,6 +146,8 @@
       <workItem from="1642883779857" duration="479000" />
       <workItem from="1642884280106" duration="39000" />
       <workItem from="1642884339318" duration="840000" />
+      <workItem from="1642890167233" duration="2000" />
+      <workItem from="1642891821408" duration="924000" />
     </task>
     <servers />
   </component>

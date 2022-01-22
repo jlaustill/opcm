@@ -85,9 +85,9 @@
 #endif
 
 // enable if you want to monitor EGT's
-//#define THERMOCOUPLE
+#define THERMOCOUPLE
 #ifdef THERMOCOUPLE
-    #define MAXDO   13
-    #define MAXCS   12
+    #define MAXDO   12
+    #define MAXCS   13
     #define MAXCLK  11
 #endif
