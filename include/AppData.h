@@ -19,6 +19,7 @@ struct AppData {
     unsigned long odometerSaveCount;
     double tripA;
     double tripB;
+    double egt;
     boolean leftBlinker;
     boolean rightBlinker;
     boolean highBeams;

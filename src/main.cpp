@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Configuration.h"
 #include <EEPROM.h>
+#include <Wire.h>
 
 #ifdef CAN_BUS
     #include "Display/CanBus.h"
@@ -36,6 +37,10 @@
     #include "Display/Nextion.h"
 #endif
 
+#ifdef THERMOCOUPLE
+    #include <Adafruit_MAX31855.h>
+#endif
+
 #include <AppData.h>
 
 AppData currentData;
@@ -56,6 +61,11 @@ float roundToTwo(float var)
 #endif
 #ifdef SPEEDOMETER_OUTPUT
     Speedometer speedometer = Speedometer();
+#endif
+
+#ifdef THERMOCOUPLE
+// initialize the Thermocouple
+Adafruit_MAX31855 thermocouple(MAXCLK, MAXCS, MAXDO);
 #endif
 
 void setup() {
@@ -121,6 +131,14 @@ void setup() {
 
 #ifdef NEXTION
     Nextion::initialize();
+#endif
+
+#ifdef THERMOCOUPLE
+    if (!thermocouple.begin()) {
+        Serial.println("ERROR INITING THERMOCOUPLE");
+    } else {
+        Serial.println("Thermocouple initialized");
+    }
 #endif
 }
 
@@ -199,6 +217,10 @@ __attribute__((unused)) void loop()
 
 #ifdef TRANSMISSION_PRESSURE_INPUT
     currentData.transmissionPressure = TransmissionPressureSensor::getTransmissionPressureInPsi();
+#endif
+
+#ifdef THERMOCOUPLE
+    currentData.egt = thermocouple.readFahrenheit();
 #endif
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT

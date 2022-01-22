@@ -83,3 +83,11 @@
     #define nexSer Serial3 // Controlling the Nextion HMI using Serial1 (pin18 of the Arduino Mega) to prevent interfering with code upload
 //    #define DEBUG          // Comment this out if you don't need to see what happens in the Serial Monitor
 #endif
+
+// enable if you want to monitor EGT's
+//#define THERMOCOUPLE
+#ifdef THERMOCOUPLE
+    #define MAXDO   13
+    #define MAXCS   12
+    #define MAXCLK  11
+#endif

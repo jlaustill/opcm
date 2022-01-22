@@ -70,9 +70,9 @@ Also, a Nextion display can be as much as 150USD, but totally worth it for me :)
 8. Speedometer Output
 9. CAN-BUS Shield CS (Output)
 10.
-11. 
-12. 
-13. 
+11. Thermocouple CLK
+12. Thermocouple CS
+13. Thermocouple DO
 14. Nextion TX
 15. Nextion RX
 16.

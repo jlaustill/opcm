@@ -1,5 +1,6 @@
 include_directories(".pio/libdeps/megaatmega2560/CAN_BUS_Shield/src")
 include_directories(".pio/libdeps/megaatmega2560/TimerFive")
 include_directories(".pio/libdeps/megaatmega2560/TimerFour")
+include_directories(".pio/libdeps/megaatmega2560/Adafruit MAX31855 library")
 include_directories("./lib/CircularList")
 include_directories("include")

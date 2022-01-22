@@ -9,15 +9,16 @@
   </component>
   <component name="CMakeSettings">
     <configurations>
-      <configuration PROFILE_NAME="megaatmega2560" CONFIG_NAME="megaatmega2560" ENABLED="true" />
+      <configuration PROFILE_NAME="megaatmega2560" ENABLED="true" CONFIG_NAME="megaatmega2560" />
     </configurations>
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a258aa2f-6a9d-432b-bf9b-261b0918f1b5" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeListsUser.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeListsUser.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/AppData.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/AppData.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Data/CumminsBus.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/CumminsBus.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Data/CumminsBus.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/CumminsBus.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Configuration.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Configuration.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Display/Nextion.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Display/Nextion.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
@@ -41,6 +42,9 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="1vI4kFZhO7err8ESvDgAP9z4uE4" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -54,12 +58,13 @@
     <property name="cf.first.check.clang-format" value="false" />
     <property name="cidr.known.project.marker" value="true" />
     <property name="cmake.loaded.for.project" value="true" />
+    <property name="last_opened_file_path" value="$USER_HOME$/vmmon.sh" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -68,6 +73,11 @@
     </key>
   </component>
   <component name="RunManager" selected="PlatformIO.PlatformIO Upload">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Debug" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="npcm" TARGET_NAME="Debug" CONFIG_NAME="megaatmega2560">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -131,6 +141,16 @@
       <workItem from="1630611045192" duration="1426000" />
       <workItem from="1630682822859" duration="755000" />
       <workItem from="1630787382272" duration="1122000" />
+      <workItem from="1635702837130" duration="985000" />
+      <workItem from="1636495013879" duration="1343000" />
+      <workItem from="1636663729714" duration="309000" />
+      <workItem from="1638033970540" duration="647000" />
+      <workItem from="1638583269706" duration="880000" />
+      <workItem from="1640185325780" duration="845000" />
+      <workItem from="1640295203471" duration="1027000" />
+      <workItem from="1642883779857" duration="479000" />
+      <workItem from="1642884280106" duration="39000" />
+      <workItem from="1642884339318" duration="840000" />
     </task>
     <servers />
   </component>
@@ -147,7 +167,6 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
