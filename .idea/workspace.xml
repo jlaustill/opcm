@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
-    <generated>
-      <config projectName="npcm" targetName="Z_DUMMY_TARGET" />
-      <config projectName="npcm" targetName="Debug" />
-      <config projectName="npcm" targetName="Production" />
-    </generated>
+    <generated />
   </component>
   <component name="CMakeSettings">
     <configurations>
@@ -17,10 +13,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a258aa2f-6a9d-432b-bf9b-261b0918f1b5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/hardware/pcb/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Configuration.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Configuration.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Display/Nextion.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Display/Nextion.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +24,6 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:megaatmega2560" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -58,13 +51,13 @@
     <property name="cf.first.check.clang-format" value="false" />
     <property name="cidr.known.project.marker" value="true" />
     <property name="cmake.loaded.for.project" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$/vmmon.sh" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Documents/PlatformIO/Projects/stm32-h723zg testy test" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="clion.platformio.config" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -72,33 +65,12 @@
       <recent name="$PROJECT_DIR$/lib/Display" />
     </key>
   </component>
-  <component name="RunManager" selected="PlatformIO.PlatformIO Upload">
-    <configuration name="Debug" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="npcm" TARGET_NAME="Debug" CONFIG_NAME="megaatmega2560">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Production" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="npcm" TARGET_NAME="Production" CONFIG_NAME="megaatmega2560">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Z_DUMMY_TARGET" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="npcm" TARGET_NAME="Z_DUMMY_TARGET" CONFIG_NAME="megaatmega2560" RUN_TARGET_PROJECT_NAME="npcm" RUN_TARGET_NAME="Z_DUMMY_TARGET">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager">
     <configuration name="PlatformIO Upload" type="platformio" factoryName="PlatformIO Upload" nameIsGenerated="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="npcm" TARGET_NAME="Production" CONFIG_NAME="megaatmega2560">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <list>
-      <item itemvalue="CMake Application.Debug" />
-      <item itemvalue="CMake Application.Production" />
-      <item itemvalue="CMake Application.Z_DUMMY_TARGET" />
-      <item itemvalue="PlatformIO.PlatformIO Upload" />
-    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -148,6 +120,14 @@
       <workItem from="1642884339318" duration="840000" />
       <workItem from="1642890167233" duration="2000" />
       <workItem from="1642891821408" duration="924000" />
+      <workItem from="1648314432790" duration="50000" />
+      <workItem from="1648314490025" duration="271000" />
+      <workItem from="1648314771446" duration="274000" />
+      <workItem from="1648315127389" duration="84000" />
+      <workItem from="1648315219840" duration="672000" />
+      <workItem from="1648395362449" duration="33000" />
+      <workItem from="1648433306797" duration="1023000" />
+      <workItem from="1648434339407" duration="2021000" />
     </task>
     <servers />
   </component>
