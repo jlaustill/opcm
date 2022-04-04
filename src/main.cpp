@@ -1,3 +1,7 @@
+#define _VERSION_MAJOR 0
+#define _VERSION_MINOR 1
+#define _VERSION_PATCH 1
+
 #include <Arduino.h>
 #include "Configuration.h"
 #include <EEPROM.h>
@@ -257,4 +261,4 @@ __attribute__((unused)) void loop()
 
     lastMillis = thisMillis;
     if (count > 50000 && count % 50000 == 0) Serial.println("Average Microseconds Per Loop: " + (String)(micros() / count));
-};
+}
