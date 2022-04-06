@@ -24,6 +24,13 @@
 #endif
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     #include "Data/Sensors/TransmissionTemperatureSensor.h"
+    TempSensor TransTempSensor = TempSensor(
+            TRANSMISSION_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
+            TRANSMISSION_TEMPERATURE_INPUT_PIN, // Pin
+            TRANSMISSION_TEMPERATURE_INPUT_A, // A
+            TRANSMISSION_TEMPERATURE_INPUT_B, // B
+            TRANSMISSION_TEMPERATURE_INPUT_C // C
+    );
 #endif
 
 #ifdef TACHOMETER_OUTPUT
@@ -228,7 +235,8 @@ __attribute__((unused)) void loop()
 #endif
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
-    currentData.transmissionTempC = TransmissionTemperatureSensor::getTransmissionTemperatureInCelcius();
+    currentData.transmissionTempC = TransTempSensor.getTempCelsius();
+//    currentData.transmissionTempC = TransmissionTemperatureSensor::getTransmissionTemperatureInCelcius();
 //    Serial.println("Trans temp in C? " + (String)currentData.transmissionTempC);
 #endif
 

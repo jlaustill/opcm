@@ -12,6 +12,8 @@
  * this section will allow you to configure where each input comes from, or if you want it at all
  *
  * */
+#include <Arduino.h>
+#include <TempSensor.h>
 
 #define ODB2
 #ifdef ODB2
@@ -50,6 +52,9 @@
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     #define TRANSMISSION_TEMPERATURE_INPUT_PIN A0 //defines the resistor value that is in series in the voltage divider
     #define TRANSMISSION_TEMPERATURE_INPUT_DIVIDER 2150 //defines the analog pin of the input voltage from the voltage divider
+    #define TRANSMISSION_TEMPERATURE_INPUT_A 1.511129458e-03
+    #define TRANSMISSION_TEMPERATURE_INPUT_B 2.497079116e-04
+    #define TRANSMISSION_TEMPERATURE_INPUT_C 0.03967365606e-07
 #endif
 
 #define LEFT_BLINKER_PIN 24
