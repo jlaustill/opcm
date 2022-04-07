@@ -6,6 +6,7 @@
 #include "Configuration.h"
 #include <EEPROM.h>
 #include <Wire.h>
+#include <TempSensor.h>
 
 #ifdef CAN_BUS
     #include "Display/CanBus.h"
@@ -23,7 +24,6 @@
     #include "Data/Sensors/TransmissionPressureSensor.h"
 #endif
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
-    #include "Data/Sensors/TransmissionTemperatureSensor.h"
     TempSensor TransTempSensor = TempSensor(
             TRANSMISSION_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
             TRANSMISSION_TEMPERATURE_INPUT_PIN, // Pin
@@ -236,7 +236,6 @@ __attribute__((unused)) void loop()
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     currentData.transmissionTempC = TransTempSensor.getTempCelsius();
-//    currentData.transmissionTempC = TransmissionTemperatureSensor::getTransmissionTemperatureInCelcius();
 //    Serial.println("Trans temp in C? " + (String)currentData.transmissionTempC);
 #endif
 
