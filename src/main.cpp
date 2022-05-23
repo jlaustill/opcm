@@ -4,7 +4,7 @@
 
 #include <Arduino.h>
 #include "Configuration.h"
-#include <EEPROM.h>
+//#include <EEPROM.h>
 #include <Wire.h>
 #include <TempSensor.h>
 
@@ -26,10 +26,11 @@
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     TempSensor TransTempSensor = TempSensor(
             TRANSMISSION_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
-            TRANSMISSION_TEMPERATURE_INPUT_PIN, // Pin
             TRANSMISSION_TEMPERATURE_INPUT_A, // A
             TRANSMISSION_TEMPERATURE_INPUT_B, // B
-            TRANSMISSION_TEMPERATURE_INPUT_C // C
+            TRANSMISSION_TEMPERATURE_INPUT_C, // C
+            TRANSMISSION_TEMPERATURE_INPUT_DEVICE_ID,
+            TRANSMISSION_TEMPERATURE_INPUT_PIN_NUMBER
     );
 #endif
 
@@ -86,14 +87,14 @@ void setup() {
     thisMillis = millis();
     thisDuration = 0;
     thisMileage = 0;
-    pinMode(LEFT_BLINKER_PIN, INPUT_PULLUP);
-    pinMode(RIGHT_BLINKER_PIN, INPUT_PULLUP);
-    pinMode(HIGH_BEAMS_PIN, INPUT_PULLUP);
-    pinMode(WAIT_TO_START_PIN, INPUT_PULLUP);
-    pinMode(FOUR_BY_FOUR_PIN, INPUT_PULLUP);
-    pinMode(SEAT_BELT_WARNING_PIN, INPUT_PULLUP);
-    pinMode(DOOR_AJAR_WARNING_PIN, INPUT_PULLUP);
-    pinMode(BRAKE_LIGHT_PIN, INPUT_PULLUP);
+    // pinMode(LEFT_BLINKER_PIN, INPUT_PULLUP);
+    // pinMode(RIGHT_BLINKER_PIN, INPUT_PULLUP);
+    // pinMode(HIGH_BEAMS_PIN, INPUT_PULLUP);
+    // pinMode(WAIT_TO_START_PIN, INPUT_PULLUP);
+    // pinMode(FOUR_BY_FOUR_PIN, INPUT_PULLUP);
+    // pinMode(SEAT_BELT_WARNING_PIN, INPUT_PULLUP);
+    // pinMode(DOOR_AJAR_WARNING_PIN, INPUT_PULLUP);
+    // pinMode(BRAKE_LIGHT_PIN, INPUT_PULLUP);
 
 #ifdef CAN_BUS
     CanBus::initialize();
@@ -117,10 +118,10 @@ void setup() {
     currentData.oilPressureInPsi = 0;
     currentData.fuelTempF = 0;
 
-    EEPROM.get(0, currentData.odometer);
-    EEPROM.get(4, currentData.tripA);
-    EEPROM.get(8, currentData.tripB);
-    EEPROM.get(12, currentData.odometerSaveCount);
+//    EEPROM.get(0, currentData.odometer);
+//    EEPROM.get(4, currentData.tripA);
+//    EEPROM.get(8, currentData.tripB);
+//    EEPROM.get(12, currentData.odometerSaveCount);
 
 
 
@@ -174,15 +175,21 @@ __attribute__((unused)) void loop()
     thisDuration = thisMillis - lastMillis;
     count++;
     newSweepValue();
+    Serial.print(sweep);
+    Serial.print(" ");
+    Serial.println(count);
+    delay(1000);
 
-    currentData.leftBlinker = digitalRead(LEFT_BLINKER_PIN) == LOW;
-    currentData.rightBlinker = digitalRead(RIGHT_BLINKER_PIN) == LOW;
-    currentData.highBeams = digitalRead(HIGH_BEAMS_PIN) == LOW;
-    currentData.waitToStart = digitalRead(WAIT_TO_START_PIN) == LOW;
-    currentData.fourByFour = digitalRead(FOUR_BY_FOUR_PIN) == LOW;
-    currentData.seatBeltWarning = digitalRead(SEAT_BELT_WARNING_PIN) == LOW;
-    currentData.doorAjarWarning = digitalRead(DOOR_AJAR_WARNING_PIN) == LOW;
-    currentData.brakeLightWarning = digitalRead(BRAKE_LIGHT_PIN) == LOW;
+    currentData.speedInMph = sweep % 80;
+
+    // currentData.leftBlinker = digitalRead(LEFT_BLINKER_PIN) == LOW;
+    // currentData.rightBlinker = digitalRead(RIGHT_BLINKER_PIN) == LOW;
+    // currentData.highBeams = digitalRead(HIGH_BEAMS_PIN) == LOW;
+    // currentData.waitToStart = digitalRead(WAIT_TO_START_PIN) == LOW;
+    // currentData.fourByFour = digitalRead(FOUR_BY_FOUR_PIN) == LOW;
+    // currentData.seatBeltWarning = digitalRead(SEAT_BELT_WARNING_PIN) == LOW;
+    // currentData.doorAjarWarning = digitalRead(DOOR_AJAR_WARNING_PIN) == LOW;
+    // currentData.brakeLightWarning = digitalRead(BRAKE_LIGHT_PIN) == LOW;
 //    Serial.println("left blinker " + (String)(currentData.leftBlinker ? "on" : "off"));
 
 #ifdef CUMMINS_BUS_INPUT

@@ -5,6 +5,7 @@
 
 #ifdef NEXTION
 
+#include <Arduino.h>
 #include "Nextion.h"
 
 void Nextion::sendCmd(String cmd) {
@@ -37,7 +38,7 @@ String formatNumber(double number) {
     int index = 0;            /* Index counter for position in output text string */
 
     /* Convert the input number to a formatted string */
-    dtostrf(number, 1, 1, buffer);
+    sprintf(buffer, "%d", number);
 
     /* Calculate the number of digits before the decimal point */
     int periodIndex = 0;

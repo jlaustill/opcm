@@ -2,11 +2,11 @@
 // Created by jlaustill on 8/2/21.
 //
 #include <Arduino.h>
+#ifdef TACHOMETER_INPUT_60_MINUS_2
 //#include <CircularList.h>
 #include "../Configuration.h"
 #include "TachometerInput60Minus2.h"
 
-#ifdef TACHOMETER_INPUT_60_MINUS_2
 #define INPUT_PIN 19
 
 volatile unsigned long previous_pwm_value2 = 0;

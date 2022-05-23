@@ -2,13 +2,13 @@
 // Created by jlaustill on 7/20/21.
 //
 
+#include "../Configuration.h"
+#ifdef SPEEDOMETER_INPUT
 #include "SpeedometerInput.h"
 #include <Arduino.h>
-#include "../Configuration.h"
 #include "Display/Gauges/Speedometer.h"
 #include <math.h>
 
-#ifdef SPEEDOMETER_INPUT
 #define INPUT_PIN 18
 #define SPEEDOMETER_INPUT_SMOOTHING_SAMPLES 10
 
