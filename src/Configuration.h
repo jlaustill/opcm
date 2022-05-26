@@ -35,7 +35,7 @@
 //#define TACHOMETER_INPUT_60_MINUS_2
 //#define TACHOMETER_INPUT_2
 
-//#define SPEEDOMETER_INPUT
+#define SPEEDOMETER_INPUT
 #ifdef SPEEDOMETER_INPUT
     #define SPEEDOMETER_INPUT_CLICKS_PER_MILE 8000
 #endif
@@ -79,7 +79,7 @@
 #endif
 
 // enable if you want a speedometer out on pin 8
-//#define SPEEDOMETER_OUTPUT
+#define SPEEDOMETER_OUTPUT
 #ifdef SPEEDOMETER_OUTPUT
     #define SPEEDOMETER_OUTPUT_CLICKS_PER_MILE 8000
 #endif

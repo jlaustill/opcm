@@ -4,7 +4,7 @@
 
 #include <Arduino.h>
 #include "Configuration.h"
-//#include <EEPROM.h>
+#include <EEPROM.h>
 #include <Wire.h>
 #include <TempSensor.h>
 
@@ -61,6 +61,7 @@ unsigned long lastMillis;
 unsigned long thisMillis;
 unsigned long thisDuration;
 float thisMileage;
+String serialBuffer;
 
 float roundToTwo(float var)
 {
@@ -118,10 +119,24 @@ void setup() {
     currentData.oilPressureInPsi = 0;
     currentData.fuelTempF = 0;
 
-//    EEPROM.get(0, currentData.odometer);
-//    EEPROM.get(4, currentData.tripA);
-//    EEPROM.get(8, currentData.tripB);
-//    EEPROM.get(12, currentData.odometerSaveCount);
+//     currentData.odometer = 307000;
+// currentData.tripA = 0;
+// currentData.tripB = 0;
+
+//             EEPROM.put(0, currentData.odometer);
+//             EEPROM.put(8, currentData.tripA);
+//             EEPROM.put(16, currentData.tripB);
+//             EEPROM.put(24, 0);
+
+   EEPROM.get(0, currentData.odometer);
+   EEPROM.get(8, currentData.tripA);
+   EEPROM.get(16, currentData.tripB);
+   EEPROM.get(24, currentData.odometerSaveCount);
+// currentData.odometer = 307000;
+// currentData.tripA = 0;
+// currentData.tripB = 0;
+
+    
 
 
 
@@ -156,7 +171,7 @@ void setup() {
 
 long sweep = 0;
 int up = 1;
-long maxSweep = 100000;
+long maxSweep = 50;
 void newSweepValue() {
     if (up == 1 && sweep < maxSweep) {
         sweep++;
@@ -175,12 +190,12 @@ __attribute__((unused)) void loop()
     thisDuration = thisMillis - lastMillis;
     count++;
     newSweepValue();
-    Serial.print(sweep);
-    Serial.print(" ");
-    Serial.println(count);
+    // Serial.print(sweep);
+    // Serial.print(" ");
+    // Serial.println(count);
     delay(1000);
 
-    currentData.speedInMph = sweep % 80;
+    currentData.speedInMph = sweep;
 
     // currentData.leftBlinker = digitalRead(LEFT_BLINKER_PIN) == LOW;
     // currentData.rightBlinker = digitalRead(RIGHT_BLINKER_PIN) == LOW;
@@ -204,7 +219,7 @@ __attribute__((unused)) void loop()
 #endif
 
 #ifdef SPEEDOMETER_INPUT
-    currentData.speedInMph = SpeedometerInput::getCurrentSpeedInMph(); // map(sweep, 0, maxSweep, 0, 200); // random(0,255);
+    currentData.speedInMph = sweep; // SpeedometerInput::getCurrentSpeedInMph(); // map(sweep, 0, maxSweep, 0, 200); // random(0,255);
     thisMileage += ((float)currentData.speedInMph / 3600000.0f * (float)thisDuration);
 //    Serial.println("thisMileage? " + (String)thisMileage);
 
@@ -217,18 +232,10 @@ __attribute__((unused)) void loop()
     }
     // We only want to save if data has changed and we have come to a stop
     if (currentData.speedInMph <= 0) {
-        double storedOdometer;
-        double storedTripA;
-        double storedTripB;
-        EEPROM.get(0, storedOdometer);
-        EEPROM.get(4, storedTripA);
-        EEPROM.get(8, storedTripB);
-        if (storedOdometer != currentData.odometer || storedTripA != currentData.tripA || storedTripB != storedTripB) {
-            EEPROM.put(0, currentData.odometer);
-            EEPROM.put(4, currentData.tripA);
-            EEPROM.put(8, currentData.tripB);
-            EEPROM.put(12, ++currentData.odometerSaveCount);
-        }
+        EEPROM.put(0, currentData.odometer);
+        EEPROM.put(8, currentData.tripA);
+        EEPROM.put(16, currentData.tripB);
+        EEPROM.put(24, ++currentData.odometerSaveCount);
 //        Serial.println("odometer: " + (String)currentData.odometer + " tripA: " + (String)currentData.tripA + " tripB: " + (String)currentData.tripB + " saveCount: " + (String)currentData.odometerSaveCount);
     }
 #endif
@@ -270,9 +277,25 @@ __attribute__((unused)) void loop()
 #endif
 
 #ifdef NEXTION
-    Nextion::updateDisplayData(currentData);
+    Nextion::updateDisplayData(&currentData);
 #endif
 
     lastMillis = thisMillis;
     if (count > 50000 && count % 50000 == 0) Serial.println("Average Microseconds Per Loop: " + (String)(micros() / count));
+
+    while (Serial.available()) {
+        int newData = Serial.read();
+        if (newData == ';') {
+            Serial.println("Execute!" + serialBuffer);
+            if (serialBuffer == "resetTripA") {
+                Serial.println("reset trip A!");
+                double zero = 0;
+                EEPROM.put(8, zero);
+                currentData.tripA = zero;
+            }
+            serialBuffer = "";
+        } else {
+            serialBuffer += (char)newData;
+        }
+    }
 }

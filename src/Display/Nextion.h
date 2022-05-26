@@ -12,7 +12,7 @@
 class Nextion {
 public:
     static void initialize();
-    static void updateDisplayData(AppData currentData);
+    static void updateDisplayData(AppData* currentData);
 private:
     static void sendCmd(String cmd);
 };

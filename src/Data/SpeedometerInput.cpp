@@ -9,7 +9,7 @@
 #include "Display/Gauges/Speedometer.h"
 #include <math.h>
 
-#define INPUT_PIN 18
+#define INPUT_PIN 5
 #define SPEEDOMETER_INPUT_SMOOTHING_SAMPLES 10
 
 volatile unsigned long prev_time = 0;
