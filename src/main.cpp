@@ -1,7 +1,12 @@
+#define _VERSION_MAJOR 0
+#define _VERSION_MINOR 1
+#define _VERSION_PATCH 1
+
 #include <Arduino.h>
 #include "Configuration.h"
 #include <EEPROM.h>
 #include <Wire.h>
+#include <TempSensor.h>
 
 #ifdef CAN_BUS
     #include "Display/CanBus.h"
@@ -19,7 +24,13 @@
     #include "Data/Sensors/TransmissionPressureSensor.h"
 #endif
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
-    #include "Data/Sensors/TransmissionTemperatureSensor.h"
+    TempSensor TransTempSensor = TempSensor(
+            TRANSMISSION_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
+            TRANSMISSION_TEMPERATURE_INPUT_PIN, // Pin
+            TRANSMISSION_TEMPERATURE_INPUT_A, // A
+            TRANSMISSION_TEMPERATURE_INPUT_B, // B
+            TRANSMISSION_TEMPERATURE_INPUT_C // C
+    );
 #endif
 
 #ifdef TACHOMETER_OUTPUT
@@ -224,7 +235,7 @@ __attribute__((unused)) void loop()
 #endif
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
-    currentData.transmissionTempC = TransmissionTemperatureSensor::getTransmissionTemperatureInCelcius();
+    currentData.transmissionTempC = TransTempSensor.getTempCelsius();
 //    Serial.println("Trans temp in C? " + (String)currentData.transmissionTempC);
 #endif
 
@@ -257,4 +268,4 @@ __attribute__((unused)) void loop()
 
     lastMillis = thisMillis;
     if (count > 50000 && count % 50000 == 0) Serial.println("Average Microseconds Per Loop: " + (String)(micros() / count));
-};
+}

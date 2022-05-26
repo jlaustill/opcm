@@ -26,8 +26,8 @@ add_custom_target(
 
 add_custom_target(
     Debug ALL
-    COMMAND platformio -c clion run --target debug "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
+    COMMAND platformio -c clion debug "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(Z_DUMMY_TARGET ${SRC_LIST} src/Display/OBD2/OBD2.cpp src/Display/OBD2/OBD2.h include/AppData.h src/Data/Sensors/TransmissionTemperatureSensor.cpp src/Data/Sensors/TransmissionTemperatureSensor.h src/Data/SpeedometerInput.cpp src/Data/SpeedometerInput.h src/Configuration.h src/Data/TachometerInput60Minus2.cpp src/Data/TachometerInput60Minus2.h src/Data/Sensors/TransmissionPressureSensor.cpp src/Data/Sensors/TransmissionPressureSensor.h src/Data/CumminsBus.cpp src/Data/CumminsBus.h src/Display/CanBus.cpp src/Display/CanBus.h src/Display/Nextion.cpp src/Display/Nextion.h)
+add_executable(Z_DUMMY_TARGET ${SRC_LIST})
