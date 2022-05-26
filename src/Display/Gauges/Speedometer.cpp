@@ -10,22 +10,36 @@
 // #include <TimerFour.h>
 #include "Speedometer.h"
 
+// Create an IntervalTimer object 
+IntervalTimer speedoTimer;
+int speedoState = LOW;
+
+void speedoSignal() {
+    if (speedoState == LOW) {
+        speedoState = HIGH;
+    } else {
+        speedoState = LOW;
+    }
+    digitalWrite(2, speedoState);
+}
+
 Speedometer::Speedometer(int _clicksPerMile) {
     this->mph = 0;
 }
 
 void Speedometer::initialize() const {
-    // Timer4.initialize();
-    // Timer4.pwm(TIMER4_C_PIN, 255); // pin 8
-    analogWrite(2, 255);
-    analogWriteResolution(15);
+    pinMode(2, OUTPUT);
+    digitalWrite(2, HIGH);
+    speedoTimer.begin(speedoSignal, 150000);
 }
 
 void Speedometer::SetMph(int _mph) {
     this->mph = _mph;
     long microseconds = Speedometer::MphToMicroseconds(this->mph);
-    double hertz = (double)_mph * SPEEDOMETER_OUTPUT_CLICKS_PER_MILE / 60 / 60;
-    tone(2, hertz);
+    Serial.print("setMPH: "); Serial.print(_mph); Serial.print(" micros: "); Serial.println(microseconds);
+    speedoTimer.update(microseconds / 2);
+    // double hertz = (double)_mph * SPEEDOMETER_OUTPUT_CLICKS_PER_MILE / 60 / 60;
+    // tone(2, hertz);
 //    Serial.println("mph: " + (String)this->mph);
 //    Serial.println("microseconds: " + (String)microseconds);
 //    Serial.println();

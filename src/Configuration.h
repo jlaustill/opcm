@@ -32,7 +32,7 @@
     #define CUMMINS_BUS_INPUT_CS_PIN 6
 #endif
 // This is the setup on a 24 valve cummins using a camshaft sensor, so it assumes the gear is running at 1/2 the speed of the crankshaft
-//#define TACHOMETER_INPUT_60_MINUS_2
+// #define TACHOMETER_INPUT_60_MINUS_2
 //#define TACHOMETER_INPUT_2
 
 #define SPEEDOMETER_INPUT
@@ -72,7 +72,7 @@
  *
  * */
 // enable if you want a tachometer output on pin 44
-//#define TACHOMETER_OUTPUT
+#define TACHOMETER_OUTPUT
 #ifdef TACHOMETER_OUTPUT
     #define TACHOMETER_OUTPUT_INITIAL_RPMS 1
     #define TACHOMETER_OUTPUT_CYLINDER_COUNT 6

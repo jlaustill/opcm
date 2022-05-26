@@ -196,6 +196,7 @@ __attribute__((unused)) void loop()
     delay(1000);
 
     currentData.speedInMph = sweep;
+    currentData.rpm = sweep * 100;
 
     // currentData.leftBlinker = digitalRead(LEFT_BLINKER_PIN) == LOW;
     // currentData.rightBlinker = digitalRead(RIGHT_BLINKER_PIN) == LOW;
