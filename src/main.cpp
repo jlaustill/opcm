@@ -88,10 +88,10 @@ void setup() {
     thisMillis = millis();
     thisDuration = 0;
     thisMileage = 0;
-    // pinMode(LEFT_BLINKER_PIN, INPUT_PULLUP);
-    // pinMode(RIGHT_BLINKER_PIN, INPUT_PULLUP);
-    // pinMode(HIGH_BEAMS_PIN, INPUT_PULLUP);
-    // pinMode(WAIT_TO_START_PIN, INPUT_PULLUP);
+    pinMode(LEFT_BLINKER_PIN, INPUT_PULLUP);
+    pinMode(RIGHT_BLINKER_PIN, INPUT_PULLUP);
+    pinMode(HIGH_BEAMS_PIN, INPUT_PULLUP);
+    pinMode(WAIT_TO_START_PIN, INPUT_PULLUP);
     // pinMode(FOUR_BY_FOUR_PIN, INPUT_PULLUP);
     // pinMode(SEAT_BELT_WARNING_PIN, INPUT_PULLUP);
     // pinMode(DOOR_AJAR_WARNING_PIN, INPUT_PULLUP);
@@ -193,15 +193,15 @@ __attribute__((unused)) void loop()
     // Serial.print(sweep);
     // Serial.print(" ");
     // Serial.println(count);
-    delay(1000);
+    // delay(1000);
 
     currentData.speedInMph = sweep;
     currentData.rpm = sweep * 100;
-
-    // currentData.leftBlinker = digitalRead(LEFT_BLINKER_PIN) == LOW;
-    // currentData.rightBlinker = digitalRead(RIGHT_BLINKER_PIN) == LOW;
-    // currentData.highBeams = digitalRead(HIGH_BEAMS_PIN) == LOW;
-    // currentData.waitToStart = digitalRead(WAIT_TO_START_PIN) == LOW;
+// Serial.print("time to debug "); Serial.println(digitalRead(LEFT_BLINKER_PIN));
+    currentData.leftBlinker = digitalRead(LEFT_BLINKER_PIN) == LOW;
+    currentData.rightBlinker = digitalRead(RIGHT_BLINKER_PIN) == LOW;
+    currentData.highBeams = digitalRead(HIGH_BEAMS_PIN) == LOW;
+    currentData.waitToStart = digitalRead(WAIT_TO_START_PIN) == LOW;
     // currentData.fourByFour = digitalRead(FOUR_BY_FOUR_PIN) == LOW;
     // currentData.seatBeltWarning = digitalRead(SEAT_BELT_WARNING_PIN) == LOW;
     // currentData.doorAjarWarning = digitalRead(DOOR_AJAR_WARNING_PIN) == LOW;
