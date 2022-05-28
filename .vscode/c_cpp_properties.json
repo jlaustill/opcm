@@ -1,0 +1,76 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "/home/jlaustill/repo/opcm/include",
+                "/home/jlaustill/repo/opcm/src",
+                "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "/home/jlaustill/repo/opcm/lib/TempSensor",
+                "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/Adafruit MAX31855 library",
+                "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/Adafruit BusIO",
+                "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/TimerFour",
+                "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/TimerFive",
+                "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/CAN_BUS_Shield/src",
+                "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "/home/jlaustill/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "/home/jlaustill/.platformio/packages/framework-arduino-avr/variants/mega",
+                "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                "/home/jlaustill/repo/opcm/lib/CircularList",
+                "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/LiquidCrystal",
+                "/home/jlaustill/.platformio/lib/TimerOne",
+                "/home/jlaustill/.platformio/lib/ToneLibrary/src",
+                "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/home/jlaustill/repo/opcm/include",
+                    "/home/jlaustill/repo/opcm/src",
+                    "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "/home/jlaustill/repo/opcm/lib/TempSensor",
+                    "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/Adafruit MAX31855 library",
+                    "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/Adafruit BusIO",
+                    "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/TimerFour",
+                    "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/TimerFive",
+                    "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/CAN_BUS_Shield/src",
+                    "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "/home/jlaustill/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "/home/jlaustill/.platformio/packages/framework-arduino-avr/variants/mega",
+                    "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    "/home/jlaustill/repo/opcm/lib/CircularList",
+                    "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/LiquidCrystal",
+                    "/home/jlaustill/.platformio/lib/TimerOne",
+                    "/home/jlaustill/.platformio/lib/ToneLibrary/src",
+                    "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60001",
+                "ARDUINO_AVR_MEGA2560",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATmega2560__",
+                ""
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "compilerPath": "/home/jlaustill/.platformio/packages/toolchain-atmelavr/bin/avr-gcc",
+            "compilerArgs": [
+                "-mmcu=atmega2560",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
