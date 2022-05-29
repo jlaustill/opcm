@@ -5,81 +5,10 @@
 #include <Arduino.h>
 #include "Configuration.h"
 #include <EEPROM.h>
-#include <Wire.h>
-#include <TempSensor.h>
 
-#ifdef CAN_BUS
-    #include "Display/CanBus.h"
-#endif
-#ifdef CUMMINS_BUS_INPUT
-    #include "Data/CumminsBus.h"
-#endif
-#ifdef SPEEDOMETER_INPUT
-    #include "Data/SpeedometerInput.h"
-#endif
-#ifdef TACHOMETER_INPUT_60_MINUS_2
-    #include "Data/TachometerInput60Minus2.h"
-#endif
-#ifdef TRANSMISSION_PRESSURE_INPUT
-    #include "Data/Sensors/TransmissionPressureSensor.h"
-#endif
-#ifdef TRANSMISSION_TEMPERATURE_INPUT
-    TempSensor TransTempSensor = TempSensor(
-            TRANSMISSION_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
-            TRANSMISSION_TEMPERATURE_INPUT_A, // A
-            TRANSMISSION_TEMPERATURE_INPUT_B, // B
-            TRANSMISSION_TEMPERATURE_INPUT_C, // C
-            TRANSMISSION_TEMPERATURE_INPUT_DEVICE_ID,
-            TRANSMISSION_TEMPERATURE_INPUT_PIN_NUMBER
-    );
-#endif
-
-#ifdef TACHOMETER_OUTPUT
-    #include "Display/Gauges/Tachometer.h"
-#endif
-#ifdef SPEEDOMETER_OUTPUT
-    #include "Display/Gauges/Speedometer.h"
-#endif
-
-#ifdef ODB2
-    #include "Display/OBD2/OBD2.h"
-#endif
-
-#ifdef NEXTION
-    #include "Display/Nextion.h"
-#endif
-
-#ifdef THERMOCOUPLE
-    #include <Adafruit_MAX31855.h>
-#endif
+#include "Domain/setup.h"
 
 #include <AppData.h>
-
-AppData currentData;
-unsigned long count;
-unsigned long lastMillis;
-unsigned long thisMillis;
-unsigned long thisDuration;
-float thisMileage;
-String serialBuffer;
-
-float roundToTwo(float var)
-{
-    float value = (int)(var * 100 + .5);
-    return (float)value / 100.0;
-}
-
-#ifdef TACHOMETER_OUTPUT
-    Tachometer tachometer = Tachometer();
-#endif
-#ifdef SPEEDOMETER_OUTPUT
-    Speedometer speedometer = Speedometer();
-#endif
-
-#ifdef THERMOCOUPLE
-// initialize the Thermocouple
-Adafruit_MAX31855 thermocouple(MAXCLK, MAXCS, MAXDO);
-#endif
 
 void setup() {
     Serial.begin(115200);
@@ -293,6 +222,16 @@ __attribute__((unused)) void loop()
                 double zero = 0;
                 EEPROM.put(8, zero);
                 currentData.tripA = zero;
+            } else if (serialBuffer.indexOf("setOdometer") > 0) {
+                double newOdometerReading = atof(
+                    serialBuffer.substring(
+                        serialBuffer.indexOf("=") + 1,
+                        serialBuffer.indexOf(";")
+                        ).c_str()
+                        );
+                EEPROM.put(0, newOdometerReading);
+                currentData.odometer = newOdometerReading;
+                Serial.print("Set Odometer = "); Serial.println(currentData.odometer);
             }
             serialBuffer = "";
         } else {
