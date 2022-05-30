@@ -49,11 +49,7 @@
 #endif
 
 AppData currentData;
-unsigned long count;
-unsigned long lastMillis;
-unsigned long thisMillis;
-unsigned long thisDuration;
-float thisMileage;
+
 String serialBuffer;
 
 float roundToTwo(float var)
