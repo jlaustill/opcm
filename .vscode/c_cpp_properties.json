@@ -27,7 +27,7 @@
                 "/home/jlaustill/.platformio/lib/TimerOne",
                 "/home/jlaustill/.platformio/lib/ToneLibrary/src",
                 "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/HID/src",
-                "/home/jlaustill/repo/opcm/.pio/libdeps/teensy41/Adafruit ADS1X15"
+                ""
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,

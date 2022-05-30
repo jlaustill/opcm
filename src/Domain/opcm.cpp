@@ -4,6 +4,7 @@
 #include "setup.h"
 
 #include "opcm.h"
+#include "memory.h"
 
 #include <AppData.h>
 
@@ -67,20 +68,16 @@ void opcm::setup() {
     currentData.oilPressureInPsi = 0;
     currentData.fuelTempF = 0;
 
-//     currentData.odometer = 307000;
 // currentData.tripA = 0;
 // currentData.tripB = 0;
 
-//             EEPROM.put(0, currentData.odometer);
 //             EEPROM.put(8, currentData.tripA);
 //             EEPROM.put(16, currentData.tripB);
 //             EEPROM.put(24, 0);
-
-   EEPROM.get(0, currentData.odometer);
+currentData.odometer = memory::getOdometer();
    EEPROM.get(8, currentData.tripA);
    EEPROM.get(16, currentData.tripB);
    EEPROM.get(24, currentData.odometerSaveCount);
-// currentData.odometer = 307000;
 // currentData.tripA = 0;
 // currentData.tripB = 0;
 
@@ -165,7 +162,7 @@ void opcm::loop() {
     }
     // We only want to save if data has changed and we have come to a stop
     if (currentData.speedInMph <= 0) {
-        EEPROM.put(0, currentData.odometer);
+        memory::setOdometer(currentData.odometer);
         EEPROM.put(8, currentData.tripA);
         EEPROM.put(16, currentData.tripB);
         EEPROM.put(24, ++currentData.odometerSaveCount);
@@ -232,7 +229,7 @@ void opcm::loop() {
                         serialBuffer.indexOf(";")
                         ).c_str()
                         );
-                EEPROM.put(0, newOdometerReading);
+                memory::setOdometer(newOdometerReading);
                 currentData.odometer = newOdometerReading;
                 Serial.print("Set Odometer = "); Serial.println(currentData.odometer);
             }
