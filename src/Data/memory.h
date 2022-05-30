@@ -13,4 +13,10 @@ class memory {
     public:
     static double getOdometer();
     static void setOdometer(double newReading);
+    static double getTripA();
+    static void setTripA(double newReading);
+    static double getTripB();
+    static void setTripB(double newReading);
+    static double getSaveCount();
+    static void setSaveCount(unsigned long newReading);
 };

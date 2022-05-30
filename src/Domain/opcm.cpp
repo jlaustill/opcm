@@ -1,10 +1,9 @@
 #include <Arduino.h>
-#include <EEPROM.h>
 #include "Configuration.h"
 #include "setup.h"
 
 #include "opcm.h"
-#include "memory.h"
+#include "Data/memory.h"
 
 #include <AppData.h>
 
@@ -68,24 +67,10 @@ void opcm::setup() {
     currentData.oilPressureInPsi = 0;
     currentData.fuelTempF = 0;
 
-// currentData.tripA = 0;
-// currentData.tripB = 0;
-
-//             EEPROM.put(8, currentData.tripA);
-//             EEPROM.put(16, currentData.tripB);
-//             EEPROM.put(24, 0);
-currentData.odometer = memory::getOdometer();
-   EEPROM.get(8, currentData.tripA);
-   EEPROM.get(16, currentData.tripB);
-   EEPROM.get(24, currentData.odometerSaveCount);
-// currentData.tripA = 0;
-// currentData.tripB = 0;
-
-    
-
-
-
-
+    currentData.odometer = memory::getOdometer();
+    currentData.tripA = memory::getTripA();
+    currentData.tripB = memory::getTripB();
+    currentData.odometerSaveCount = memory::getSaveCount();
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     currentData.transmissionTempC = 0;
@@ -163,9 +148,9 @@ void opcm::loop() {
     // We only want to save if data has changed and we have come to a stop
     if (currentData.speedInMph <= 0) {
         memory::setOdometer(currentData.odometer);
-        EEPROM.put(8, currentData.tripA);
-        EEPROM.put(16, currentData.tripB);
-        EEPROM.put(24, ++currentData.odometerSaveCount);
+        memory::setTripA(currentData.tripA);
+        memory::setTripB(currentData.tripB);
+        memory::setSaveCount(++currentData.odometerSaveCount);
 //        Serial.println("odometer: " + (String)currentData.odometer + " tripA: " + (String)currentData.tripA + " tripB: " + (String)currentData.tripB + " saveCount: " + (String)currentData.odometerSaveCount);
     }
 #endif
@@ -219,9 +204,8 @@ void opcm::loop() {
             Serial.println("Execute!" + serialBuffer);
             if (serialBuffer == "resetTripA") {
                 Serial.println("reset trip A!");
-                double zero = 0;
-                EEPROM.put(8, zero);
-                currentData.tripA = zero;
+                memory::setTripA(0);
+                currentData.tripA = 0;
             } else if (serialBuffer.indexOf("setOdometer") > 0) {
                 double newOdometerReading = atof(
                     serialBuffer.substring(
