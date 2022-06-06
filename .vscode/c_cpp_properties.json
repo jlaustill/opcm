@@ -23,7 +23,6 @@
                 "/home/jlaustill/.platformio/packages/framework-arduino-avr/variants/mega",
                 "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
                 "/home/jlaustill/repo/opcm/lib/CircularList",
-                "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/LiquidCrystal",
                 "/home/jlaustill/.platformio/lib/TimerOne",
                 "/home/jlaustill/.platformio/lib/ToneLibrary/src",
                 "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/HID/src",
@@ -47,7 +46,6 @@
                     "/home/jlaustill/.platformio/packages/framework-arduino-avr/variants/mega",
                     "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
                     "/home/jlaustill/repo/opcm/lib/CircularList",
-                    "/home/jlaustill/repo/opcm/.pio/libdeps/megaatmega2560/LiquidCrystal",
                     "/home/jlaustill/.platformio/lib/TimerOne",
                     "/home/jlaustill/.platformio/lib/ToneLibrary/src",
                     "/home/jlaustill/.platformio/packages/framework-arduino-avr/libraries/HID/src",
@@ -55,7 +53,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=60001",
+                "PLATFORMIO=60002",
                 "ARDUINO_AVR_MEGA2560",
                 "F_CPU=16000000L",
                 "ARDUINO_ARCH_AVR",
