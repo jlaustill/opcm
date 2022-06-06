@@ -105,9 +105,10 @@ void Nextion::updateDisplayData(AppData currentData) {
     sendCmd("doorajar.aph=" + (String)(currentData.doorAjarWarning ? "127" : "0"));
     sendCmd("parkbrake.aph=" + (String)(currentData.brakeLightWarning ? "127" : "0"));
 
-    double transPressureDegrees = 360.0 - (double)currentData.transmissionPressure * 30 / 400;
-    sendCmd("tranpresgauge.val=" + (String)(int)transPressureDegrees);
-    sendCmd("transprestxt.txt=\"" + (String)currentData.transmissionPressure + " PSI\"");
+//    double transPressureDegrees = 360.0 - (double)currentData.transmissionPressure * 30 / 400;
+//    sendCmd("tranpresgauge.val=" + (String)(int)transPressureDegrees);
+//    sendCmd("transprestxt.txt=\"" + (String)currentData.transmissionPressure + " PSI\"");
+    sendCmd("transPres.val=" + (String)currentData.transmissionPressure);
 
     double coolTempF = ((double)currentData.coolantTemp * 9 / 5) + 32;
     sendCmd("h20t.val=" + (String)(int)coolTempF);
@@ -121,8 +122,9 @@ void Nextion::updateDisplayData(AppData currentData) {
     double transmissionTemperateDegrees = (((double)currentData.transmissionTempC * 9 / 5) + 32);
     sendCmd("trantemp.val=" + (String)(int)transmissionTemperateDegrees);
 
-    double oilPressureDegrees = 360 - (double)currentData.oilPressureInPsi * 40 / 100;
-    sendCmd("oilpres.val=" + (String)(int)oilPressureDegrees);
+//    double oilPressureDegrees = 360 - (double)currentData.oilPressureInPsi * 40 / 100;
+//    sendCmd("oilpres.val=" + (String)(int)oilPressureDegrees);
+    sendCmd("oilPres.val=" + (String)currentData.oilPressureInPsi);
 }
 
 #endif
