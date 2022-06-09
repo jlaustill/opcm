@@ -97,6 +97,8 @@ void setup() {
     // pinMode(DOOR_AJAR_WARNING_PIN, INPUT_PULLUP);
     // pinMode(BRAKE_LIGHT_PIN, INPUT_PULLUP);
 
+    Serial.println("Starting up...");
+
 #ifdef CAN_BUS
     CanBus::initialize();
 #endif
