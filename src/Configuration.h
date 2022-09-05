@@ -26,7 +26,7 @@
     #define CAN_BUS_CS_PIN 5
 #endif
 // The Cummins bus provides rpms, so don't enable both at the same time
-// #define CUMMINS_BUS_INPUT
+#define CUMMINS_BUS_INPUT
 #ifdef CUMMINS_BUS_INPUT
     #define CUMMINS_BUS_INPUT_INT_PIN 3
     #define CUMMINS_BUS_INPUT_CS_PIN 6
@@ -72,7 +72,7 @@
  *
  * */
 // enable if you want a tachometer output on pin 44
-#define TACHOMETER_OUTPUT
+// #define TACHOMETER_OUTPUT
 #ifdef TACHOMETER_OUTPUT
     #define TACHOMETER_OUTPUT_INITIAL_RPMS 1
     #define TACHOMETER_OUTPUT_CYLINDER_COUNT 6

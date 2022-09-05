@@ -5,11 +5,13 @@
 #ifdef CUMMINS_BUS_INPUT
 #include <Arduino.h>
 // mcp2515 uses SPI, so include the SPI library
-#include <SPI.h>
+// #include <SPI.h>
+#include <FlexCAN_T4.h>
+FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can2;
 #include "CumminsBus.h"
 
-#define CumminsBusSPI_BEGIN()        SPIClass::beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0))
-#define CumminsBusSPI_END()          SPIClass::endTransaction()
+// #define CumminsBusSPI_BEGIN()        SPIClass::beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0))
+// #define CumminsBusSPI_END()          SPIClass::endTransaction()
 
 volatile byte data[16];
 
@@ -45,29 +47,29 @@ volatile float FuelPCT; // +
 volatile int ids[8] = {0,0,0,0,0,0,0,0};
 volatile int idsP = 0;
 
-void writeRegister(int CSpin, byte thisRegister, byte thisValue) {
-    // take the chip select low to select the device:
-    CumminsBusSPI_BEGIN();
-    digitalWrite(CSpin, LOW);
-    SPIClass::transfer(0x02);         //write register command (02)
-    SPIClass::transfer(thisRegister); //Send register address
-    SPIClass::transfer(thisValue);  //Send value to record into register
-    // take the chip select high to de-select:
-    digitalWrite(CSpin, HIGH);
-    CumminsBusSPI_END();
-}
+// void writeRegister(int CSpin, byte thisRegister, byte thisValue) {
+//     // // take the chip select low to select the device:
+//     // CumminsBusSPI_BEGIN();
+//     // digitalWrite(CSpin, LOW);
+//     // SPIClass::transfer(0x02);         //write register command (02)
+//     // SPIClass::transfer(thisRegister); //Send register address
+//     // SPIClass::transfer(thisValue);  //Send value to record into register
+//     // // take the chip select high to de-select:
+//     // digitalWrite(CSpin, HIGH);
+//     // CumminsBusSPI_END();
+// }
 
-byte readRegister(int CSpin, byte thisRegister) {
-    byte result = 0;
-    CumminsBusSPI_BEGIN();
-    digitalWrite(CSpin, LOW);
-    SPIClass::transfer(0x03);                 //read register command (03)
-    SPIClass::transfer(thisRegister);
-    result = SPIClass::transfer(0x00);        //shift out dummy byte (00) so "thisRegister" gets clocked into result
-    digitalWrite(CSpin, HIGH);
-    CumminsBusSPI_END();
-    return result;
-}
+// byte readRegister(int CSpin, byte thisRegister) {
+//     byte result = 0;
+//     // CumminsBusSPI_BEGIN();
+//     // digitalWrite(CSpin, LOW);
+//     // SPIClass::transfer(0x03);                 //read register command (03)
+//     // SPIClass::transfer(thisRegister);
+//     // result = SPIClass::transfer(0x00);        //shift out dummy byte (00) so "thisRegister" gets clocked into result
+//     // digitalWrite(CSpin, HIGH);
+//     // CumminsBusSPI_END();
+//     return result;
+// }
 
 void updateMessage(volatile CanMessage* _messageToUpdate, int _id) {
     _messageToUpdate->computedId = _id;
@@ -86,54 +88,54 @@ void updateMessage(volatile CanMessage* _messageToUpdate, int _id) {
     _messageToUpdate->count++;
 }
 
-void ISR_trig0(){
-    CumminsBusSPI_BEGIN();
-    digitalWrite(CUMMINS_BUS_INPUT_CS_PIN, LOW);
-    SPIClass::transfer(0x90);   //read buffer 0 Command. also clears the CAN module interrupt flag
-    for(int i = 0; i < 13; i++){
-        data[i] = SPIClass::transfer(0x00);
+void ISR_trig0(const CAN_message_t &msg){
+//     CumminsBusSPI_BEGIN();
+//     digitalWrite(CUMMINS_BUS_INPUT_CS_PIN, LOW);
+//     SPIClass::transfer(0x90);   //read buffer 0 Command. also clears the CAN module interrupt flag
+    for(uint8_t i = 0; i < msg.len; i++){
+        data[i] = msg.buf[i];
     }
-    digitalWrite(CUMMINS_BUS_INPUT_CS_PIN, HIGH);
-    CumminsBusSPI_END();
+//     digitalWrite(CUMMINS_BUS_INPUT_CS_PIN, HIGH);
+//     CumminsBusSPI_END();
 
-    int id = (data[0] << 3) + (data[1] >> 5);
-    if ((data[1] & 0x08) ==  0x08) {
-        /* extended id                  */
-        id = (id << 2) + (data[1] & 0x03);
-        id = (id << 8) + data[2];
-        id = (id << 8) + data[3];
+//     int id = (data[0] << 3) + (data[1] >> 5);
+//     if ((data[1] & 0x08) ==  0x08) {
+//         /* extended id                  */
+//         id = (id << 2) + (data[1] & 0x03);
+//         id = (id << 8) + data[2];
+//         id = (id << 8) + data[3];
 
-    }
+//     }
     if (data[0] == 0xC7 && data[1] == 0xFA && data[2] == 0xEE) {
-        updateMessage(&C7FAEEMessage, id);
-    } else if (id == -4352) {//data[0] == 0xC7 && data[1] == 0xFA && data[2] == 0xEF) { // id == -4608) {//
+        updateMessage(&C7FAEEMessage, msg.id);
+    } else if (msg.id == -4352) {//data[0] == 0xC7 && data[1] == 0xFA && data[2] == 0xEF) { // id == -4608) {//
 //        Serial.println("received water temp");
-        updateMessage(&C7FAEFMessage, id);
+        updateMessage(&C7FAEFMessage, msg.id);
 
 //        // Compute Oil Pressure
 //        oilPressure = C7FAEFMessage.data[3] * 4 / 6.895;
     } else if (data[0] == 0x67 && data[1] == 0x98 && data[2] == 0x3) {
-        updateMessage(&x67983Message, id);
+        updateMessage(&x67983Message, msg.id);
 
 //        // computer APP/throttle percentage
 //        throttlePercentage = x67983Message.data[1] * 100 / 255;
     }  else if (data[0] == 0x67 && data[1] == 0x98 && data[2] == 0x4) {
-        updateMessage(&x67984Message, id);
+        updateMessage(&x67984Message, msg.id);
 
 //        // Compute Load %
 //        load = x67984Message.data[2];
 //        load -= 125;
 //        load = load * 4 / 5;
     } else if (data[0] == 0x22) {
-        updateMessage(&x22Message, id);
+        updateMessage(&x22Message, msg.id);
 
 //        // Compute Fuel Temperature
         fuelTemp = (x22Message.data[7] << 8) | x22Message.data[6]; // Raw
         fuelTemp = fuelTemp / 16; // Kelvin
         fuelTemp = fuelTemp - 273.15; // Celsius
         fuelTemp = ((fuelTemp * 9) / 5) + 32; // Fahrenheit
-    } else if (id == 256) {
-        updateMessage(&x20Message, id);
+    } else if (msg.id == 256) {
+        updateMessage(&x20Message, msg.id);
 
 //        //Fuel compute
 //        FuelPCT = ((x20Message.data[1] << 8) | x20Message.data[0]);
@@ -143,7 +145,7 @@ void ISR_trig0(){
 //        Timing = (x20Message.data[5] << 8) | x20Message.data[4]; //convert from little endian. 128 bits per degree.
 //        Timing = (float)((Timing) / 128);
     } else {
-        ids[idsP++] = id;
+        ids[idsP++] = msg.id;
         if (idsP >= 8) idsP = 0;
     }
 }// ISR done
@@ -181,48 +183,56 @@ int CumminsBus::getCurrentFuelTemp() {
 
 void CumminsBus::initialize() {
     Serial.println("Cummins Bus initializing");
+
+    Can2.setBaudRate(250000);
+    Can2.begin();
+    Can2.setMaxMB(16);
+    Can2.enableFIFO();
+    Can2.enableFIFOInterrupt();
+    Can2.onReceive(ISR_trig0);
+    Can2.mailboxStatus();
     // start the SPI library:
-    SPIClass::begin();
-    //default settings, but shown here for learning example.
-//    SPIClass::setBitOrder(MSBFIRST);
-//    SPIClass::setDataMode(SPI_MODE0);
-//    SPIClass::setClockDivider(SPI_CLOCK_DIV2);
+//     SPIClass::begin();
+//     //default settings, but shown here for learning example.
+// //    SPIClass::setBitOrder(MSBFIRST);
+// //    SPIClass::setDataMode(SPI_MODE0);
+// //    SPIClass::setClockDivider(SPI_CLOCK_DIV2);
 
-    // initalize the  intterupts, ss, and chip select pins:
+//     // initalize the  intterupts, ss, and chip select pins:
 
-    pinMode(53, OUTPUT);    //Arduino is master
-    pinMode(CUMMINS_BUS_INPUT_INT_PIN, INPUT);  //INT0
-    pinMode(CUMMINS_BUS_INPUT_CS_PIN, OUTPUT);
+//     pinMode(53, OUTPUT);    //Arduino is master
+//     pinMode(CUMMINS_BUS_INPUT_INT_PIN, INPUT);  //INT0
+//     pinMode(CUMMINS_BUS_INPUT_CS_PIN, OUTPUT);
 
-    CumminsBusSPI_BEGIN();
-    // take the chip select low to select the device
-    digitalWrite(CUMMINS_BUS_INPUT_CS_PIN, LOW);
-    SPIClass::transfer(0xC0); //reset CAN1 command & enter config mode
-    // take the chip select high to de-select
-    digitalWrite(CUMMINS_BUS_INPUT_CS_PIN, HIGH);
-    CumminsBusSPI_END();
+//     CumminsBusSPI_BEGIN();
+//     // take the chip select low to select the device
+//     digitalWrite(CUMMINS_BUS_INPUT_CS_PIN, LOW);
+//     SPIClass::transfer(0xC0); //reset CAN1 command & enter config mode
+//     // take the chip select high to de-select
+//     digitalWrite(CUMMINS_BUS_INPUT_CS_PIN, HIGH);
+//     CumminsBusSPI_END();
 
-    // give the mcp2515 time to reset
-    delay(10);
+//     // give the mcp2515 time to reset
+//     delay(10);
 
-    //do this once for CAN1
-    //set baud rate to 8MHZ osc 250Kb/s
-    writeRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x2A, 0x40);  //cnf1
-    writeRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x29, 0xF1);  //cnf2
-    writeRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x28, 0x85);  //cnf3
+//     //do this once for CAN1
+//     //set baud rate to 8MHZ osc 250Kb/s
+//     writeRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x2A, 0x40);  //cnf1
+//     writeRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x29, 0xF1);  //cnf2
+//     writeRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x28, 0x85);  //cnf3
 
-    //recieve buff 0 apply mask and filters SID or EXID
-    writeRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x60, 0x60);  // 60 RXB0CTRL rec all. ignore filters
+//     //recieve buff 0 apply mask and filters SID or EXID
+//     writeRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x60, 0x60);  // 60 RXB0CTRL rec all. ignore filters
 
-    //SOF signal output to mcp2515 CLCKout pin 3 for O'scope trigger
-    writeRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x0F, 0x04);  //canctrl ******normal mode***** //one shot mode trans disabled
+//     //SOF signal output to mcp2515 CLCKout pin 3 for O'scope trigger
+//     writeRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x0F, 0x04);  //canctrl ******normal mode***** //one shot mode trans disabled
 
-    if(readRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x0E)== 0 && readRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x0F) == 04){ //mode status to check if init happened correctly
-        Serial.println("Cummins Bus CAN module init Normal");
-    }
-    else{
-        Serial.println("Cummins Bus CAN module init FAILED!! ");
-    }
+//     if(readRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x0E)== 0 && readRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x0F) == 04){ //mode status to check if init happened correctly
+//         Serial.println("Cummins Bus CAN module init Normal");
+//     }
+//     else{
+//         Serial.println("Cummins Bus CAN module init FAILED!! ");
+//     }
 
 
 
@@ -243,13 +253,13 @@ void CumminsBus::initialize() {
 //    writeRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x70, 0);
 
 
-    //CAN 1 module enable REC buffer 0 interrupt
-    writeRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x2B, 0x01);
+    // //CAN 1 module enable REC buffer 0 interrupt
+    // writeRegister(CUMMINS_BUS_INPUT_CS_PIN, 0x2B, 0x01);
 
 
 
-    SPIClass::usingInterrupt(digitalPinToInterrupt(CUMMINS_BUS_INPUT_INT_PIN));
-    attachInterrupt(digitalPinToInterrupt(CUMMINS_BUS_INPUT_INT_PIN), ISR_trig0, FALLING);
+    // SPIClass::usingInterrupt(digitalPinToInterrupt(CUMMINS_BUS_INPUT_INT_PIN));
+    // attachInterrupt(digitalPinToInterrupt(CUMMINS_BUS_INPUT_INT_PIN), ISR_trig0, FALLING);
 }
 
 #endif
