@@ -112,7 +112,7 @@ void opcm::loop() {
     // delay(1000);
 
     currentData.speedInMph = sweep;
-    currentData.rpm = sweep * 100;
+    // currentData.rpm = sweep * 100;
 // Serial.print("time to debug "); Serial.println(digitalRead(LEFT_BLINKER_PIN));
     currentData.leftBlinker = digitalRead(LEFT_BLINKER_PIN) == LOW;
     currentData.rightBlinker = digitalRead(RIGHT_BLINKER_PIN) == LOW;
@@ -167,7 +167,7 @@ void opcm::loop() {
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     currentData.transmissionTempC = TransTempSensor.getTempCelsius();
-   Serial.println("Trans temp in C? " + (String)currentData.transmissionTempC);
+//    Serial.println("Trans temp in C? " + (String)currentData.transmissionTempC);
 #endif
 
 #ifdef TACHOMETER_OUTPUT
