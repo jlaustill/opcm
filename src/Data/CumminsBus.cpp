@@ -138,7 +138,7 @@ void CumminsBus::initialize() {
     Serial.println("Cummins Bus initializing");
 
     Can2.begin();
-    Can2.setBaudRate(500000);
+    Can2.setBaudRate(250000);
     Can2.setMaxMB(16);
     Can2.enableFIFO();
     Can2.enableFIFOInterrupt();
