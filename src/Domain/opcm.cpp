@@ -111,7 +111,7 @@ void opcm::loop() {
     // Serial.println(count);
     // delay(1000);
 
-    currentData.speedInMph = sweep;
+    // currentData.speedInMph = sweep;
     // currentData.rpm = sweep * 100;
 // Serial.print("time to debug "); Serial.println(digitalRead(LEFT_BLINKER_PIN));
     currentData.leftBlinker = digitalRead(LEFT_BLINKER_PIN) == LOW;
@@ -136,7 +136,7 @@ void opcm::loop() {
 #endif
 
 #ifdef SPEEDOMETER_INPUT
-    currentData.speedInMph = sweep; // SpeedometerInput::getCurrentSpeedInMph(); // map(sweep, 0, maxSweep, 0, 200); // random(0,255);
+    currentData.speedInMph = SpeedometerInput::getCurrentSpeedInMph(); // map(sweep, 0, maxSweep, 0, 200); // random(0,255);
     thisMileage += ((float)currentData.speedInMph / 3600000.0f * (float)thisDuration);
 //    Serial.println("thisMileage? " + (String)thisMileage);
 

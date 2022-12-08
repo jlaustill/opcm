@@ -19,8 +19,8 @@ public:
         ChannelId = channelId;
 
         if (!ads.begin(DeviceId)) {
-        Serial.println("Failed to initialize ADS.");
-     }
+            Serial.println("Failed to initialize ADS.");
+        }
     }
 
     float getTempKelvin();
