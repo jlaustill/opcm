@@ -14,7 +14,7 @@ void TempSensor::computeKelvin() {
 }
 
 void TempSensor::updateSensor() {
-    this->readVoltage = analogRead(this->SensorPin);
+    this->readVoltage = ads.readADC_SingleEnded(ChannelId);
     this->computeResistorValue();
     this->computeKelvin();
 }
@@ -37,5 +37,5 @@ float TempSensor::getTempFahrenheit() {
 void TempSensor::computeResistorValue() {
     this->computedResistorValue =
             (TempSensor::KnownResistorValue * readVoltage) /
-            (1024 - readVoltage);
+            (32767 - readVoltage);
 }

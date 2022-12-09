@@ -5,7 +5,9 @@
 
 #ifdef NEXTION
 
+#include <Arduino.h>
 #include "Nextion.h"
+#include <EEPROM.h>
 
 void Nextion::sendCmd(String cmd) {
     nexSer.print(cmd);
@@ -37,7 +39,7 @@ String formatNumber(double number) {
     int index = 0;            /* Index counter for position in output text string */
 
     /* Convert the input number to a formatted string */
-    dtostrf(number, 1, 1, buffer);
+    sprintf(buffer, "%f", number);
 
     /* Calculate the number of digits before the decimal point */
     int periodIndex = 0;
@@ -89,42 +91,67 @@ String formatNumber(double number) {
     return finalText;
 }
 
-void Nextion::updateDisplayData(AppData currentData) {
-    sendCmd("mph.val=" + (String)currentData.speedInMph);
-    sendCmd("odometer.txt=\"" + formatNumber(currentData.odometer) + "\"");
-    sendCmd("tripA.txt=\"" + formatNumber(currentData.tripA) + "\"");
-    sendCmd("tripB.txt=\"" + formatNumber(currentData.tripB) + "\"");
-    sendCmd("egt.val=" + (String)(int)currentData.egt);
+void Nextion::updateDisplayData(AppData* currentData) {
+    sendCmd("mph.val=" + (String)currentData->speedInMph);
+    sendCmd("odometer.txt=\"" + formatNumber(currentData->odometer) + "\"");
+    sendCmd("tripA.txt=\"" + formatNumber(currentData->tripA) + "\"");
+    sendCmd("tripB.txt=\"" + formatNumber(currentData->tripB) + "\"");
+    // Serial.print("Odom: "); Serial.print(currentData->odometer); Serial.print(" tripA: "); Serial.print(currentData->tripA); Serial.print(" tripB: "); Serial.println(currentData->tripB);
 
-    sendCmd("leftturn.aph=" + (String)(currentData.leftBlinker ? "127" : "0"));
-    sendCmd("rightturn.aph=" + (String)(currentData.rightBlinker ? "127" : "0"));
-    sendCmd("highbeam.aph=" + (String)(currentData.highBeams ? "127" : "0"));
-    sendCmd("wts.aph=" + (String)(currentData.waitToStart ? "127" : "0"));
-    sendCmd("fourx4.aph=" + (String)(currentData.fourByFour ? "127" : "0"));
-    sendCmd("seatbelt.aph=" + (String)(currentData.seatBeltWarning ? "127" : "0"));
-    sendCmd("doorajar.aph=" + (String)(currentData.doorAjarWarning ? "127" : "0"));
-    sendCmd("parkbrake.aph=" + (String)(currentData.brakeLightWarning ? "127" : "0"));
+    sendCmd("egt.val=" + (String)(int)currentData->egt);
 
-//    double transPressureDegrees = 360.0 - (double)currentData.transmissionPressure * 30 / 400;
-//    sendCmd("tranpresgauge.val=" + (String)(int)transPressureDegrees);
-//    sendCmd("transprestxt.txt=\"" + (String)currentData.transmissionPressure + " PSI\"");
-    sendCmd("transPres.val=" + (String)currentData.transmissionPressure);
+    sendCmd("leftturn.aph=" + (String)(currentData->leftBlinker ? "127" : "0"));
+    sendCmd("rightturn.aph=" + (String)(currentData->rightBlinker ? "127" : "0"));
+    sendCmd("highbeam.aph=" + (String)(currentData->highBeams ? "127" : "0"));
+    sendCmd("wts.aph=" + (String)(currentData->waitToStart ? "127" : "0"));
+    sendCmd("fourx4.aph=" + (String)(currentData->fourByFour ? "127" : "0"));
+    sendCmd("seatbelt.aph=" + (String)(currentData->seatBeltWarning ? "127" : "0"));
+    sendCmd("doorajar.aph=" + (String)(currentData->doorAjarWarning ? "127" : "0"));
+    sendCmd("parkbrake.aph=" + (String)(currentData->brakeLightWarning ? "127" : "0"));
 
-    double coolTempF = ((double)currentData.coolantTemp * 9 / 5) + 32;
+    double transPressureDegrees = 360.0 - (double)currentData->transmissionPressure * 30 / 400;
+    sendCmd("tranpresgauge.val=" + (String)(int)transPressureDegrees);
+    sendCmd("transprestxt.txt=\"" + (String)currentData->transmissionPressure + " PSI\"");
+
+    double coolTempF = ((double)currentData->coolantTemp * 9 / 5) + 32;
     sendCmd("h20t.val=" + (String)(int)coolTempF);
 
-    sendCmd("fueltmp.val=" + (String)currentData.fuelTempF);
+    sendCmd("fueltmp.val=" + (String)currentData->fuelTempF);
 
 //    double rpmDegrees = ((double)currentData.rpm * 33) / 4000;
 //    Serial.println("rpmDegrees: " + (String)rpmDegrees);
-    sendCmd("rpm.val=" + (String)currentData.rpm);
+    sendCmd("rpm.val=" + (String)currentData->rpm);
 
-    double transmissionTemperateDegrees = (((double)currentData.transmissionTempC * 9 / 5) + 32);
+    double transmissionTemperateDegrees = (((double)currentData->transmissionTempC * 9 / 5) + 32);
     sendCmd("trantemp.val=" + (String)(int)transmissionTemperateDegrees);
 
-//    double oilPressureDegrees = 360 - (double)currentData.oilPressureInPsi * 40 / 100;
-//    sendCmd("oilpres.val=" + (String)(int)oilPressureDegrees);
-    sendCmd("oilPres.val=" + (String)currentData.oilPressureInPsi);
+    double oilPressureDegrees = 360 - (double)currentData->oilPressureInPsi * 40 / 100;
+    sendCmd("oilpres.val=" + (String)(int)oilPressureDegrees);
+
+    String serialBuffer;
+    while (nexSer.available()) {
+    int newData = nexSer.read();
+    if (newData == ';') {
+        Serial.println("Execute!" + serialBuffer);
+        if (serialBuffer.indexOf("resetTripA") > 0) {
+            Serial.println("reset trip A!");
+            double zero = 0;
+            EEPROM.put(8, zero);
+            currentData->tripA = zero;
+        }
+        if (serialBuffer.indexOf("resetTripB") > 0) {
+            Serial.println("reset trip B!");
+            double zero = 0;
+            EEPROM.put(16, zero);
+            currentData->tripB = zero;
+        }
+        serialBuffer = "";
+    } else {
+        serialBuffer += (char)newData;
+    }
+    }
 }
+
+
 
 #endif

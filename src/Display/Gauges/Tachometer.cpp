@@ -2,12 +2,21 @@
 // Created by jlaustill on 7/4/21.
 //
 #include "../../Configuration.h"
+
 #ifdef TACHOMETER_OUTPUT
-
 #include <Arduino.h>
-#include <TimerFive.h>
-
 #include "Tachometer.h"
+IntervalTimer tachTimer;
+int tachState = LOW;
+
+void tachSignal() {
+    if (tachState == LOW) {
+        tachState = HIGH;
+    } else {
+        tachState = LOW;
+    }
+    digitalWrite(4, tachState);
+}
 
 Tachometer::Tachometer(int _pinNumber) {
     this->numberOfCylinders = TACHOMETER_OUTPUT_CYLINDER_COUNT;
@@ -16,16 +25,25 @@ Tachometer::Tachometer(int _pinNumber) {
 }
 
 void Tachometer::initialize() {
-    Timer5.initialize(75);
-    Timer5.pwm((char)this->pinNumber, 1023);
+    // analogWrite(this->pinNumber, 255);
+    // analogWriteResolution(15);
+    pinMode(this->pinNumber, OUTPUT);
+    digitalWrite(this->pinNumber, HIGH);
+    tachTimer.begin(tachSignal, 150000);
 }
 
 void Tachometer::SetRpms(int _rpms) {
     this->rpms = _rpms;
+    // long hertz = Tachometer::RpmToHertz(this->rpms);
+    // Serial.print("RPMs: "); Serial.print(this->rpms); Serial.print(" pn: "); Serial.print(this->pinNumber); Serial.print(" hertz: "); Serial.println(hertz);
+    // tone(4, 100);
     long microseconds = Tachometer::RpmToMicroseconds(this->rpms);
-//    Serial.println("rpm: " + (String)this->rpms + " microseconds: " + (String)microseconds);
-//    Serial.println();
-    Timer5.setPeriod(microseconds);
+    tachTimer.update(microseconds / 2);
+}
+
+long Tachometer::RpmToHertz(int32_t _rpms) {
+    double hertz = (double)_rpms * this->numberOfCylinders / 120;
+    return hertz;
 }
 
 long Tachometer::RpmToMicroseconds(int32_t _rpms) const {

@@ -4,16 +4,23 @@
 
 #ifndef OPCM_TEMPSENSOR_H
 #define OPCM_TEMPSENSOR_H
+#include <Adafruit_ADS1X15.h>
 
 
 class TempSensor {
 public:
-    TempSensor(float knownResistorValue, int sensorPin, float a, float b, float c) {
+    TempSensor(float knownResistorValue, float a, float b, float c, uint8_t deviceId, uint8_t channelId) {
         KnownResistorValue = knownResistorValue;
-        SensorPin = sensorPin;
         A = a;
         B = b;
         C = c;
+
+        DeviceId = deviceId;
+        ChannelId = channelId;
+
+        if (!ads.begin(DeviceId)) {
+            Serial.println("Failed to initialize ADS.");
+        }
     }
 
     float getTempKelvin();
@@ -22,7 +29,8 @@ public:
 
 private:
     float KnownResistorValue;
-    int SensorPin;
+    uint8_t DeviceId;
+    uint8_t ChannelId;
     float A;
     float B;
     float C;
@@ -34,7 +42,7 @@ private:
     void updateSensor();
     void computeKelvin();
     void computeResistorValue();
-
+    Adafruit_ADS1115 ads;
 };
 
 
