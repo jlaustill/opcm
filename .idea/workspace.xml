@@ -26,13 +26,10 @@
       <change afterPath="$PROJECT_DIR$/src/Domain/opcm.h" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/Domain/setup.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.vscode/c_cpp_properties.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/c_cpp_properties.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/launch.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Configuration.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Configuration.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
-=======
->>>>>>> main
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,11 +89,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-<<<<<<< HEAD
     <configuration name="PlatformIO Upload" type="platformio" factoryName="PlatformIO Upload" nameIsGenerated="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="opcm" TARGET_NAME="Production" CONFIG_NAME="megaatmega2560">
-=======
-    <configuration name="PlatformIO Upload" type="platformio" factoryName="PlatformIO Upload" nameIsGenerated="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="npcm" TARGET_NAME="Production" CONFIG_NAME="megaatmega2560">
->>>>>>> main
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -163,15 +156,10 @@
       <workItem from="1648395362449" duration="33000" />
       <workItem from="1648433306797" duration="1023000" />
       <workItem from="1648434339407" duration="9512000" />
-<<<<<<< HEAD
       <workItem from="1651800685508" duration="669000" />
       <workItem from="1651801379892" duration="2999000" />
       <workItem from="1652923556497" duration="1456000" />
       <workItem from="1662394806360" duration="14000" />
-=======
-      <workItem from="1654535546869" duration="119000" />
-      <workItem from="1654535696087" duration="3000" />
->>>>>>> main
     </task>
     <servers />
   </component>
