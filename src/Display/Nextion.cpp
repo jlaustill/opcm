@@ -100,7 +100,6 @@ void Nextion::updateDisplayData(AppData* currentData) {
 
     sendCmd("egt.val=" + (String)(int)currentData->egt);
 
-<<<<<<< HEAD
     sendCmd("leftturn.aph=" + (String)(currentData->leftBlinker ? "127" : "0"));
     sendCmd("rightturn.aph=" + (String)(currentData->rightBlinker ? "127" : "0"));
     sendCmd("highbeam.aph=" + (String)(currentData->highBeams ? "127" : "0"));
@@ -113,12 +112,6 @@ void Nextion::updateDisplayData(AppData* currentData) {
     double transPressureDegrees = 360.0 - (double)currentData->transmissionPressure * 30 / 400;
     sendCmd("tranpresgauge.val=" + (String)(int)transPressureDegrees);
     sendCmd("transprestxt.txt=\"" + (String)currentData->transmissionPressure + " PSI\"");
-=======
-//    double transPressureDegrees = 360.0 - (double)currentData.transmissionPressure * 30 / 400;
-//    sendCmd("tranpresgauge.val=" + (String)(int)transPressureDegrees);
-//    sendCmd("transprestxt.txt=\"" + (String)currentData.transmissionPressure + " PSI\"");
-    sendCmd("transPres.val=" + (String)currentData.transmissionPressure);
->>>>>>> main
 
     double coolTempF = ((double)currentData->coolantTemp * 9 / 5) + 32;
     sendCmd("h20t.val=" + (String)(int)coolTempF);
@@ -132,7 +125,6 @@ void Nextion::updateDisplayData(AppData* currentData) {
     double transmissionTemperateDegrees = (((double)currentData->transmissionTempC * 9 / 5) + 32);
     sendCmd("trantemp.val=" + (String)(int)transmissionTemperateDegrees);
 
-<<<<<<< HEAD
     double oilPressureDegrees = 360 - (double)currentData->oilPressureInPsi * 40 / 100;
     sendCmd("oilpres.val=" + (String)(int)oilPressureDegrees);
 
@@ -158,11 +150,6 @@ void Nextion::updateDisplayData(AppData* currentData) {
         serialBuffer += (char)newData;
     }
     }
-=======
-//    double oilPressureDegrees = 360 - (double)currentData.oilPressureInPsi * 40 / 100;
-//    sendCmd("oilpres.val=" + (String)(int)oilPressureDegrees);
-    sendCmd("oilPres.val=" + (String)currentData.oilPressureInPsi);
->>>>>>> main
 }
 
 
