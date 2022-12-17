@@ -125,8 +125,7 @@ void Nextion::updateDisplayData(AppData* currentData) {
     double transmissionTemperateDegrees = (((double)currentData->transmissionTempC * 9 / 5) + 32);
     sendCmd("trantemp.val=" + (String)(int)transmissionTemperateDegrees);
 
-    double oilPressureDegrees = 360 - (double)currentData->oilPressureInPsi * 40 / 100;
-    sendCmd("oilpres.val=" + (String)(int)oilPressureDegrees);
+    sendCmd("oilPres.val=" + (String)(int)currentData->oilPressureInPsi);
 
     String serialBuffer;
     while (nexSer.available()) {
