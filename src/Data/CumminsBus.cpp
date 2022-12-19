@@ -110,7 +110,8 @@ int CumminsBus::getCurrentRpms() {
 
 int CumminsBus::getCurrentBoostInPsi() {
     double kpa = message419362304.data[1] * 2;
-    return kpa * 0.1450377377;
+    double psi = kpa * 0.1450377377 - 10; 
+    return psi;
 }
 
 int CumminsBus::getCurrentWaterTemp() {
@@ -124,7 +125,7 @@ int CumminsBus::getCurrentWaterTemp() {
 //    }
 //    Serial.println();
 
-    Serial.print("Water temp? ");
+    Serial.print("IAT temp? ");
     Serial.println(message419360256.data[1] - 40);
 
     waterTemp = message419360256.data[0] - 40;
