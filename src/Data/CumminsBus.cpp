@@ -115,7 +115,7 @@ int CumminsBus::getCurrentBoostInPsi() {
 
 int CumminsBus::getCurrentWaterTemp() {
     // Compute Water Temperature
-    waterTemp = ((message419360256.data[1] >> 8) | message419360256.data[0]) - 40; // celcius water temp!!!
+    // waterTemp = ((message419360256.data[1] >> 8) | message419360256.data[0]) - 40; // celcius water temp!!! // My guess
 //    waterTemp = waterTemp * 9 / 5 + 32; // F
 //Serial.println("water temp? " + (String)waterTemp + " " + (String)C7FAEEMessage.count);
 //    for (int a = 0; a < 8; a++) {
@@ -123,6 +123,11 @@ int CumminsBus::getCurrentWaterTemp() {
 //        Serial.print(" ");
 //    }
 //    Serial.println();
+
+    Serial.print("Water temp? ");
+    Serial.println(message419360256.data[1] - 40);
+
+    waterTemp = message419360256.data[0] - 40;
     return (int)waterTemp;
 }
 
