@@ -24,7 +24,7 @@ volatile CanMessage message256{};
 volatile CanMessage message274{};
 volatile CanMessage x67984Message{0x67, 0x8, {0xFE, 0x7D, 0x7D, 0xC0, 0x1, 0xFF, 0xFF, 0xFF}, 0};
 volatile CanMessage message217056000{0x67, 0x8, {0xF1, 0x0, 0x0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}, 0};
-
+volatile CanMessage message419362304{};
 
 // Our data, how exciting!
 volatile unsigned long RPM, FuelLongM, FuelLongR, TimingLongM, TimingLongR;
@@ -63,7 +63,10 @@ void CumminsBusSniff(const CAN_message_t &msg) {
     }
     else if (msg.id == 419360512) {
         updateMessage(&message419360512, msg);
-    } 
+    }
+    else if (msg.id == 419362304) {
+        updateMessage(&message419362304, msg);
+    }
     else if (msg.id == 217056000) {
         updateMessage(&message217056000, msg);
 
@@ -103,6 +106,11 @@ int CumminsBus::getCurrentRpms() {
     RPM = (message256.data[7] << 8) | message256.data[6];     //convert from little endian
     RPM /= 4 ;
     return (int)RPM;
+}
+
+int CumminsBus::getCurrentBoostInPsi() {
+    double kpa = message419362304.data[1] * 2;
+    return kpa * 0.1450377377;
 }
 
 int CumminsBus::getCurrentWaterTemp() {

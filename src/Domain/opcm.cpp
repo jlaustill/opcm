@@ -68,6 +68,7 @@ void opcm::setup() {
     currentData.transmissionPressure = 0;
     currentData.oilPressureInPsi = 0;
     currentData.fuelTempF = 0;
+    currentData.boost = 0;
 
     currentData.odometer = memory::getOdometer();
     currentData.tripA = memory::getTripA();
@@ -129,6 +130,9 @@ void opcm::loop() {
     currentData.coolantTemp = CumminsBus::getCurrentWaterTemp();
     currentData.oilPressureInPsi = CumminsBus::getCurrentOilPressure();
     currentData.fuelTempF = CumminsBus::getCurrentFuelTemp();
+    currentData.boost = CumminsBus::getCurrentBoostInPsi();
+    Serial.print("boost: ");
+    Serial.println(currentData.boost);
 //    Serial.println("RPM: " + (String)currentData.rpm);
 #endif
 #ifdef TACHOMETER_INPUT_60_MINUS_2

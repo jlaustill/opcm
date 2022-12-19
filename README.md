@@ -72,28 +72,11 @@ Also, a Nextion display can be as much as 150USD, but totally worth it for me :)
 31. 
 32.
 33.
-34.
-35.
-36.
+34. Wait To Start
+35. High Beams
+36. Right Blinker
 37. Left Blinker
 38.
 39.
 40.
 41.
-42.
-43.
-44. Tachometer Output
-45.
-46.
-47.
-48.
-49.
-50. MISO (Master In Slave Out Cummins Bus)
-51. MOSI (Master Out Slave In Cummins Bus)
-52. SCK (Serial Clock Cummins Bus)
-53. SS (Slave Select Cummins Bus)
-
-ICSP Pins
-* CAN-BUS Shield MOSI (Output)
-* CAN-BUS Shield MISO (Output)
-* CAN-BUS Shield SCK (Output)
