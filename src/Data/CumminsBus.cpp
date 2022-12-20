@@ -71,7 +71,13 @@ void CumminsBusSniff(const CAN_message_t &msg) {
         updateMessage(&message217056000, msg);
 
        // computer APP/throttle percentage
-       throttlePercentage = message217056000.data[1] * 100 / 255;
+       throttlePercentage = message217056000.data[1] * .4; // looking good!
+    //    Serial.print("throttle % ");
+    //    Serial.println(throttlePercentage);
+
+       load = message217056000.data[2]; // looking good!
+    //    Serial.print("load % ");
+    //    Serial.println(load);
     }
 //  else if (data[0] == 0x67 && data[1] == 0x98 && data[2] == 0x4) {
 //         updateMessage(&x67984Message, msg.id);
@@ -109,8 +115,12 @@ int CumminsBus::getCurrentRpms() {
 }
 
 int CumminsBus::getCurrentBoostInPsi() {
+
+    // Serial.print("IAT temp? ");
+    // Serial.println(message419362304.data[2] - 40); // looks right!
+
     double kpa = message419362304.data[1] * 2;
-    double psi = kpa * 0.1450377377 - 10; 
+    double psi = kpa / 6.895 - 10; 
     return psi;
 }
 
@@ -125,16 +135,13 @@ int CumminsBus::getCurrentWaterTemp() {
 //    }
 //    Serial.println();
 
-    Serial.print("IAT temp? ");
-    Serial.println(message419360256.data[1] - 40);
-
-    waterTemp = message419360256.data[0] - 40;
+    waterTemp = message419360256.data[0] - 40; // Confirmed!!!
     return (int)waterTemp;
 }
 
 byte CumminsBus::getCurrentOilPressure() {
     // Compute Oil Pressure
-    oilPressure = message419360512.data[3] * 4 / 6.895;
+    oilPressure = message419360512.data[3] * 4 / 6.895; // Confirmed!!!
     return (byte)oilPressure;
 }
 

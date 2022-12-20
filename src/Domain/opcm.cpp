@@ -131,8 +131,8 @@ void opcm::loop() {
     currentData.oilPressureInPsi = CumminsBus::getCurrentOilPressure();
     currentData.fuelTempF = CumminsBus::getCurrentFuelTemp();
     currentData.boost = CumminsBus::getCurrentBoostInPsi();
-    Serial.print("boost: ");
-    Serial.println(currentData.boost);
+    // Serial.print("boost: ");
+    // Serial.println(currentData.boost);
 //    Serial.println("RPM: " + (String)currentData.rpm);
 #endif
 #ifdef TACHOMETER_INPUT_60_MINUS_2
