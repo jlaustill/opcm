@@ -29,6 +29,11 @@ struct AppData {
     boolean seatBeltWarning;
     boolean doorAjarWarning;
     boolean brakeLightWarning;
+    float timing;
+    float fuelPercentage;
+    float amt;
+    int throttlePercentage;
+    int load;
 };
 
 #endif //OPCM_APPDATA_H

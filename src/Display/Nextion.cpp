@@ -127,6 +127,9 @@ void Nextion::updateDisplayData(AppData* currentData) {
 
     sendCmd("oilPres.val=" + (String)(int)currentData->oilPressureInPsi);
 
+    sendCmd("load.val=" + (String)(int)currentData->load);
+    sendCmd("throttlePercentage.val=" + (String)(int)currentData->throttlePercentage);
+
     String serialBuffer;
     while (nexSer.available()) {
     int newData = nexSer.read();

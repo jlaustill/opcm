@@ -31,8 +31,8 @@ volatile unsigned long RPM, FuelLongM, FuelLongR, TimingLongM, TimingLongR;
 volatile double fuelTemp; // +
 volatile double oilPressure = 0; // +
 volatile double waterTemp = 0; // +
-volatile double load = 0; // +
-volatile unsigned long throttlePercentage = 0; // +
+volatile byte load = 0; // +
+volatile byte throttlePercentage = 0; // +
 volatile float Timing; // +
 volatile float FuelPCT; // +
 
@@ -69,72 +69,59 @@ void CumminsBusSniff(const CAN_message_t &msg) {
     }
     else if (msg.id == 217056000) {
         updateMessage(&message217056000, msg);
-
-       // computer APP/throttle percentage
-       throttlePercentage = message217056000.data[1] * .4; // looking good!
-    //    Serial.print("throttle % ");
-    //    Serial.println(throttlePercentage);
-
-       load = message217056000.data[2]; // looking good!
-    //    Serial.print("load % ");
-    //    Serial.println(load);
     }
-//  else if (data[0] == 0x67 && data[1] == 0x98 && data[2] == 0x4) {
-//         updateMessage(&x67984Message, msg.id);
-
-// //        // Compute Load %
-// //        load = x67984Message.data[2];
-// //        load -= 125;
-// //        load = load * 4 / 5;
-//     }
- else if (msg.id == 274) {
+    else if (msg.id == 274) {
         updateMessage(&message274, msg);
     } 
     else if (msg.id == 256) {
         updateMessage(&message256, msg);
-
-       //Fuel compute
-       FuelPCT = ((message256.data[1] << 8) | message256.data[0]);
-       FuelPCT = (float)(FuelPCT*100) / 4096;    // 4095 is max fuel allowed by pump
-
-       // compute timing advance
-       Timing = (message256.data[5] << 8) | message256.data[4]; //convert from little endian. 128 bits per degree.
-       Timing = (float)((Timing) / 128);
     } else {
         ids[idsP++] = msg.id;
         if (idsP >= 8) idsP = 0;
     }
 }// ISR done
 
+float CumminsBus::getCurrentTiming() {
+    // compute timing advance
+    Timing = (message256.data[5] << 8) | message256.data[4]; //convert from little endian. 128 bits per degree.
+    Timing = (float)((Timing) / 128);
+    return Timing;
+}
+
+float CumminsBus::getCurrentFuelPercentage() {
+    //Fuel compute
+    FuelPCT = ((message256.data[1] << 8) | message256.data[0]);
+    FuelPCT = (float)(FuelPCT*100) / 4096;    // 4095 is max fuel allowed by pump
+    return FuelPCT;
+}
+
+int CumminsBus::getCurrentThrottlePercentage() {
+       throttlePercentage = message217056000.data[1] * .4; // looking good!
+    return throttlePercentage;
+}
+
+int CumminsBus::getCurrentLoad() {
+       load = message217056000.data[2]; // looking good!
+    return load;
+}
+
 int CumminsBus::getCurrentRpms() {
-//    Serial.println("x20 id? " + (String)x20Message.computedId);
-    //compute RPM from ID 20xx bytes 7 and 6
     RPM = (message256.data[7] << 8) | message256.data[6];     //convert from little endian
     RPM /= 4 ;
     return (int)RPM;
 }
 
+int CumminsBus::getCurrentAMT() {
+    return message419362304.data[2] - 40;
+}
+
 int CumminsBus::getCurrentBoostInPsi() {
-
-    // Serial.print("IAT temp? ");
-    // Serial.println(message419362304.data[2] - 40); // looks right!
-
     double kpa = message419362304.data[1] * 2;
     double psi = kpa / 6.895 - 10; 
     return psi;
 }
 
 int CumminsBus::getCurrentWaterTemp() {
-    // Compute Water Temperature
-    // waterTemp = ((message419360256.data[1] >> 8) | message419360256.data[0]) - 40; // celcius water temp!!! // My guess
-//    waterTemp = waterTemp * 9 / 5 + 32; // F
-//Serial.println("water temp? " + (String)waterTemp + " " + (String)C7FAEEMessage.count);
-//    for (int a = 0; a < 8; a++) {
-//        Serial.print(ids[a]);
-//        Serial.print(" ");
-//    }
-//    Serial.println();
-
     waterTemp = message419360256.data[0] - 40; // Confirmed!!!
     return (int)waterTemp;
 }
