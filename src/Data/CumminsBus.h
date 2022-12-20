@@ -13,6 +13,7 @@ public:
     static int getCurrentWaterTemp();
     static byte getCurrentOilPressure();
     static int getCurrentFuelTemp();
+    static int getCurrentBoostInPsi();
 };
 
 

@@ -7,29 +7,47 @@
 #ifdef SPEEDOMETER_OUTPUT
 
 #include <Arduino.h>
-#include <TimerFour.h>
+// #include <TimerFour.h>
 #include "Speedometer.h"
+
+// Create an IntervalTimer object 
+IntervalTimer speedoTimer;
+int speedoState = LOW;
+
+void speedoSignal() {
+    if (speedoState == LOW) {
+        speedoState = HIGH;
+    } else {
+        speedoState = LOW;
+    }
+    digitalWrite(2, speedoState);
+}
 
 Speedometer::Speedometer(int _clicksPerMile) {
     this->mph = 0;
 }
 
 void Speedometer::initialize() const {
-    Timer4.initialize();
-    Timer4.pwm(TIMER4_C_PIN, 255); // pin 8
+    pinMode(2, OUTPUT);
+    digitalWrite(2, HIGH);
+    speedoTimer.begin(speedoSignal, 150000);
 }
 
 void Speedometer::SetMph(int _mph) {
     this->mph = _mph;
     long microseconds = Speedometer::MphToMicroseconds(this->mph);
+    // Serial.print("setMPH: "); Serial.print(_mph); Serial.print(" micros: "); Serial.println(microseconds);
+    speedoTimer.update(microseconds / 2);
+    // double hertz = (double)_mph * SPEEDOMETER_OUTPUT_CLICKS_PER_MILE / 60 / 60;
+    // tone(2, hertz);
 //    Serial.println("mph: " + (String)this->mph);
 //    Serial.println("microseconds: " + (String)microseconds);
 //    Serial.println();
-    Timer4.setPeriod(microseconds);
+    // Timer4.setPeriod(microseconds);
 }
 
 long Speedometer::MphToMicroseconds(int _mph) {
-    double hertz = (double)_mph * SPEEDOMETER_INPUT_CLICKS_PER_MILE / 60 / 60;
+    double hertz = (double)_mph * SPEEDOMETER_OUTPUT_CLICKS_PER_MILE / 60 / 60;
 //    Serial.println("hertz: " + (String)hertz);
     long microseconds = Speedometer::HertzToMicroseconds(hertz);
 //    Serial.println("microseconds: " + (String(microseconds)));

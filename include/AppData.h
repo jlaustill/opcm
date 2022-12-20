@@ -15,6 +15,7 @@ struct AppData {
     int transmissionPressure;
     byte transmissionTempC;
     int fuelTempF;
+    int boost;
     double odometer;
     unsigned long odometerSaveCount;
     double tripA;
