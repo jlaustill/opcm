@@ -25,6 +25,7 @@ volatile CanMessage message274{};
 volatile CanMessage x67984Message{0x67, 0x8, {0xFE, 0x7D, 0x7D, 0xC0, 0x1, 0xFF, 0xFF, 0xFF}, 0};
 volatile CanMessage message217056000{0x67, 0x8, {0xF1, 0x0, 0x0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}, 0};
 volatile CanMessage message419362304{};
+CAN_message_t msg;
 
 // Our data, how exciting!
 volatile unsigned long RPM, FuelLongM, FuelLongR, TimingLongM, TimingLongR;
@@ -122,6 +123,9 @@ int CumminsBus::getCurrentBoostInPsi() {
 }
 
 int CumminsBus::getCurrentWaterTemp() {
+    // Serial.println("requesting water temp?" + (String)Can2.getTXQueueCount());
+    // Can2.events();
+    Can2.write(msg);
     waterTemp = message419360256.data[0] - 40; // Confirmed!!!
     return (int)waterTemp;
 }
@@ -152,6 +156,14 @@ void CumminsBus::initialize() {
     Can2.enableFIFOInterrupt();
     Can2.onReceive(CumminsBusSniff);
     Can2.mailboxStatus();
+
+    // pgn to request water temp pgn :)
+    msg.flags.extended = 1;
+    msg.id = 2364145912;
+    msg.len = 3;
+    msg.buf[0] = 238;
+    msg.buf[1] = 254;
+    msg.buf[2] = 0;
 }
 
 #endif
