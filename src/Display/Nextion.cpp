@@ -96,6 +96,14 @@ void Nextion::updateDisplayData(AppData* currentData) {
     sendCmd("odometer.txt=\"" + formatNumber(currentData->odometer) + "\"");
     sendCmd("tripA.txt=\"" + formatNumber(currentData->tripA) + "\"");
     sendCmd("tripB.txt=\"" + formatNumber(currentData->tripB) + "\"");
+    sendCmd("oc.txt=\"" + formatNumber(currentData->oilChange) + "\"");
+    sendCmd("tfc.txt=\"" + formatNumber(currentData->transmissionFluidChange) + "\"");
+    sendCmd("tcfc.txt=\"" + formatNumber(currentData->transferCaseFluidChange) + "\"");
+    sendCmd("fdfc.txt=\"" + formatNumber(currentData->frontDifferentialFluidChange) + "\"");
+    sendCmd("rdfc.txt=\"" + formatNumber(currentData->rearDifferentialFluidChange) + "\"");
+    sendCmd("ffc.txt=\"" + formatNumber(currentData->fuelFilterChange) + "\"");
+    sendCmd("tr.txt=\"" + formatNumber(currentData->tireRotation) + "\"");
+
     // Serial.print("Odom: "); Serial.print(currentData->odometer); Serial.print(" tripA: "); Serial.print(currentData->tripA); Serial.print(" tripB: "); Serial.println(currentData->tripB);
 
     sendCmd("egt.val=" + (String)(int)currentData->egt);

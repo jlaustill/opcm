@@ -63,3 +63,108 @@ double memory::getSaveCount() {
 void memory::setSaveCount(unsigned long newReading) {
     EEPROM.put(opcmMemoryAddresses.count, newReading);
 }
+
+double memory::getOilChange() {
+    double result = 0;
+    EEPROM.get(opcmMemoryAddresses.oilChange, result);
+
+    if (isnan(result)) {
+        result = 0;
+    }
+
+    return result;
+}
+
+void memory::setOilChange(unsigned long newReading) {
+    EEPROM.put(opcmMemoryAddresses.oilChange, newReading);
+}
+
+double memory::getTransmissionFluidChange() {
+    double result = 0;
+    EEPROM.get(opcmMemoryAddresses.transmissionFluidChange, result);
+
+    if (isnan(result)) {
+        result = 0;
+    }
+
+    return result;
+}
+
+void memory::setTransmissionFluidChange(unsigned long newReading) {
+    EEPROM.put(opcmMemoryAddresses.transmissionFluidChange, newReading);
+}
+
+double memory::getTransferCaseFluidChange() {
+    double result = 0;
+    EEPROM.get(opcmMemoryAddresses.transferCaseFluidChange, result);
+
+    if (isnan(result)) {
+        result = 0;
+    }
+
+    return result;
+}
+
+void memory::setTransferCaseFluidChange(unsigned long newReading) {
+    EEPROM.put(opcmMemoryAddresses.transferCaseFluidChange, newReading);
+}
+
+double memory::getFrontDifferentialFluidChange() {
+    double result = 0;
+    EEPROM.get(opcmMemoryAddresses.frontDifferentialFluidChange, result);
+
+    if (isnan(result)) {
+        result = 0;
+    }
+
+    return result;
+}
+
+void memory::setFrontDifferentialFluidChange(unsigned long newReading) {
+    EEPROM.put(opcmMemoryAddresses.frontDifferentialFluidChange, newReading);
+}
+
+double memory::getRearDifferentialFluidChange() {
+    double result = 0;
+    EEPROM.get(opcmMemoryAddresses.rearDifferentialFluidChange, result);
+
+    if (isnan(result)) {
+        result = 0;
+    }
+
+    return result;
+}
+
+void memory::setRearDifferentialFluidChange(unsigned long newReading) {
+    EEPROM.put(opcmMemoryAddresses.rearDifferentialFluidChange, newReading);
+}
+
+double memory::getFuelFilterChange() {
+    double result = 0;
+    EEPROM.get(opcmMemoryAddresses.fuelFilterChange, result);
+
+    if (isnan(result)) {
+        result = 0;
+    }
+
+    return result;
+}
+
+void memory::setFuelFilterChange(unsigned long newReading) {
+    EEPROM.put(opcmMemoryAddresses.fuelFilterChange, newReading);
+}
+
+double memory::getTireRotation() {
+    double result = 0;
+    EEPROM.get(opcmMemoryAddresses.tireRotation, result);
+
+    if (isnan(result)) {
+        result = 0;
+    }
+
+    return result;
+}
+
+void memory::setTireRotation(unsigned long newReading) {
+    EEPROM.put(opcmMemoryAddresses.tireRotation, newReading);
+}

@@ -80,6 +80,13 @@ void opcm::setup() {
     currentData.tripA = memory::getTripA();
     currentData.tripB = memory::getTripB();
     currentData.odometerSaveCount = memory::getSaveCount();
+    currentData.oilChange = memory::getOilChange();
+    currentData.transmissionFluidChange = memory::getTransmissionFluidChange();
+    currentData.transferCaseFluidChange = memory::getTransferCaseFluidChange();
+    currentData.frontDifferentialFluidChange = memory::getFrontDifferentialFluidChange();
+    currentData.rearDifferentialFluidChange = memory::getRearDifferentialFluidChange();
+    currentData.fuelFilterChange = memory::getFuelFilterChange();
+    currentData.tireRotation = memory::getTireRotation();
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     currentData.transmissionTempC = 0;
@@ -157,6 +164,14 @@ void opcm::loop() {
         currentData.odometer += thisMileage;
         currentData.tripA += thisMileage;
         currentData.tripB += thisMileage;
+        currentData.oilChange += thisMileage;
+        currentData.transmissionFluidChange += thisMileage;
+        currentData.transferCaseFluidChange += thisMileage;
+        currentData.frontDifferentialFluidChange += thisMileage;
+        currentData.rearDifferentialFluidChange += thisMileage;
+        currentData.fuelFilterChange += thisMileage;
+        currentData.tireRotation += thisMileage;
+
 //        Serial.println("odometer: " + (String)currentData.odometer + " tripA: " + (String)currentData.tripA + " tripB: " + (String)currentData.tripB);
         thisMileage = 0;
     }
@@ -166,6 +181,13 @@ void opcm::loop() {
         memory::setTripA(currentData.tripA);
         memory::setTripB(currentData.tripB);
         memory::setSaveCount(++currentData.odometerSaveCount);
+        memory::setOilChange(currentData.oilChange);
+        memory::setTransmissionFluidChange(currentData.transmissionFluidChange);
+        memory::setTransferCaseFluidChange(currentData.transferCaseFluidChange);
+        memory::setFrontDifferentialFluidChange(currentData.frontDifferentialFluidChange);
+        memory::setRearDifferentialFluidChange(currentData.rearDifferentialFluidChange);
+        memory::setFuelFilterChange(currentData.fuelFilterChange);
+        memory::setTireRotation(currentData.tireRotation);
 //        Serial.println("odometer: " + (String)currentData.odometer + " tripA: " + (String)currentData.tripA + " tripB: " + (String)currentData.tripB + " saveCount: " + (String)currentData.odometerSaveCount);
     }
 #endif
