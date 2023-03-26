@@ -14,6 +14,11 @@ public:
     static byte getCurrentOilPressure();
     static int getCurrentFuelTemp();
     static int getCurrentBoostInPsi();
+    static int getCurrentLoad();
+    static int getCurrentThrottlePercentage();
+    static int getCurrentAMT();
+    static float getCurrentFuelPercentage();
+    static float getCurrentTiming();
 };
 
 
