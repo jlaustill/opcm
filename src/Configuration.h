@@ -15,7 +15,7 @@
 #include <Arduino.h>
 #include <TempSensor.h>
 
-//#define ODB2
+#define ODB2
 #ifdef ODB2
     #define ODB2_INT_PIN 2
     #define ODB2_CS_PIN 5

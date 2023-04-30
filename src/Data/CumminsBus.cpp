@@ -17,6 +17,24 @@ struct CanMessage {
     unsigned count;
 };
 
+uint32_t calculateJ1939PGN(uint8_t *canMsg)
+{
+    // Extract PDU format (PF) and PDU specific (PS) bytes
+    uint8_t pf = canMsg[0] >> 4;
+    uint8_t ps = canMsg[1];
+    
+    // Calculate PGN
+    uint32_t pgn = (pf << 16) | (ps << 8);
+    
+    // If PF is greater than or equal to 240, then PS contains the data page number
+    if (pf >= 0xF0) {
+        uint8_t dp = canMsg[2];
+        pgn |= (dp << 16);
+    }
+    
+    return pgn;
+}
+
 
 volatile CanMessage message419360256{0x67, 0x8, {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, 0};
 volatile CanMessage message419360512{};
@@ -97,13 +115,54 @@ float CumminsBus::getCurrentFuelPercentage() {
 }
 
 int CumminsBus::getCurrentThrottlePercentage() {
-       throttlePercentage = message217056000.data[1] * .4; // looking good!
+       throttlePercentage = message217056000.data[1] * .4f; // looking good!
     return throttlePercentage;
 }
 
 int CumminsBus::getCurrentLoad() {
-       load = message217056000.data[2]; // looking good!
+       load = static_cast<float>(message217056000.data[2]) * 0.4f; // looking good!
     return load;
+}
+float parseEngineLoad(uint8_t *canMsg)
+{
+    // Check that the PGN is 0xFEF1 (Engine Fluids - 1) and the SPN is 92 (Engine Load)
+    uint32_t pgn = calculateJ1939PGN(canMsg);
+    uint16_t spn = (canMsg[2] << 8) | canMsg[3];
+    if (pgn != 0xFEF1 || spn != 92) {
+        return -1.0f; // Invalid message
+    }
+    
+    // Extract engine load value (range: 0-100%)
+    uint8_t value = canMsg[5];
+    float load = static_cast<float>(value) * 0.4f;
+    
+    return load;
+}
+
+uint8_t calculateJ1939Source(uint8_t *canMsg)
+{
+    // Extract source address (SA) from the message (bits 8-15 of byte 0)
+    uint8_t sa = canMsg[0] & 0xFF;
+    
+    // If the message is an RTR message, add 0x80 to the SA to indicate that it's a request message
+    if ((canMsg[0] & 0x10) == 0x10) {
+        sa += 0x80;
+    }
+    
+    return sa;
+}
+
+uint8_t calculateJ1939Destination(uint8_t *canMsg)
+{
+    // Extract destination address (DA) from the message (bits 0-7 of byte 0)
+    uint8_t da = canMsg[0] >> 3;
+    
+    // If the message is an RTR message, set DA to the global broadcast address (0xFF)
+    if ((canMsg[0] & 0x10) == 0x10) {
+        da = 0xFF;
+    }
+    
+    return da;
 }
 
 int CumminsBus::getCurrentRpms() {
