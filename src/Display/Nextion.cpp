@@ -8,6 +8,7 @@
 #include <Arduino.h>
 #include "Nextion.h"
 #include <EEPROM.h>
+#include "Data/memory.h"
 
 void Nextion::sendCmd(String cmd) {
     nexSer.print(cmd);
@@ -96,6 +97,14 @@ void Nextion::updateDisplayData(AppData* currentData) {
     sendCmd("odometer.txt=\"" + formatNumber(currentData->odometer) + "\"");
     sendCmd("tripA.txt=\"" + formatNumber(currentData->tripA) + "\"");
     sendCmd("tripB.txt=\"" + formatNumber(currentData->tripB) + "\"");
+    sendCmd("oc.txt=\"" + formatNumber(currentData->oilChange) + "\"");
+    sendCmd("tfc.txt=\"" + formatNumber(currentData->transmissionFluidChange) + "\"");
+    sendCmd("tcfc.txt=\"" + formatNumber(currentData->transferCaseFluidChange) + "\"");
+    sendCmd("fdfc.txt=\"" + formatNumber(currentData->frontDifferentialFluidChange) + "\"");
+    sendCmd("rdfc.txt=\"" + formatNumber(currentData->rearDifferentialFluidChange) + "\"");
+    sendCmd("ffc.txt=\"" + formatNumber(currentData->fuelFilterChange) + "\"");
+    sendCmd("tr.txt=\"" + formatNumber(currentData->tireRotation) + "\"");
+
     // Serial.print("Odom: "); Serial.print(currentData->odometer); Serial.print(" tripA: "); Serial.print(currentData->tripA); Serial.print(" tripB: "); Serial.println(currentData->tripB);
 
     sendCmd("egt.val=" + (String)(int)currentData->egt);
@@ -138,14 +147,56 @@ void Nextion::updateDisplayData(AppData* currentData) {
         if (serialBuffer.indexOf("resetTripA") > 0) {
             Serial.println("reset trip A!");
             double zero = 0;
-            EEPROM.put(8, zero);
+            memory::setTripA(zero);
             currentData->tripA = zero;
         }
         if (serialBuffer.indexOf("resetTripB") > 0) {
             Serial.println("reset trip B!");
             double zero = 0;
-            EEPROM.put(16, zero);
+            memory::setTripB(zero);
             currentData->tripB = zero;
+        }
+        if (serialBuffer.indexOf("resetOC") > 0) {
+            Serial.println("reset Oil Change Mileage!");
+            double zero = 0;
+            memory::setOilChange(zero);
+            currentData->oilChange = zero;
+        }
+        if (serialBuffer.indexOf("resetTFC") > 0) {
+            Serial.println("reset Transmission Fluid Change Mileage!");
+            double zero = 0;
+            memory::setFuelFilterChange(zero);
+            currentData->fuelFilterChange = zero;
+        }
+        if (serialBuffer.indexOf("resetTCFC") > 0) {
+            Serial.println("reset Transfer Case Fluid Change Mileage!");
+            double zero = 0;
+            memory::setTransferCaseFluidChange(zero);
+            currentData->transferCaseFluidChange = zero;
+        }
+        if (serialBuffer.indexOf("resetFDFC") > 0) {
+            Serial.println("reset Front Differential Fluid Change Mileage!");
+            double zero = 0;
+            memory::setFrontDifferentialFluidChange(zero);
+            currentData->frontDifferentialFluidChange = zero;
+        }
+        if (serialBuffer.indexOf("resetRDFC") > 0) {
+            Serial.println("reset Rear Differential Fluid Change Mileage!");
+            double zero = 0;
+            memory::setRearDifferentialFluidChange(zero);
+            currentData->rearDifferentialFluidChange = zero;
+        }
+        if (serialBuffer.indexOf("resetFFC") > 0) {
+            Serial.println("reset Fuel Filter Change Mileage!");
+            double zero = 0;
+            memory::setFuelFilterChange(zero);
+            currentData->fuelFilterChange = zero;
+        }
+        if (serialBuffer.indexOf("resetTR") > 0) {
+            Serial.println("reset Tire Rotation Mileage!");
+            double zero = 0;
+            memory::setTireRotation(zero);
+            currentData->tireRotation = zero;
         }
         serialBuffer = "";
     } else {
