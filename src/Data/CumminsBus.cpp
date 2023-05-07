@@ -5,8 +5,9 @@
 #ifdef CUMMINS_BUS_INPUT
 #include <Arduino.h>
 #include <FlexCAN_T4.h>
-FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can2;
+FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can1;
 #include "CumminsBus.h"
+#include <cstdint>
 
 volatile byte data[16];
 
@@ -15,6 +16,12 @@ struct CanMessage {
     byte length;
     byte data[8];
     unsigned count;
+};
+
+// J1939 message structure
+struct J1939Message {
+    std::uint32_t id;
+    std::uint8_t data[8];
 };
 
 uint32_t calculateJ1939PGN(uint8_t *canMsg)
@@ -181,13 +188,51 @@ int CumminsBus::getCurrentBoostInPsi() {
     return psi;
 }
 
+// Parse "engine coolant temperature" parameter from J1939 message
+bool parseEngineCoolantTemp(const J1939Message& msg, float& coolantTemp) {
+    // Check if the message is an "engine coolant temperature" message
+    if ((msg.id >> 18) != 0) {
+        return false;
+    }
+    std::uint8_t pf = (msg.id >> 8) & 0xFF; // PDU format
+    std::uint8_t ps = msg.id & 0xFF;        // PDU specific
+    // Check if the message has the PGN 65262 (hexadecimal 0xFEEE)
+    if (pf != 240 || ps != 14) {
+        return false;
+    }
+    // Extract "engine coolant temperature" parameter from data
+    std::int16_t tempRaw = (msg.data[1] << 8) | msg.data[0];
+    coolantTemp = (float)tempRaw * 0.03125f - 273.15f;
+    return true;
+}
+
 int CumminsBus::getCurrentWaterTemp() {
     // Serial.println("requesting water temp?" + (String)Can2.getTXQueueCount());
     // Can2.events();
-    Can2.write(msg);
+    Can1.write(msg);
     waterTemp = message419360256.data[0] - 40; // Confirmed!!!
     return (int)waterTemp;
 }
+
+// Parse "current engine oil pressure" parameter from J1939 message and convert to PSI
+bool parseCurrentEngineOilPressure(const J1939Message& msg, float& oilPressurePsi) {
+    // Check if the message is an "engine oil pressure" message
+    if ((msg.id >> 18) != 0) {
+        return false;
+    }
+    std::uint8_t pf = (msg.id >> 8) & 0xFF; // PDU format
+    std::uint8_t ps = msg.id & 0xFF;        // PDU specific
+    // Check if the message has the PGN 65265 (hexadecimal 0xFEF1)
+    if (pf != 240 || ps != 17) {
+        return false;
+    }
+    // Extract "current engine oil pressure" parameter from data
+    std::uint16_t pressureRaw = (msg.data[1] << 8) | msg.data[0];
+    float oilPressureKpa = (float)(pressureRaw - 10000) / 1000.0f;
+    oilPressurePsi = oilPressureKpa * 0.145038f;
+    return true;
+}
+
 
 byte CumminsBus::getCurrentOilPressure() {
     // Compute Oil Pressure
@@ -208,13 +253,13 @@ int CumminsBus::getCurrentFuelTemp() {
 void CumminsBus::initialize() {
     Serial.println("Cummins Bus initializing");
 
-    Can2.begin();
-    Can2.setBaudRate(250000);
-    Can2.setMaxMB(16);
-    Can2.enableFIFO();
-    Can2.enableFIFOInterrupt();
-    Can2.onReceive(CumminsBusSniff);
-    Can2.mailboxStatus();
+    Can1.begin();
+    Can1.setBaudRate(250000);
+    Can1.setMaxMB(16);
+    Can1.enableFIFO();
+    Can1.enableFIFOInterrupt();
+    Can1.onReceive(CumminsBusSniff);
+    Can1.mailboxStatus();
 
     // pgn to request water temp pgn :)
     msg.flags.extended = 1;

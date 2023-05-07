@@ -136,7 +136,6 @@ void opcm::loop() {
     // currentData.seatBeltWarning = digitalRead(SEAT_BELT_WARNING_PIN) == LOW;
     // currentData.doorAjarWarning = digitalRead(DOOR_AJAR_WARNING_PIN) == LOW;
     // currentData.brakeLightWarning = digitalRead(BRAKE_LIGHT_PIN) == LOW;
-//    Serial.println("left blinker " + (String)(currentData.leftBlinker ? "on" : "off"));
 
 #ifdef CUMMINS_BUS_INPUT
     currentData.rpm = CumminsBus::getCurrentRpms();

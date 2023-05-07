@@ -67,5 +67,5 @@ float roundToTwo(float var)
 
 #ifdef THERMOCOUPLE
 // initialize the Thermocouple
-Adafruit_MAX31855 thermocouple(MAXCLK, MAXCS, MAXDO);
+Adafruit_MAX31855 thermocouple(MAXCS);
 #endif

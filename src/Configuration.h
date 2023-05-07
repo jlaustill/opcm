@@ -15,10 +15,9 @@
 #include <Arduino.h>
 #include <TempSensor.h>
 
-#define ODB2
+// #define ODB2
 #ifdef ODB2
-    #define ODB2_INT_PIN 2
-    #define ODB2_CS_PIN 5
+    #define CAN2_ID          0x7E8
 #endif
 //#define CAN_BUS
 #ifdef CAN_BUS
@@ -26,13 +25,13 @@
     #define CAN_BUS_CS_PIN 5
 #endif
 // The Cummins bus provides rpms, so don't enable both at the same time
-#define CUMMINS_BUS_INPUT
+// #define CUMMINS_BUS_INPUT
 
 // This is the setup on a 24 valve cummins using a camshaft sensor, so it assumes the gear is running at 1/2 the speed of the crankshaft
 // #define TACHOMETER_INPUT_60_MINUS_2
 //#define TACHOMETER_INPUT_2
 
-#define SPEEDOMETER_INPUT
+// #define SPEEDOMETER_INPUT
 #ifdef SPEEDOMETER_INPUT
     #define SPEEDOMETER_INPUT_CLICKS_PER_MILE 8000
 #endif
@@ -45,7 +44,7 @@
     #define TRANSMISSION_PRESSURE_INPUT_PSI_MAX 500.0
 #endif
 
-#define TRANSMISSION_TEMPERATURE_INPUT
+// #define TRANSMISSION_TEMPERATURE_INPUT
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     #define TRANSMISSION_TEMPERATURE_INPUT_DEVICE_ID B1001000
     #define TRANSMISSION_TEMPERATURE_INPUT_PIN_NUMBER 1
@@ -76,7 +75,7 @@
 #endif
 
 // enable if you want a speedometer out on pin 8
-#define SPEEDOMETER_OUTPUT
+// #define SPEEDOMETER_OUTPUT
 #ifdef SPEEDOMETER_OUTPUT
     #define SPEEDOMETER_OUTPUT_CLICKS_PER_MILE 8000
 #endif
@@ -88,9 +87,7 @@
 #endif
 
 // enable if you want to monitor EGT's
-//#define THERMOCOUPLE
+#define THERMOCOUPLE
 #ifdef THERMOCOUPLE
-    #define MAXDO   12
-    #define MAXCS   13
-    #define MAXCLK  11
+    #define MAXCS   2
 #endif
