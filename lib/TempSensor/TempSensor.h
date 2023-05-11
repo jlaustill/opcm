@@ -1,49 +1,35 @@
-//
-// Created by jlaustill on 4/6/22.
-//
+#ifndef TEMP_SENSOR_H
+#define TEMP_SENSOR_H
 
-#ifndef OPCM_TEMPSENSOR_H
-#define OPCM_TEMPSENSOR_H
 #include <Adafruit_ADS1X15.h>
-
 
 class TempSensor {
 public:
-    TempSensor(float knownResistorValue, float a, float b, float c, uint8_t deviceId, uint8_t channelId) {
-        KnownResistorValue = knownResistorValue;
-        A = a;
-        B = b;
-        C = c;
+    // Constructor that takes an instance of Adafruit_ADS1115 as a reference
+    TempSensor(float knownResistorValue, float a, float b, float c, uint8_t deviceId, uint8_t channelId);
 
-        DeviceId = deviceId;
-        ChannelId = channelId;
-
-        if (!ads.begin(DeviceId)) {
-            Serial.println("Failed to initialize ADS.");
-        }
-    }
-
-    float getTempKelvin();
-    float getTempCelsius();
-    float getTempFahrenheit();
+    // Functions to get temperature in Kelvin, Celsius, and Fahrenheit
+    float getTempInKelvin();
+    float getTempInCelsius();
+    float getTempInFahrenheit();
 
 private:
-    float KnownResistorValue;
-    uint8_t DeviceId;
-    uint8_t ChannelId;
-    float A;
-    float B;
-    float C;
+    // Private member variables
+    float knownResistorValue_;
+    float a_;
+    float b_;
+    float c_;
+    uint8_t channelId_;
+    uint8_t deviceId_;
+    float readVoltage_;
+    float rawResistorValue_;
+    float kelvin_;
+    Adafruit_ADS1115 ads_;
 
-
-    float readVoltage;
-    float computedResistorValue;
-    float kelvin;
+    // Private member functions
     void updateSensor();
     void computeKelvin();
     void computeResistorValue();
-    Adafruit_ADS1115 ads;
 };
 
-
-#endif //OPCM_TEMPSENSOR_H
+#endif // TEMP_SENSOR_H

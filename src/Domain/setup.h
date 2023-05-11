@@ -1,4 +1,5 @@
 #include "Configuration.h"
+#include <AppData.h>
 
 #include <TempSensor.h>
 // #include <Wire.h>

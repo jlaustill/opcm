@@ -25,7 +25,7 @@
     #define CAN_BUS_CS_PIN 5
 #endif
 // The Cummins bus provides rpms, so don't enable both at the same time
-// #define CUMMINS_BUS_INPUT
+#define CUMMINS_BUS_INPUT
 
 // This is the setup on a 24 valve cummins using a camshaft sensor, so it assumes the gear is running at 1/2 the speed of the crankshaft
 // #define TACHOMETER_INPUT_60_MINUS_2
@@ -36,7 +36,7 @@
     #define SPEEDOMETER_INPUT_CLICKS_PER_MILE 8000
 #endif
 
-//#define TRANSMISSION_PRESSURE_INPUT
+// #define TRANSMISSION_PRESSURE_INPUT
 #ifdef TRANSMISSION_PRESSURE_INPUT
     #define TRANSMISSION_PRESSURE_INPUT_PIN 1
     #define TRANSMISSION_PRESSURE_INPUT_RAW_ZERO 105.0
@@ -87,7 +87,7 @@
 #endif
 
 // enable if you want to monitor EGT's
-// #define THERMOCOUPLE
+#define THERMOCOUPLE
 #ifdef THERMOCOUPLE
-    #define MAXCS   2
+    #define MAXCS   40
 #endif

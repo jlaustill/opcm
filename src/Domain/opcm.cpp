@@ -197,10 +197,11 @@ void opcm::loop() {
 
 #ifdef THERMOCOUPLE
     currentData.egt = thermocouple.readFahrenheit();
+    // Serial.println("EGT: " + (String)currentData.egt);
 #endif
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
-    currentData.transmissionTempC = TransTempSensor.getTempCelsius();
+    currentData.transmissionTempC = TransTempSensor.getTempInCelsius();
 //    Serial.println("Trans temp in C? " + (String)currentData.transmissionTempC);
 #endif
 
@@ -232,7 +233,7 @@ void opcm::loop() {
 #endif
 
     lastMillis = thisMillis;
-    if (count > 50000 && count % 50000 == 0) Serial.println("Average Microseconds Per Loop: " + (String)(micros() / count));
+    // if (count > 500000 && count % 500000 == 0) Serial.println("Average Microseconds Per Loop: " + (String)(micros() / count));
 
     while (Serial.available()) {
         int newData = Serial.read();
