@@ -59,6 +59,30 @@ void opcm::setup() {
     );
 #endif
 
+
+#ifdef OIL_TEMPERATURE_INPUT
+    OilTempSensor = TempSensor(
+            OIL_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
+            OIL_TEMPERATURE_INPUT_A, // A
+            OIL_TEMPERATURE_INPUT_B, // B
+            OIL_TEMPERATURE_INPUT_C, // C
+            OIL_TEMPERATURE_INPUT_DEVICE_ID,
+            OIL_TEMPERATURE_INPUT_PIN_NUMBER
+    );
+#endif
+
+
+#ifdef WATER_TEMPERATURE_INPUT
+    WaterTempSensor = TempSensor(
+            WATER_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
+            WATER_TEMPERATURE_INPUT_A, // A
+            WATER_TEMPERATURE_INPUT_B, // B
+            WATER_TEMPERATURE_INPUT_C, // C
+            WATER_TEMPERATURE_INPUT_DEVICE_ID,
+            WATER_TEMPERATURE_INPUT_PIN_NUMBER
+    );
+#endif
+
 #ifdef CAN_BUS
     CanBus::initialize();
 #endif
@@ -102,6 +126,12 @@ void opcm::setup() {
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     currentData.transmissionTempC = 0;
+#endif
+#ifdef OIL_TEMPERATURE_INPUT
+    currentData.oilTempC = 0;
+#endif
+#ifdef WATER_TEMPERATURE_INPUT
+    currentData.coolantTemp2 = 0;
 #endif
 #ifdef TACHOMETER_OUTPUT
     tachometer.initialize();
@@ -214,7 +244,17 @@ void opcm::loop() {
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     currentData.transmissionTempC = TransTempSensor.getTempCelsius();
-   Serial.println("Trans temp in C? " + (String)currentData.transmissionTempC);
+//    Serial.println("Trans temp in C? " + (String)currentData.transmissionTempC);
+#endif
+
+#ifdef OIL_TEMPERATURE_INPUT
+    currentData.oilTempC = OilTempSensor.getTempCelsius();
+//    Serial.println("Oil temp in C? " + (String)currentData.oilTempC);
+#endif
+
+#ifdef WATER_TEMPERATURE_INPUT
+    currentData.coolantTemp2 = WaterTempSensor.getTempCelsius();
+//    Serial.println("Water2 temp in C? " + (String)currentData.coolantTemp2);
 #endif
 
 #ifdef TACHOMETER_OUTPUT

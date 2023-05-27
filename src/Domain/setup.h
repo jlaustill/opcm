@@ -19,8 +19,17 @@
 #ifdef TRANSMISSION_PRESSURE_INPUT
     #include "Data/Sensors/TransmissionPressureSensor.h"
 #endif
+
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     TempSensor TransTempSensor;
+#endif
+
+#ifdef OIL_TEMPERATURE_INPUT
+    TempSensor OilTempSensor;
+#endif
+
+#ifdef WATER_TEMPERATURE_INPUT
+    TempSensor WaterTempSensor;
 #endif
 
 #ifdef TACHOMETER_OUTPUT

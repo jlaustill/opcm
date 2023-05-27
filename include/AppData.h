@@ -9,9 +9,11 @@
 
 struct AppData {
     byte coolantTemp;
+    byte coolantTemp2;
     int rpm;
     byte speedInMph;
     byte oilPressureInPsi;
+    byte oilTempC;
     int transmissionPressure;
     byte transmissionTempC;
     int fuelTempF;
