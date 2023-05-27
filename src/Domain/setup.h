@@ -20,14 +20,7 @@
     #include "Data/Sensors/TransmissionPressureSensor.h"
 #endif
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
-    TempSensor TransTempSensor = TempSensor(
-            TRANSMISSION_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
-            TRANSMISSION_TEMPERATURE_INPUT_A, // A
-            TRANSMISSION_TEMPERATURE_INPUT_B, // B
-            TRANSMISSION_TEMPERATURE_INPUT_C, // C
-            TRANSMISSION_TEMPERATURE_INPUT_DEVICE_ID,
-            TRANSMISSION_TEMPERATURE_INPUT_PIN_NUMBER
-    );
+    TempSensor TransTempSensor;
 #endif
 
 #ifdef TACHOMETER_OUTPUT

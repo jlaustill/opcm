@@ -25,7 +25,7 @@
     #define CAN_BUS_CS_PIN 5
 #endif
 // The Cummins bus provides rpms, so don't enable both at the same time
-#define CUMMINS_BUS_INPUT
+// #define CUMMINS_BUS_INPUT
 
 // This is the setup on a 24 valve cummins using a camshaft sensor, so it assumes the gear is running at 1/2 the speed of the crankshaft
 // #define TACHOMETER_INPUT_60_MINUS_2
@@ -44,24 +44,24 @@
     #define TRANSMISSION_PRESSURE_INPUT_PSI_MAX 500.0
 #endif
 
-// #define TRANSMISSION_TEMPERATURE_INPUT
+#define TRANSMISSION_TEMPERATURE_INPUT
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
-    #define TRANSMISSION_TEMPERATURE_INPUT_DEVICE_ID B1001000
-    #define TRANSMISSION_TEMPERATURE_INPUT_PIN_NUMBER 1
-    #define TRANSMISSION_TEMPERATURE_INPUT_DIVIDER 10000 //defines the analog pin of the input voltage from the voltage divider
+    #define TRANSMISSION_TEMPERATURE_INPUT_DEVICE_ID B1001000 // addr to gnd
+    #define TRANSMISSION_TEMPERATURE_INPUT_PIN_NUMBER 2
+    #define TRANSMISSION_TEMPERATURE_INPUT_DIVIDER 2 * 1000 //defines the analog pin of the input voltage from the voltage divider
     #define TRANSMISSION_TEMPERATURE_INPUT_A 1.511129458e-03
     #define TRANSMISSION_TEMPERATURE_INPUT_B 2.497079116e-04
-    #define TRANSMISSION_TEMPERATURE_INPUT_C 0.03967365606e-07
+    #define TRANSMISSION_TEMPERATURE_INPUT_C -0.03967365606e-07
 #endif
 
-#define LEFT_BLINKER_PIN 37
-#define RIGHT_BLINKER_PIN 36
-#define HIGH_BEAMS_PIN 35
-#define WAIT_TO_START_PIN 32
-#define FOUR_BY_FOUR_PIN 33
-#define SEAT_BELT_WARNING_PIN 27
-#define DOOR_AJAR_WARNING_PIN 38
-#define BRAKE_LIGHT_PIN 26
+// #define LEFT_BLINKER_PIN 37
+// #define RIGHT_BLINKER_PIN 36
+// #define HIGH_BEAMS_PIN 35
+// #define WAIT_TO_START_PIN 32
+// #define FOUR_BY_FOUR_PIN 33
+// #define SEAT_BELT_WARNING_PIN 27
+// #define DOOR_AJAR_WARNING_PIN 38
+// #define BRAKE_LIGHT_PIN 26
 
 /*
  * Outputs configuration
@@ -80,14 +80,14 @@
     #define SPEEDOMETER_OUTPUT_CLICKS_PER_MILE 8000
 #endif
 
-#define NEXTION
+// #define NEXTION
 #ifdef NEXTION
     #define nexSer Serial2 // Controlling the Nextion HMI using Serial1 (pin18 of the Arduino Mega) to prevent interfering with code upload
 //    #define DEBUG          // Comment this out if you don't need to see what happens in the Serial Monitor
 #endif
 
 // enable if you want to monitor EGT's
-#define THERMOCOUPLE
+// #define THERMOCOUPLE
 #ifdef THERMOCOUPLE
     #define MAXCS   40
 #endif
