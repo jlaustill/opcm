@@ -6,6 +6,7 @@
 #ifdef NEXTION
 
 #include <Arduino.h>
+#include <cctype>
 #include "Nextion.h"
 #include <EEPROM.h>
 #include "Data/memory.h"
@@ -35,60 +36,38 @@ void Nextion::initialize() {
 }
 
 String formatNumber(double number) {
-    String finalText = "";    /* String to contain formatted output text */
-    char buffer[11];        /* Temporary string buffer to perform formatting operations */
-    int index = 0;            /* Index counter for position in output text string */
+    String finalText = "";
+    char buffer[20];  // Adjust the buffer size according to your needs
 
-    /* Convert the input number to a formatted string */
-    sprintf(buffer, "%f", number);
+    // Convert the input number to a formatted string
+    snprintf(buffer, sizeof(buffer), "%.2f", number);
 
-    /* Calculate the number of digits before the decimal point */
-    int periodIndex = 0;
     int numDigits = 0;
-    int i, distance;
+    size_t periodIndex = strcspn(buffer, "."); // Find the position of the decimal point
 
-    for (i = 0; i < 11; i++) {
-        if (buffer[i] == '.') {
-            periodIndex = i;
-            i = 99;
-        }
-    }
-
-    for (i = 0; i < periodIndex; i++) {
-        if (buffer[i] == '0'
-            || buffer[i] == '1'
-               || buffer[i] == '2'
-                  || buffer[i] == '3'
-                     || buffer[i] == '4'
-                        || buffer[i] == '5'
-                           || buffer[i] == '6'
-                              || buffer[i] == '7'
-                                 || buffer[i] == '8'
-                                    || buffer[i] == '9'
-            ) {
+    for (size_t i = 0; i < periodIndex; i++) {
+        if (isdigit(buffer[i])) {
             numDigits++;
         }
     }
-    /* Loop through the input string and copy each number to the
-      outputText string, inserting commas along the way */
-    for (i = 0; i < periodIndex; i++) {
-        /* Copy character from the input string to the output string */
+
+    // Loop through the input string and copy each number to the output string,
+    // inserting commas along the way
+    for (size_t i = 0; i < periodIndex; i++) {
         finalText += buffer[i];
-        index++;
 
-        /* Decrease the distance from the decimal point */
-        distance = numDigits - i - 1;
+        // Decrease the distance from the decimal point
+        size_t distance = numDigits - i - 1;
 
-        /* Insert a comma every three decimal positions away from the decimal point */
+        // Insert a comma every three decimal positions away from the decimal point
         if ((distance > 0) && (distance % 3 == 0)) {
             finalText += ',';
-            index++;
         }
     }
+
     finalText += '.';
     finalText += buffer[periodIndex + 1];
 
-//    Serial.println("buffer: " + (String)buffer + " periodIndex: " + (String)periodIndex + " numDigits: " + (String)numDigits + " index: " + (String)index + " finalText: " + finalText);
     return finalText;
 }
 
@@ -105,18 +84,7 @@ void Nextion::updateDisplayData(AppData* currentData) {
     sendCmd("ffc.txt=\"" + formatNumber(currentData->fuelFilterChange) + "\"");
     sendCmd("tr.txt=\"" + formatNumber(currentData->tireRotation) + "\"");
 
-    // Serial.print("Odom: "); Serial.print(currentData->odometer); Serial.print(" tripA: "); Serial.print(currentData->tripA); Serial.print(" tripB: "); Serial.println(currentData->tripB);
-
     sendCmd("egt.val=" + (String)(int)currentData->egt);
-
-    sendCmd("leftturn.aph=" + (String)(currentData->leftBlinker ? "127" : "0"));
-    sendCmd("rightturn.aph=" + (String)(currentData->rightBlinker ? "127" : "0"));
-    sendCmd("highbeam.aph=" + (String)(currentData->highBeams ? "127" : "0"));
-    sendCmd("wts.aph=" + (String)(currentData->waitToStart ? "127" : "0"));
-    sendCmd("fourx4.aph=" + (String)(currentData->fourByFour ? "127" : "0"));
-    sendCmd("seatbelt.aph=" + (String)(currentData->seatBeltWarning ? "127" : "0"));
-    sendCmd("doorajar.aph=" + (String)(currentData->doorAjarWarning ? "127" : "0"));
-    sendCmd("parkbrake.aph=" + (String)(currentData->brakeLightWarning ? "127" : "0"));
 
     double transPressureDegrees = 360.0 - (double)currentData->transmissionPressure * 30 / 400;
     sendCmd("tranpresgauge.val=" + (String)(int)transPressureDegrees);
@@ -125,10 +93,14 @@ void Nextion::updateDisplayData(AppData* currentData) {
     double coolTempF = ((double)currentData->coolantTemp * 9 / 5) + 32;
     sendCmd("h20t.val=" + (String)(int)coolTempF);
 
+    double coolTemp2F = ((double)currentData->coolantTemp2 * 9 / 5) + 32;
+    sendCmd("h20t2.val=" + (String)(int)coolTemp2F);
+
+    double oilTempF = ((double)currentData->oilTempC * 9 / 5) + 32;
+    sendCmd("ot.val=" + (String)(int)oilTempF);
+
     sendCmd("fueltmp.val=" + (String)currentData->fuelTempF);
 
-//    double rpmDegrees = ((double)currentData.rpm * 33) / 4000;
-//    Serial.println("rpmDegrees: " + (String)rpmDegrees);
     sendCmd("rpm.val=" + (String)currentData->rpm);
 
     double transmissionTemperateDegrees = (((double)currentData->transmissionTempC * 9 / 5) + 32);

@@ -282,6 +282,7 @@ void opcm::loop() {
 
 #ifdef NEXTION
     Nextion::updateDisplayData(&currentData);
+    // Serial.println("why the rebooting?" + (String)thisMillis);
 #endif
 
     lastMillis = thisMillis;
