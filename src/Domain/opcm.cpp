@@ -48,6 +48,17 @@ void opcm::setup() {
     Serial.println("Starting up...");
 
 
+#ifdef TRANSMISSION_PRESSURE_INPUT
+    TransPresSensor = PressureSensor(
+            TRANSMISSION_PRESSURE_INPUT_PSI_MAX,
+            TRANSMISSION_PRESSURE_INPUT_RAW_ZERO,
+            TRANSMISSION_PRESSURE_INPUT_RAW_MAX,
+            TRANSMISSION_PRESSURE_INPUT_DEVICE_ID,
+            TRANSMISSION_PRESSURE_INPUT_PIN_NUMBER
+    );
+#endif
+
+
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     TransTempSensor = TempSensor(
             TRANSMISSION_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
@@ -234,7 +245,8 @@ void opcm::loop() {
 #endif
 
 #ifdef TRANSMISSION_PRESSURE_INPUT
-    currentData.transmissionPressure = TransmissionPressureSensor::getTransmissionPressureInPsi();
+    currentData.transmissionPressure = TransPresSensor.getPressureInPsi();
+    // Serial.println("trans pressure? " + (String)currentData.transmissionPressure);
 #endif
 
 #ifdef THERMOCOUPLE

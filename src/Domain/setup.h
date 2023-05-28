@@ -2,6 +2,7 @@
 #include <AppData.h>
 
 #include <TempSensor.h>
+#include <PressureSensor.h>
 // #include <Wire.h>
 
 #ifdef CAN_BUS
@@ -17,7 +18,7 @@
     #include "Data/TachometerInput60Minus2.h"
 #endif
 #ifdef TRANSMISSION_PRESSURE_INPUT
-    #include "Data/Sensors/TransmissionPressureSensor.h"
+    PressureSensor TransPresSensor;
 #endif
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT

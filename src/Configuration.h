@@ -25,7 +25,7 @@
     #define CAN_BUS_CS_PIN 5
 #endif
 // The Cummins bus provides rpms, so don't enable both at the same time
-// #define CUMMINS_BUS_INPUT
+#define CUMMINS_BUS_INPUT
 
 // This is the setup on a 24 valve cummins using a camshaft sensor, so it assumes the gear is running at 1/2 the speed of the crankshaft
 // #define TACHOMETER_INPUT_60_MINUS_2
@@ -36,12 +36,13 @@
     #define SPEEDOMETER_INPUT_CLICKS_PER_MILE 8000
 #endif
 
-// #define TRANSMISSION_PRESSURE_INPUT
+#define TRANSMISSION_PRESSURE_INPUT
 #ifdef TRANSMISSION_PRESSURE_INPUT
-    #define TRANSMISSION_PRESSURE_INPUT_PIN 1
-    #define TRANSMISSION_PRESSURE_INPUT_RAW_ZERO 105.0
-    #define TRANSMISSION_PRESSURE_INPUT_RAW_MAX 921.6
-    #define TRANSMISSION_PRESSURE_INPUT_PSI_MAX 500.0
+    #define TRANSMISSION_PRESSURE_INPUT_DEVICE_ID B1001000 // addr to gnd
+    #define TRANSMISSION_PRESSURE_INPUT_PIN_NUMBER 0
+    #define TRANSMISSION_PRESSURE_INPUT_RAW_ZERO 2000.0f
+    #define TRANSMISSION_PRESSURE_INPUT_RAW_MAX 59000.0f
+    #define TRANSMISSION_PRESSURE_INPUT_PSI_MAX 150.0
 #endif
 
 #define TRANSMISSION_TEMPERATURE_INPUT
@@ -74,15 +75,6 @@
     #define WATER_TEMPERATURE_INPUT_C -0.03967365606e-07
 #endif
 
-// #define LEFT_BLINKER_PIN 37
-// #define RIGHT_BLINKER_PIN 36
-// #define HIGH_BEAMS_PIN 35
-// #define WAIT_TO_START_PIN 32
-// #define FOUR_BY_FOUR_PIN 33
-// #define SEAT_BELT_WARNING_PIN 27
-// #define DOOR_AJAR_WARNING_PIN 38
-// #define BRAKE_LIGHT_PIN 26
-
 /*
  * Outputs configuration
  *
@@ -107,7 +99,7 @@
 #endif
 
 // enable if you want to monitor EGT's
-// #define THERMOCOUPLE
+#define THERMOCOUPLE
 #ifdef THERMOCOUPLE
     #define MAXCS   40
 #endif
