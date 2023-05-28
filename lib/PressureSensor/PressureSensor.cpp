@@ -6,13 +6,13 @@
 #include <Arduino.h>
 
 void PressureSensor::updateSensor() {
-    this->rawValue = ads.readADC_SingleEnded(ChannelId);
+    this->rawValue = ads.computeVolts(ads.readADC_SingleEnded(ChannelId));
 }
 
 float PressureSensor::getPressureInPsi() {
     this->updateSensor();
-    // Serial.println("raw value? " + (String)this->rawValue);
-    return (int)((this->rawValue - this->rawZero) *
-            this->PsiMax /
-            (this->rawMax - this->rawZero));
+    float zeroVoltage = .49f;
+    float maxVoltage = 3.0f;
+    float returnValue = map(this->rawValue, zeroVoltage, maxVoltage, 0, 500);
+    return returnValue;
 }

@@ -86,9 +86,10 @@ void Nextion::updateDisplayData(AppData* currentData) {
 
     sendCmd("egt.val=" + (String)(int)currentData->egt);
 
-    double transPressureDegrees = 360.0 - (double)currentData->transmissionPressure * 30 / 400;
-    sendCmd("tranpresgauge.val=" + (String)(int)transPressureDegrees);
-    sendCmd("transprestxt.txt=\"" + (String)currentData->transmissionPressure + " PSI\"");
+    // double transPressureDegrees = 360.0 - (double)currentData->transmissionPressure * 30 / 400;
+    sendCmd("transPres.val=" + (String)(int)currentData->transmissionPressure);
+    // sendCmd("transprestxt.txt=\"" + (String)currentData->transmissionPressure + " PSI\"");
+    Serial.println("trans pres? " + (String)currentData->transmissionPressure);
 
     double coolTempF = ((double)currentData->coolantTemp * 9 / 5) + 32;
     sendCmd("h20t.val=" + (String)(int)coolTempF);
