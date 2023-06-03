@@ -42,7 +42,7 @@ float TempSensor::getTempFahrenheit() {
 void TempSensor::computeResistorValue() {
     this->computedResistorValue =
             (TempSensor::KnownResistorValue * -readVoltage) /
-            (readVoltage - 3.3);
+            (readVoltage - 3.325);
             
     // Serial.println("Computed Resistor value? " + (String)this->computedResistorValue
     // + " Known Resistor Value? " + (String)TempSensor::KnownResistorValue

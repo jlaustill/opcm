@@ -138,8 +138,8 @@ void Nextion::updateDisplayData(AppData* currentData) {
         if (serialBuffer.indexOf("resetTFC") > 0) {
             Serial.println("reset Transmission Fluid Change Mileage!");
             double zero = 0;
-            memory::setFuelFilterChange(zero);
-            currentData->fuelFilterChange = zero;
+            memory::setTransmissionFluidChange(zero);
+            currentData->transmissionFluidChange = zero;
         }
         if (serialBuffer.indexOf("resetTCFC") > 0) {
             Serial.println("reset Transfer Case Fluid Change Mileage!");
@@ -174,6 +174,7 @@ void Nextion::updateDisplayData(AppData* currentData) {
         serialBuffer = "";
     } else {
         serialBuffer += (char)newData;
+        // Serial.println(serialBuffer);
     }
     }
 }

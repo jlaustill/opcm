@@ -5,6 +5,7 @@ private:
     static unsigned long lastMillis;
     static unsigned long thisMillis;
     static unsigned long thisDuration;
+    static unsigned long lastOdometerUpdate;
     static float thisMileage;
     static long sweep;
     static long maxSweep;

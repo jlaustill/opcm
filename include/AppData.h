@@ -36,13 +36,13 @@ struct AppData {
     float amt;
     int throttlePercentage;
     int load;
-    int oilChange;
-    int transmissionFluidChange;
-    int transferCaseFluidChange;
-    int frontDifferentialFluidChange;
-    int rearDifferentialFluidChange;
-    int fuelFilterChange;
-    int tireRotation;
+    double oilChange;
+    double transmissionFluidChange;
+    double transferCaseFluidChange;
+    double frontDifferentialFluidChange;
+    double rearDifferentialFluidChange;
+    double fuelFilterChange;
+    double tireRotation;
 };
 
 #endif //OPCM_APPDATA_H

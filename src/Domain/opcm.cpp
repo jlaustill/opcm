@@ -23,6 +23,7 @@ unsigned long opcm::count = 0;
 unsigned long opcm::lastMillis = 0;
 unsigned long opcm::thisMillis = 0;
 unsigned long opcm::thisDuration = 0;
+unsigned long opcm::lastOdometerUpdate = 0;
 float opcm::thisMileage = 0;
 
 long opcm::sweep = 0;
@@ -34,6 +35,7 @@ void opcm::setup() {
     count = 0;
     lastMillis = millis();
     thisMillis = millis();
+    lastOdometerUpdate = 0;
     thisDuration = 0;
     thisMileage = 0;
     // pinMode(LEFT_BLINKER_PIN, INPUT_PULLUP);
@@ -210,9 +212,10 @@ void opcm::loop() {
 #ifdef SPEEDOMETER_INPUT
     currentData.speedInMph = SpeedometerInput::getCurrentSpeedInMph(); // map(sweep, 0, maxSweep, 0, 200); // random(0,255);
     thisMileage += ((float)currentData.speedInMph / 3600000.0f * (float)thisDuration);
-//    Serial.println("thisMileage? " + (String)thisMileage);
+//    Serial.println("thisMileage? " + (String)thisMileage + " "  + (thisMillis) + " "  + (lastOdometerUpdate) + " "  + (thisMillis - lastOdometerUpdate));
 
-    if (thisMileage >= 0.1 || currentData.speedInMph <= 0) {
+    if (thisMileage >= 0.1 || (thisMillis - lastOdometerUpdate) > (10 * 1000)) {
+        lastOdometerUpdate = thisMillis;
         currentData.odometer += thisMileage;
         currentData.tripA += thisMileage;
         currentData.tripB += thisMileage;
@@ -226,9 +229,9 @@ void opcm::loop() {
 
 //        Serial.println("odometer: " + (String)currentData.odometer + " tripA: " + (String)currentData.tripA + " tripB: " + (String)currentData.tripB);
         thisMileage = 0;
-    }
+
     // We only want to save if data has changed and we have come to a stop
-    if (currentData.speedInMph <= 0) {
+
         memory::setOdometer(currentData.odometer);
         memory::setTripA(currentData.tripA);
         memory::setTripB(currentData.tripB);
@@ -241,8 +244,10 @@ void opcm::loop() {
         memory::setFuelFilterChange(currentData.fuelFilterChange);
         memory::setTireRotation(currentData.tireRotation);
 //        Serial.println("odometer: " + (String)currentData.odometer + " tripA: " + (String)currentData.tripA + " tripB: " + (String)currentData.tripB + " saveCount: " + (String)currentData.odometerSaveCount);
+    
     }
 #endif
+// Serial.println("Transfer Case Fluid? " + (String)currentData.transferCaseFluidChange);
 
 #ifdef TRANSMISSION_PRESSURE_INPUT
     currentData.transmissionPressure = TransPresSensor.getPressureInPsi();

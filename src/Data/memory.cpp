@@ -60,7 +60,7 @@ double memory::getSaveCount() {
     return result;
 }
 
-void memory::setSaveCount(unsigned long newReading) {
+void memory::setSaveCount(double newReading) {
     EEPROM.put(opcmMemoryAddresses.count, newReading);
 }
 
@@ -75,7 +75,7 @@ double memory::getOilChange() {
     return result;
 }
 
-void memory::setOilChange(unsigned long newReading) {
+void memory::setOilChange(double newReading) {
     EEPROM.put(opcmMemoryAddresses.oilChange, newReading);
 }
 
@@ -90,7 +90,7 @@ double memory::getTransmissionFluidChange() {
     return result;
 }
 
-void memory::setTransmissionFluidChange(unsigned long newReading) {
+void memory::setTransmissionFluidChange(double newReading) {
     EEPROM.put(opcmMemoryAddresses.transmissionFluidChange, newReading);
 }
 
@@ -105,7 +105,7 @@ double memory::getTransferCaseFluidChange() {
     return result;
 }
 
-void memory::setTransferCaseFluidChange(unsigned long newReading) {
+void memory::setTransferCaseFluidChange(double newReading) {
     EEPROM.put(opcmMemoryAddresses.transferCaseFluidChange, newReading);
 }
 
@@ -120,7 +120,7 @@ double memory::getFrontDifferentialFluidChange() {
     return result;
 }
 
-void memory::setFrontDifferentialFluidChange(unsigned long newReading) {
+void memory::setFrontDifferentialFluidChange(double newReading) {
     EEPROM.put(opcmMemoryAddresses.frontDifferentialFluidChange, newReading);
 }
 
@@ -135,7 +135,7 @@ double memory::getRearDifferentialFluidChange() {
     return result;
 }
 
-void memory::setRearDifferentialFluidChange(unsigned long newReading) {
+void memory::setRearDifferentialFluidChange(double newReading) {
     EEPROM.put(opcmMemoryAddresses.rearDifferentialFluidChange, newReading);
 }
 
@@ -150,7 +150,7 @@ double memory::getFuelFilterChange() {
     return result;
 }
 
-void memory::setFuelFilterChange(unsigned long newReading) {
+void memory::setFuelFilterChange(double newReading) {
     EEPROM.put(opcmMemoryAddresses.fuelFilterChange, newReading);
 }
 
@@ -165,6 +165,6 @@ double memory::getTireRotation() {
     return result;
 }
 
-void memory::setTireRotation(unsigned long newReading) {
+void memory::setTireRotation(double newReading) {
     EEPROM.put(opcmMemoryAddresses.tireRotation, newReading);
 }
