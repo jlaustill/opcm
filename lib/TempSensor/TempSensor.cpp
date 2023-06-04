@@ -1,6 +1,3 @@
-
- 
-
 //
 // Created by jlaustill on 4/6/22.
 //
@@ -18,8 +15,6 @@ void TempSensor::computeKelvin() {
 
 void TempSensor::updateSensor() {
     this->readVoltage = ads.computeVolts(ads.readADC_SingleEnded(ChannelId));
-    // Serial.println("Read Analog? " + (String)this->readAnalog);
-    // Serial.println((String)ads.computeVolts(this->readAnalog));
     this->computeResistorValue();
     this->computeKelvin();
 }
@@ -40,11 +35,5 @@ float TempSensor::getTempFahrenheit() {
 }
 
 void TempSensor::computeResistorValue() {
-    this->computedResistorValue =
-            (TempSensor::KnownResistorValue * -readVoltage) /
-            (readVoltage - 3.325);
-            
-    // Serial.println("Computed Resistor value? " + (String)this->computedResistorValue
-    // + " Known Resistor Value? " + (String)TempSensor::KnownResistorValue
-    // + " read analog value? " + (String)readAnalog);
+    this->computedResistorValue = (this->readVoltage / 3.325f) * TempSensor::KnownResistorValue;
 }
