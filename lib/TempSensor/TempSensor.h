@@ -22,6 +22,7 @@ public:
         if (!ads.begin(DeviceId)) {
             Serial.println("Failed to initialize ADS.");
         } else {
+            ads.setGain(GAIN_TWO);
             Serial.println("Succesfuly initialized ADS.");
         }
     }
