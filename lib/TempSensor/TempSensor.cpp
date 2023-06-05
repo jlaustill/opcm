@@ -1,6 +1,6 @@
 //
 // Created by jlaustill on 4/6/22.
-//
+// Updated on 5/4/23
 
 #include "TempSensor.h"
 #include <Arduino.h>
@@ -35,6 +35,12 @@ float TempSensor::getTempFahrenheit() {
 }
 
 void TempSensor::computeResistorValue() {
-    this->computedResistorValue = (this->readVoltage * TempSensor::KnownResistorValue) / (3.3f - this->readVoltage);
+    // This tests accurate 
+    // 328.4 -> 326 measured
+    // 994 -> 988 measured
+    // 92,600 -> 92,500 measured
+    // I think this is within the error rate of my voltmeter
+    // REALLY need an accurate 3.3vref, need to figure out how to measure that to keep this consistent with voltage sways
+    this->computedResistorValue = (this->readVoltage * TempSensor::KnownResistorValue) / (3.3225f - this->readVoltage);
     // Serial.println("computed resistance value? " + (String)this->computedResistorValue + " ReadVoltage? " + (String)this->readVoltage);
 }
