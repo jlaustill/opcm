@@ -41,6 +41,7 @@ void TempSensor::computeResistorValue() {
     // 92,600 -> 92,500 measured
     // I think this is within the error rate of my voltmeter
     // REALLY need an accurate 3.3vref, need to figure out how to measure that to keep this consistent with voltage sways
-    this->computedResistorValue = (this->readVoltage * TempSensor::KnownResistorValue) / (3.3225f - this->readVoltage);
-    // Serial.println("computed resistance value? " + (String)this->computedResistorValue + " ReadVoltage? " + (String)this->readVoltage);
+    this->computedResistorValue = (this->readVoltage * this->KnownResistorValue) / (3.3225f - this->readVoltage);
+    this->computedResistorValue -= this->WiringResistance; // adjusting for resistance in the wiring maybe?
+    // Serial.println("computed resistance value? " + (String)this->computedResistorValue + " ReadVoltage? " + (String)this->readVoltage + " wiring resistance? " + (String)this->WiringResistance);
 }

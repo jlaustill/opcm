@@ -10,6 +10,7 @@ FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can1;
 #include <cstdint>
 
 volatile byte data[16];
+boolean warmedUp = false;
 
 struct CanMessage {
     byte id;
@@ -79,6 +80,17 @@ void updateMessage(volatile CanMessage* _messageToUpdate, CAN_message_t msg) {
     _messageToUpdate->count++;
 }
 
+byte* getIdBytes(uint32_t id) {
+    byte* idBytes = new byte[4];
+
+    idBytes[0] = id >> 24;
+    idBytes[1] = id >> 16;
+    idBytes[2] = id >> 8;
+    idBytes[3] = id;
+
+    return idBytes;
+}
+
 void CumminsBusSniff(const CAN_message_t &msg) {
     for(uint8_t i = 0; i < msg.len; i++){
         data[i] = msg.buf[i];
@@ -101,11 +113,73 @@ void CumminsBusSniff(const CAN_message_t &msg) {
     } 
     else if (msg.id == 256) {
         updateMessage(&message256, msg);
+        CAN_message_t newMsg = msg;
+        CumminsBus::updateTiming(newMsg);
     } else {
         ids[idsP++] = msg.id;
         if (idsP >= 8) idsP = 0;
     }
 }// ISR done
+
+float getMaxTiming(int rpms, float currentTiming) {
+    // 1500 => 15
+    // 2000 => 20
+    // 2500 => 25
+    // 3000+ => 30
+    if (rpms < 1500) {
+        return currentTiming;
+    } else if (rpms > 3000) {
+        return 30.0l;
+    }
+    
+    float returnValue = map(rpms, 1500, 3000, 1500.0l, 3000.0l);
+    returnValue /= 100;
+    return returnValue;
+}
+
+int rpms = 0;
+float currentTiming = 14.0l;
+float maxTiming = 15.0l;
+int throttle = 0;
+int maxOfThrottleAndLoad = 0;
+float newTiming = 15.0l;
+unsigned short timingValue = 0;
+
+void CumminsBus::updateTiming(CAN_message_t &msg) {
+    // check coolant temp > 150
+    if (!warmedUp) {
+        Serial.println("Engine not warmed up yet, not adjusting timing " + (String)waterTemp);
+        return;
+    }
+
+    // get max timing for rpm 
+    rpms = getCurrentRpms();
+    currentTiming = getCurrentTiming();
+    maxTiming = getMaxTiming(rpms, currentTiming);
+
+    // Serial.println("current timing -> " + (String)currentTiming + " max timing " + (String)maxTiming);
+    
+    // get max of throttle and load
+    throttle = getCurrentThrottlePercentage();
+    load = getCurrentLoad();
+    maxOfThrottleAndLoad = throttle > load ? throttle : load;
+    // map between current timing and max timing based on max of throttle and load
+    newTiming = map(maxOfThrottleAndLoad, 0, 100, currentTiming * 100, maxTiming * 100);
+    newTiming /= 100;
+
+    // Serial.println("current timing -> " + (String)currentTiming + " max timing " + (String)maxTiming + " calculated timing " + (String)newTiming);
+
+    newTiming *= 128.0; // Multiply by 128 to convert timing to 128 bits per degree
+    timingValue = static_cast<unsigned short>(newTiming); // Convert timing to unsigned short
+
+    msg.buf[4] = timingValue & 0xFF;
+    msg.buf[5] = (timingValue >> 8) & 0xFF;
+    
+
+    // send new timing message
+    Can1.write(msg);
+
+}
 
 float CumminsBus::getCurrentTiming() {
     // compute timing advance
@@ -127,7 +201,7 @@ int CumminsBus::getCurrentThrottlePercentage() {
 }
 
 int CumminsBus::getCurrentLoad() {
-       load = static_cast<float>(message217056000.data[2]) * 0.4f; // looking good!
+       load = static_cast<float>(message217056000.data[2]) * 0.8f; // looking good!
     return load;
 }
 float parseEngineLoad(uint8_t *canMsg)
@@ -211,6 +285,9 @@ int CumminsBus::getCurrentWaterTemp() {
     // Can2.events();
     Can1.write(msg);
     waterTemp = message419360256.data[0] - 40; // Confirmed!!!
+    if (!warmedUp && waterTemp > 65) {
+        warmedUp = true;
+    }
     return (int)waterTemp;
 }
 

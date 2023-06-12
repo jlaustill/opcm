@@ -9,9 +9,10 @@
 
 class TempSensor {
 public:
-    TempSensor(float knownResistorValue, float a, float b, float c, uint8_t deviceId, uint8_t channelId) {
+    TempSensor(float knownResistorValue, float a, float b, float c, uint8_t deviceId, uint8_t channelId, float wiringResistance) {
         Serial.println("Starting to initialize ADS. devicedId: " + (String)deviceId);
         KnownResistorValue = knownResistorValue;
+        WiringResistance = wiringResistance;
         A = a;
         B = b;
         C = c;
@@ -36,6 +37,7 @@ public:
 
 private:
     float KnownResistorValue;
+    float WiringResistance;
     uint8_t DeviceId;
     uint8_t ChannelId;
     float A;
