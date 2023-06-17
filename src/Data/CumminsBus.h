@@ -9,15 +9,18 @@
 class CumminsBus {
 public:
     static void initialize();
+    static void updateRpms();
     static int getCurrentRpms();
     static int getCurrentWaterTemp();
     static byte getCurrentOilPressure();
     static int getCurrentFuelTemp();
     static int getCurrentBoostInPsi();
     static int getCurrentLoad();
+    static void updateThrottlePercentage();
     static int getCurrentThrottlePercentage();
     static int getCurrentAMT();
     static float getCurrentFuelPercentage();
+    static void updateTiming();
     static float getCurrentTiming();
     static void updateTiming(CAN_message_t &msg);
 };

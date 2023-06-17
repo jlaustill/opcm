@@ -61,7 +61,13 @@ volatile double waterTemp = 0; // +
 volatile byte load = 0; // +
 volatile byte throttlePercentage = 0; // +
 volatile float Timing; // +
-volatile float FuelPCT; // +
+volatile float FuelPercentage; // +
+
+// tuning data
+volatile float maxTiming = 15.0f;
+volatile int maxOfThrottleAndLoad = 0;
+volatile float newTiming = 15.0f;
+volatile unsigned short shortTimingValue = 0;
 
 volatile int ids[8] = {0,0,0,0,0,0,0,0};
 volatile int idsP = 0;
@@ -121,29 +127,34 @@ void CumminsBusSniff(const CAN_message_t &msg) {
     }
 }// ISR done
 
-float getMaxTiming(int rpms, float currentTiming) {
+float mapf(float x, float in_min, float in_max, float out_min, float out_max) {
+    if (in_min == in_max) {
+        // Handle division by zero error or invalid input range
+        // You can choose to return a default value or throw an exception
+        return 0.0f; // Default value
+    }
+
+    // Compute the scaling factor
+    float scale = (out_max - out_min) / (in_max - in_min);
+
+    // Map the value to the output range
+    return (x - in_min) * scale + out_min;
+}
+
+float getMaxTiming() {
     // 1500 => 15
     // 2000 => 20
     // 2500 => 25
     // 3000+ => 30
-    if (rpms < 1500) {
-        return currentTiming;
-    } else if (rpms > 3000) {
-        return 30.0l;
+    if (RPM < 1200) {
+        return Timing;
+    } else if (RPM > 3000) {
+        return 30.0f;
     }
     
-    float returnValue = map(rpms, 1500, 3000, 1500.0l, 3000.0l);
-    returnValue /= 100;
+    float returnValue = mapf((float)RPM, 1200.0f, 3000.0f, 16.0f, 30.0f);
     return returnValue;
 }
-
-int rpms = 0;
-float currentTiming = 14.0l;
-float maxTiming = 15.0l;
-int throttle = 0;
-int maxOfThrottleAndLoad = 0;
-float newTiming = 15.0l;
-unsigned short timingValue = 0;
 
 void CumminsBus::updateTiming(CAN_message_t &msg) {
     // check coolant temp > 150
@@ -153,50 +164,66 @@ void CumminsBus::updateTiming(CAN_message_t &msg) {
     }
 
     // get max timing for rpm 
-    rpms = getCurrentRpms();
-    currentTiming = getCurrentTiming();
-    maxTiming = getMaxTiming(rpms, currentTiming);
+    CumminsBus::updateRpms();
+    CumminsBus::updateTiming();
+    maxTiming = getMaxTiming();
 
     // Serial.println("current timing -> " + (String)currentTiming + " max timing " + (String)maxTiming);
     
     // get max of throttle and load
-    throttle = getCurrentThrottlePercentage();
+    CumminsBus::updateThrottlePercentage();
     load = getCurrentLoad();
-    maxOfThrottleAndLoad = throttle > load ? throttle : load;
+    maxOfThrottleAndLoad = throttlePercentage > load ? throttlePercentage : load;
     // map between current timing and max timing based on max of throttle and load
-    newTiming = map(maxOfThrottleAndLoad, 0, 100, currentTiming * 100, maxTiming * 100);
-    newTiming /= 100;
+    newTiming = mapf((float)maxOfThrottleAndLoad, 0.0f, 100.0f, Timing, maxTiming);
 
-    // Serial.println("current timing -> " + (String)currentTiming + " max timing " + (String)maxTiming + " calculated timing " + (String)newTiming);
+    // Serial.println(
+    //     "current timing -> " + (String)Timing
+    //     + " max timing " + (String)maxTiming 
+    //     + " calculated timing " + (String)newTiming 
+    //     + " Timing Advanced " + (String)(newTiming - Timing)
+    // );
+
+    // Serial.println("Fuel % " + (String)FuelPercentage
+    //     + " Throttle % " + (String)throttlePercentage
+    //     + " Load % " + (String)load
+    // );
 
     newTiming *= 128.0; // Multiply by 128 to convert timing to 128 bits per degree
-    timingValue = static_cast<unsigned short>(newTiming); // Convert timing to unsigned short
+    shortTimingValue = static_cast<unsigned short>(newTiming); // Convert timing to unsigned short
 
-    msg.buf[4] = timingValue & 0xFF;
-    msg.buf[5] = (timingValue >> 8) & 0xFF;
-    
+    msg.buf[4] = shortTimingValue & 0xFF;
+    msg.buf[5] = (shortTimingValue >> 8) & 0xFF;
 
     // send new timing message
     Can1.write(msg);
 
 }
 
-float CumminsBus::getCurrentTiming() {
+void CumminsBus::updateTiming() {
     // compute timing advance
     Timing = (message256.data[5] << 8) | message256.data[4]; //convert from little endian. 128 bits per degree.
-    Timing = (float)((Timing) / 128);
+    Timing = (float)((Timing) / 128.0f);
+}
+
+float CumminsBus::getCurrentTiming() {
+    CumminsBus::updateTiming();
     return Timing;
 }
 
 float CumminsBus::getCurrentFuelPercentage() {
     //Fuel compute
-    FuelPCT = ((message256.data[1] << 8) | message256.data[0]);
-    FuelPCT = (float)(FuelPCT*100) / 4096;    // 4095 is max fuel allowed by pump
-    return FuelPCT;
+    FuelPercentage = ((message256.data[1] << 8) | message256.data[0]);
+    FuelPercentage = (float)(FuelPercentage*100.0f) / 4096.0f;    // 4095 is max fuel allowed by pump
+    return FuelPercentage;
+}
+
+void CumminsBus::updateThrottlePercentage() {
+    throttlePercentage = message217056000.data[1] * .4f; // looking good!
 }
 
 int CumminsBus::getCurrentThrottlePercentage() {
-       throttlePercentage = message217056000.data[1] * .4f; // looking good!
+    CumminsBus::updateThrottlePercentage();
     return throttlePercentage;
 }
 
@@ -246,9 +273,13 @@ uint8_t calculateJ1939Destination(uint8_t *canMsg)
     return da;
 }
 
-int CumminsBus::getCurrentRpms() {
+void CumminsBus::updateRpms() {
     RPM = (message256.data[7] << 8) | message256.data[6];     //convert from little endian
     RPM /= 4 ;
+}
+
+int CumminsBus::getCurrentRpms() {
+    CumminsBus::updateRpms();
     return (int)RPM;
 }
 
