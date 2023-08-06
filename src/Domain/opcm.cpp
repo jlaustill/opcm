@@ -4,6 +4,7 @@
 
 #include "opcm.h"
 #include "Data/memory.h"
+#include "Data/sdCard.h"
 
 #include <AppData.h>
 
@@ -30,6 +31,8 @@ long opcm::sweep = 0;
 long opcm::maxSweep = 50;
 int opcm::up = 1;
 
+sdCard *SdCard;
+
 void opcm::setup() {
     Serial.begin(115200);
     count = 0;
@@ -48,6 +51,7 @@ void opcm::setup() {
     // pinMode(BRAKE_LIGHT_PIN, INPUT_PULLUP);
 
     Serial.println("Starting up...");
+    SdCard = new sdCard();
 
 
 #ifdef TRANSMISSION_PRESSURE_INPUT
@@ -140,6 +144,8 @@ void opcm::setup() {
     currentData.fuelFilterChange = memory::getFuelFilterChange();
     currentData.tireRotation = memory::getTireRotation();
 
+    SdCard->saveData(&currentData);
+
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     currentData.transmissionTempC = 0;
 #endif
@@ -229,16 +235,18 @@ void opcm::loop() {
         currentData.rearDifferentialFluidChange += thisMileage;
         currentData.fuelFilterChange += thisMileage;
         currentData.tireRotation += thisMileage;
+        currentData.odometerSaveCount++;
 
 //        Serial.println("odometer: " + (String)currentData.odometer + " tripA: " + (String)currentData.tripA + " tripB: " + (String)currentData.tripB);
         thisMileage = 0;
 
     // We only want to save if data has changed and we have come to a stop
+        SdCard->saveData(&currentData);
 
         memory::setOdometer(currentData.odometer);
         memory::setTripA(currentData.tripA);
         memory::setTripB(currentData.tripB);
-        memory::setSaveCount(++currentData.odometerSaveCount);
+        memory::setSaveCount(currentData.odometerSaveCount);
         memory::setOilChange(currentData.oilChange);
         memory::setTransmissionFluidChange(currentData.transmissionFluidChange);
         memory::setTransferCaseFluidChange(currentData.transferCaseFluidChange);

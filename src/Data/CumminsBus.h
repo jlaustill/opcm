@@ -15,6 +15,7 @@ public:
     static byte getCurrentOilPressure();
     static int getCurrentFuelTemp();
     static int getCurrentBoostInPsi();
+    static void updateLoad();
     static int getCurrentLoad();
     static void updateThrottlePercentage();
     static int getCurrentThrottlePercentage();

@@ -97,6 +97,32 @@ byte* getIdBytes(uint32_t id) {
     return idBytes;
 }
 
+uint8_t calculateJ1939Source(uint8_t *canMsg)
+{
+    // Extract source address (SA) from the message (bits 8-15 of byte 0)
+    uint8_t sa = canMsg[0] & 0xFF;
+    
+    // If the message is an RTR message, add 0x80 to the SA to indicate that it's a request message
+    if ((canMsg[0] & 0x10) == 0x10) {
+        sa += 0x80;
+    }
+    
+    return sa;
+}
+
+uint8_t calculateJ1939Destination(uint8_t *canMsg)
+{
+    // Extract destination address (DA) from the message (bits 0-7 of byte 0)
+    uint8_t da = canMsg[0] >> 3;
+    
+    // If the message is an RTR message, set DA to the global broadcast address (0xFF)
+    if ((canMsg[0] & 0x10) == 0x10) {
+        da = 0xFF;
+    }
+    
+    return da;
+}
+
 void CumminsBusSniff(const CAN_message_t &msg) {
     for(uint8_t i = 0; i < msg.len; i++){
         data[i] = msg.buf[i];
@@ -122,6 +148,14 @@ void CumminsBusSniff(const CAN_message_t &msg) {
         CAN_message_t newMsg = msg;
         CumminsBus::updateTiming(newMsg);
     } else {
+        // byte* idBytes = getIdBytes(msg.id);
+        // int pgn = calculateJ1939PGN(idBytes);
+        // uint8_t sourceAddress = calculateJ1939Source(idBytes);
+        // uint8_t destinationAddress = calculateJ1939Destination(idBytes);
+        // Serial.println("unknow PGN: " + (String)pgn
+        //     + " Source Address: " + (String)sourceAddress
+        //     + " Destination Address: " + (String)destinationAddress
+        // );
         ids[idsP++] = msg.id;
         if (idsP >= 8) idsP = 0;
     }
@@ -141,19 +175,18 @@ float mapf(float x, float in_min, float in_max, float out_min, float out_max) {
     return (x - in_min) * scale + out_min;
 }
 
-float getMaxTiming() {
-    // 1500 => 15
+void updateMaxTiming() {
+    // 1200 => 16
     // 2000 => 20
     // 2500 => 25
     // 3000+ => 30
     if (RPM < 1200) {
-        return Timing;
+        maxTiming = Timing;
     } else if (RPM > 3000) {
-        return 30.0f;
+        maxTiming = 30.0f;
     }
     
-    float returnValue = mapf((float)RPM, 1200.0f, 3000.0f, 16.0f, 30.0f);
-    return returnValue;
+    maxTiming = mapf((float)RPM, 1200.0f, 3000.0f, 16.0f, 30.0f);
 }
 
 void CumminsBus::updateTiming(CAN_message_t &msg) {
@@ -166,13 +199,13 @@ void CumminsBus::updateTiming(CAN_message_t &msg) {
     // get max timing for rpm 
     CumminsBus::updateRpms();
     CumminsBus::updateTiming();
-    maxTiming = getMaxTiming();
+    updateMaxTiming();
 
     // Serial.println("current timing -> " + (String)currentTiming + " max timing " + (String)maxTiming);
     
     // get max of throttle and load
     CumminsBus::updateThrottlePercentage();
-    load = getCurrentLoad();
+    CumminsBus::updateLoad();
     maxOfThrottleAndLoad = throttlePercentage > load ? throttlePercentage : load;
     // map between current timing and max timing based on max of throttle and load
     newTiming = mapf((float)maxOfThrottleAndLoad, 0.0f, 100.0f, Timing, maxTiming);
@@ -227,8 +260,12 @@ int CumminsBus::getCurrentThrottlePercentage() {
     return throttlePercentage;
 }
 
+void CumminsBus::updateLoad() {
+    load = static_cast<float>(message217056000.data[2]) * 0.8f; // looking good!
+}
+
 int CumminsBus::getCurrentLoad() {
-       load = static_cast<float>(message217056000.data[2]) * 0.8f; // looking good!
+    CumminsBus::updateLoad();
     return load;
 }
 float parseEngineLoad(uint8_t *canMsg)
@@ -245,32 +282,6 @@ float parseEngineLoad(uint8_t *canMsg)
     float load = static_cast<float>(value) * 0.4f;
     
     return load;
-}
-
-uint8_t calculateJ1939Source(uint8_t *canMsg)
-{
-    // Extract source address (SA) from the message (bits 8-15 of byte 0)
-    uint8_t sa = canMsg[0] & 0xFF;
-    
-    // If the message is an RTR message, add 0x80 to the SA to indicate that it's a request message
-    if ((canMsg[0] & 0x10) == 0x10) {
-        sa += 0x80;
-    }
-    
-    return sa;
-}
-
-uint8_t calculateJ1939Destination(uint8_t *canMsg)
-{
-    // Extract destination address (DA) from the message (bits 0-7 of byte 0)
-    uint8_t da = canMsg[0] >> 3;
-    
-    // If the message is an RTR message, set DA to the global broadcast address (0xFF)
-    if ((canMsg[0] & 0x10) == 0x10) {
-        da = 0xFF;
-    }
-    
-    return da;
 }
 
 void CumminsBus::updateRpms() {
