@@ -3,8 +3,7 @@
 #include <SPI.h>
 #include <ArduinoJson.h>
 
-sdCard::sdCard(/* args */)
-{
+sdCard::sdCard(/* args */) {
     if (!SD.begin(BUILTIN_SDCARD)) {
         Serial.println("SdCard failed or not present!");
         return;
@@ -21,8 +20,7 @@ sdCard::sdCard(/* args */)
     }
 }
 
-sdCard::~sdCard()
-{
+sdCard::~sdCard() {
 }
 
 void sdCard::saveData(AppData* currentData) {

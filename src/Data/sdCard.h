@@ -6,8 +6,8 @@ class sdCard
 {
 private:
     String sdCardData;
-    StaticJsonDocument<200> inputDoc;
-    StaticJsonDocument<200> outputDoc;
+    StaticJsonDocument<400> inputDoc;
+    StaticJsonDocument<400> outputDoc;
 public:
     sdCard(/* args */);
     ~sdCard();
