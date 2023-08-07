@@ -37,8 +37,9 @@ void sdCard::saveData(AppData* currentData) {
 
     sdCard::outputDoc["saveCount"] = currentData->odometerSaveCount;
 
-    File sdCardDataFile = SD.open("data.json");
+    File sdCardDataFile = SD.open("data.json", FILE_WRITE_BEGIN);
     sdCardDataFile.truncate();
     serializeJsonPretty(sdCard::outputDoc, sdCardDataFile);
     sdCardDataFile.close();
+    Serial.println("Saved data to sdcard!" + sdCard::outputDoc.as<String>());
 }

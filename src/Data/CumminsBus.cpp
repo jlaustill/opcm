@@ -192,7 +192,7 @@ void updateMaxTiming() {
 void CumminsBus::updateTiming(CAN_message_t &msg) {
     // check coolant temp > 150
     if (!warmedUp) {
-        Serial.println("Engine not warmed up yet, not adjusting timing " + (String)waterTemp);
+        // Serial.println("Engine not warmed up yet, not adjusting timing " + (String)waterTemp);
         return;
     }
 
