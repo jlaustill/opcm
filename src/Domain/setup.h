@@ -6,50 +6,50 @@
 // #include <Wire.h>
 
 #ifdef CAN_BUS
-    #include "Display/CanBus.h"
+#include "Display/CanBus.h"
 #endif
 #ifdef CUMMINS_BUS_INPUT
-    #include "Data/CumminsBus.h"
+#include "Data/CumminsBus.h"
 #endif
 #ifdef SPEEDOMETER_INPUT
-    #include "Data/SpeedometerInput.h"
+#include "Data/SpeedometerInput.h"
 #endif
 #ifdef TACHOMETER_INPUT_60_MINUS_2
-    #include "Data/TachometerInput60Minus2.h"
+#include "Data/TachometerInput60Minus2.h"
 #endif
 #ifdef TRANSMISSION_PRESSURE_INPUT
-    PressureSensor TransPresSensor;
+PressureSensor TransPresSensor;
 #endif
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
-    TempSensor TransTempSensor;
+TempSensor TransTempSensor;
 #endif
 
 #ifdef OIL_TEMPERATURE_INPUT
-    TempSensor OilTempSensor;
+TempSensor OilTempSensor;
 #endif
 
 #ifdef WATER_TEMPERATURE_INPUT
-    TempSensor WaterTempSensor;
+TempSensor WaterTempSensor;
 #endif
 
 #ifdef TACHOMETER_OUTPUT
-    #include "Display/Gauges/Tachometer.h"
+#include "Display/Gauges/Tachometer.h"
 #endif
 #ifdef SPEEDOMETER_OUTPUT
-    #include "Display/Gauges/Speedometer.h"
+#include "Display/Gauges/Speedometer.h"
 #endif
 
 #ifdef ODB2
-    #include "Display/OBD2/OBD2.h"
+#include "Display/OBD2/OBD2.h"
 #endif
 
 #ifdef NEXTION
-    #include "Display/Nextion.h"
+#include "Display/Nextion.h"
 #endif
 
 #ifdef THERMOCOUPLE
-    #include <Adafruit_MAX31855.h>
+#include <Adafruit_MAX31855.h>
 #endif
 
 AppData currentData;
@@ -63,10 +63,10 @@ float roundToTwo(float var)
 }
 
 #ifdef TACHOMETER_OUTPUT
-    Tachometer tachometer = Tachometer();
+Tachometer tachometer = Tachometer();
 #endif
 #ifdef SPEEDOMETER_OUTPUT
-    Speedometer speedometer = Speedometer();
+Speedometer speedometer = Speedometer();
 #endif
 
 #ifdef THERMOCOUPLE

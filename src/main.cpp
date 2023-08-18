@@ -6,10 +6,12 @@
 
 #include "Domain/opcm.h"
 
-void setup() {
+void setup()
+{
     opcm::setup();
 }
 
-__attribute__((unused)) void loop() {
+__attribute__((unused)) void loop()
+{
     opcm::loop();
 }

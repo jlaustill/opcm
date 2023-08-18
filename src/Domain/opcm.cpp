@@ -8,14 +8,22 @@
 
 #include <AppData.h>
 
-void opcm::newSweepValue() {
-    if (up == 1 && sweep < maxSweep) {
+void opcm::newSweepValue()
+{
+    if (up == 1 && sweep < maxSweep)
+    {
         sweep++;
-    } else if (up == 1 && sweep >= maxSweep) {
+    }
+    else if (up == 1 && sweep >= maxSweep)
+    {
         up = 0;
-    } else if (sweep > 0) {
+    }
+    else if (sweep > 0)
+    {
         sweep--;
-    } else {
+    }
+    else
+    {
         up = 1;
     }
 }
@@ -33,7 +41,8 @@ int opcm::up = 1;
 
 sdCard *SdCard;
 
-void opcm::setup() {
+void opcm::setup()
+{
     Serial.begin(115200);
     count = 0;
     lastMillis = millis();
@@ -53,54 +62,46 @@ void opcm::setup() {
     Serial.println("Starting up...");
     SdCard = new sdCard();
 
-
 #ifdef TRANSMISSION_PRESSURE_INPUT
     TransPresSensor = PressureSensor(
-            TRANSMISSION_PRESSURE_INPUT_PSI_MAX,
-            TRANSMISSION_PRESSURE_INPUT_RAW_ZERO,
-            TRANSMISSION_PRESSURE_INPUT_RAW_MAX,
-            TRANSMISSION_PRESSURE_INPUT_DEVICE_ID,
-            TRANSMISSION_PRESSURE_INPUT_PIN_NUMBER
-    );
+        TRANSMISSION_PRESSURE_INPUT_PSI_MAX,
+        TRANSMISSION_PRESSURE_INPUT_RAW_ZERO,
+        TRANSMISSION_PRESSURE_INPUT_RAW_MAX,
+        TRANSMISSION_PRESSURE_INPUT_DEVICE_ID,
+        TRANSMISSION_PRESSURE_INPUT_PIN_NUMBER);
 #endif
-
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     TransTempSensor = TempSensor(
-            TRANSMISSION_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
-            TRANSMISSION_TEMPERATURE_INPUT_A, // A
-            TRANSMISSION_TEMPERATURE_INPUT_B, // B
-            TRANSMISSION_TEMPERATURE_INPUT_C, // C
-            TRANSMISSION_TEMPERATURE_INPUT_DEVICE_ID,
-            TRANSMISSION_TEMPERATURE_INPUT_PIN_NUMBER,
-            TRANSMISSION_TEMPERATURE_INPUT_WIRING_RESISTANCE
-    );
+        TRANSMISSION_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
+        TRANSMISSION_TEMPERATURE_INPUT_A,       // A
+        TRANSMISSION_TEMPERATURE_INPUT_B,       // B
+        TRANSMISSION_TEMPERATURE_INPUT_C,       // C
+        TRANSMISSION_TEMPERATURE_INPUT_DEVICE_ID,
+        TRANSMISSION_TEMPERATURE_INPUT_PIN_NUMBER,
+        TRANSMISSION_TEMPERATURE_INPUT_WIRING_RESISTANCE);
 #endif
-
 
 #ifdef OIL_TEMPERATURE_INPUT
     OilTempSensor = TempSensor(
-            OIL_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
-            OIL_TEMPERATURE_INPUT_A, // A
-            OIL_TEMPERATURE_INPUT_B, // B
-            OIL_TEMPERATURE_INPUT_C, // C
-            OIL_TEMPERATURE_INPUT_DEVICE_ID,
-            OIL_TEMPERATURE_INPUT_PIN_NUMBER,
-            OIL_TEMPERATURE_INPUT_WIRING_RESISTANCE
-    );
+        OIL_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
+        OIL_TEMPERATURE_INPUT_A,       // A
+        OIL_TEMPERATURE_INPUT_B,       // B
+        OIL_TEMPERATURE_INPUT_C,       // C
+        OIL_TEMPERATURE_INPUT_DEVICE_ID,
+        OIL_TEMPERATURE_INPUT_PIN_NUMBER,
+        OIL_TEMPERATURE_INPUT_WIRING_RESISTANCE);
 #endif
-
 
 #ifdef WATER_TEMPERATURE_INPUT
     WaterTempSensor = TempSensor(
-            WATER_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
-            WATER_TEMPERATURE_INPUT_A, // A
-            WATER_TEMPERATURE_INPUT_B, // B
-            WATER_TEMPERATURE_INPUT_C, // C
-            WATER_TEMPERATURE_INPUT_DEVICE_ID,
-            WATER_TEMPERATURE_INPUT_PIN_NUMBER,
-            WATER_TEMPERATURE_INPUT_WIRING_RESISTANCE
-    );
+        WATER_TEMPERATURE_INPUT_DIVIDER, // KnownResistorValue
+        WATER_TEMPERATURE_INPUT_A,       // A
+        WATER_TEMPERATURE_INPUT_B,       // B
+        WATER_TEMPERATURE_INPUT_C,       // C
+        WATER_TEMPERATURE_INPUT_DEVICE_ID,
+        WATER_TEMPERATURE_INPUT_PIN_NUMBER,
+        WATER_TEMPERATURE_INPUT_WIRING_RESISTANCE);
 #endif
 
 #ifdef CAN_BUS
@@ -118,6 +119,8 @@ void opcm::setup() {
     TachometerInput60Minus2::initialize();
 #endif
 
+    currentData = SdCard->loadData();
+
     currentData.rpm = 0;
     currentData.coolantTemp = 0;
     currentData.speedInMph = 0;
@@ -125,26 +128,26 @@ void opcm::setup() {
     currentData.oilPressureInPsi = 0;
     currentData.fuelTempF = 0;
     currentData.boost = 0;
-    
+
     currentData.timing = 0;
     currentData.fuelPercentage = 0;
     currentData.amt = 0;
     currentData.throttlePercentage = 0;
     currentData.load = 0;
 
-    currentData.odometer = memory::getOdometer();
-    currentData.tripA = memory::getTripA();
-    currentData.tripB = memory::getTripB();
-    currentData.odometerSaveCount = memory::getSaveCount();
-    currentData.oilChange = memory::getOilChange();
-    currentData.transmissionFluidChange = memory::getTransmissionFluidChange();
-    currentData.transferCaseFluidChange = memory::getTransferCaseFluidChange();
-    currentData.frontDifferentialFluidChange = memory::getFrontDifferentialFluidChange();
-    currentData.rearDifferentialFluidChange = memory::getRearDifferentialFluidChange();
-    currentData.fuelFilterChange = memory::getFuelFilterChange();
-    currentData.tireRotation = memory::getTireRotation();
+    // currentData.odometer = memory::getOdometer();
+    // currentData.tripA = memory::getTripA();
+    // currentData.tripB = memory::getTripB();
+    // currentData.odometerSaveCount = memory::getSaveCount();
+    // currentData.oilChange = memory::getOilChange();
+    // currentData.transmissionFluidChange = memory::getTransmissionFluidChange();
+    // currentData.transferCaseFluidChange = memory::getTransferCaseFluidChange();
+    // currentData.frontDifferentialFluidChange = memory::getFrontDifferentialFluidChange();
+    // currentData.rearDifferentialFluidChange = memory::getRearDifferentialFluidChange();
+    // currentData.fuelFilterChange = memory::getFuelFilterChange();
+    // currentData.tireRotation = memory::getTireRotation();
 
-    SdCard->saveData(&currentData);
+    // SdCard->saveData(&currentData);
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
     currentData.transmissionTempC = 0;
@@ -171,15 +174,19 @@ void opcm::setup() {
 #endif
 
 #ifdef THERMOCOUPLE
-    if (!thermocouple.begin()) {
+    if (!thermocouple.begin())
+    {
         Serial.println("ERROR INITING THERMOCOUPLE");
-    } else {
+    }
+    else
+    {
         Serial.println("Thermocouple initialized");
     }
 #endif
 }
 
-void opcm::loop() {
+void opcm::loop()
+{
     thisMillis = millis();
     thisDuration = thisMillis - lastMillis;
     count++;
@@ -191,7 +198,7 @@ void opcm::loop() {
 
     // currentData.speedInMph = sweep;
     // currentData.rpm = sweep * 100;
-// Serial.print("time to debug "); Serial.println(digitalRead(LEFT_BLINKER_PIN));
+    // Serial.print("time to debug "); Serial.println(digitalRead(LEFT_BLINKER_PIN));
     // currentData.leftBlinker = digitalRead(LEFT_BLINKER_PIN) == LOW;
     // currentData.rightBlinker = digitalRead(RIGHT_BLINKER_PIN) == LOW;
     // currentData.highBeams = digitalRead(HIGH_BEAMS_PIN) == LOW;
@@ -221,9 +228,10 @@ void opcm::loop() {
 #ifdef SPEEDOMETER_INPUT
     currentData.speedInMph = SpeedometerInput::getCurrentSpeedInMph(); // map(sweep, 0, maxSweep, 0, 200); // random(0,255);
     thisMileage += ((float)currentData.speedInMph / 3600000.0f * (float)thisDuration);
-//    Serial.println("thisMileage? " + (String)thisMileage + " "  + (thisMillis) + " "  + (lastOdometerUpdate) + " "  + (thisMillis - lastOdometerUpdate));
+    //    Serial.println("thisMileage? " + (String)thisMileage + " "  + (thisMillis) + " "  + (lastOdometerUpdate) + " "  + (thisMillis - lastOdometerUpdate));
 
-    if (thisMileage >= 0.1 || (thisMillis - lastOdometerUpdate) > (10 * 1000)) {
+    if (thisMileage >= 0.1 || (thisMillis - lastOdometerUpdate) > (10 * 1000))
+    {
         lastOdometerUpdate = thisMillis;
         currentData.odometer += thisMileage;
         currentData.tripA += thisMileage;
@@ -237,10 +245,10 @@ void opcm::loop() {
         currentData.tireRotation += thisMileage;
         currentData.odometerSaveCount++;
 
-//        Serial.println("odometer: " + (String)currentData.odometer + " tripA: " + (String)currentData.tripA + " tripB: " + (String)currentData.tripB);
+        //        Serial.println("odometer: " + (String)currentData.odometer + " tripA: " + (String)currentData.tripA + " tripB: " + (String)currentData.tripB);
         thisMileage = 0;
 
-    // We only want to save if data has changed and we have come to a stop
+        // We only want to save if data has changed and we have come to a stop
         SdCard->saveData(&currentData);
 
         memory::setOdometer(currentData.odometer);
@@ -254,11 +262,10 @@ void opcm::loop() {
         memory::setRearDifferentialFluidChange(currentData.rearDifferentialFluidChange);
         memory::setFuelFilterChange(currentData.fuelFilterChange);
         memory::setTireRotation(currentData.tireRotation);
-//        Serial.println("odometer: " + (String)currentData.odometer + " tripA: " + (String)currentData.tripA + " tripB: " + (String)currentData.tripB + " saveCount: " + (String)currentData.odometerSaveCount);
-    
+        //        Serial.println("odometer: " + (String)currentData.odometer + " tripA: " + (String)currentData.tripA + " tripB: " + (String)currentData.tripB + " saveCount: " + (String)currentData.odometerSaveCount);
     }
 #endif
-// Serial.println("Transfer Case Fluid? " + (String)currentData.transferCaseFluidChange);
+    // Serial.println("Transfer Case Fluid? " + (String)currentData.transferCaseFluidChange);
 
 #ifdef TRANSMISSION_PRESSURE_INPUT
     currentData.transmissionPressure = TransPresSensor.getPressureInPsi();
@@ -296,15 +303,16 @@ void opcm::loop() {
 //    OBD2::sendData(currentData);
 #endif
 #ifdef CAN_BUS
-//    if (count % 100 == 0)
-//    CanBus::sendRpms(currentData.rpm);
+    //    if (count % 100 == 0)
+    //    CanBus::sendRpms(currentData.rpm);
     CanBus::setRpms(currentData.rpm);
     CanBus::setMph(currentData.speedInMph);
     CanBus::setCoolantTemp(currentData.coolantTemp);
-    if (thisDuration > 50) {
+    if (thisDuration > 50)
+    {
         // send unpolled data
         CanBus::sendOilPressure(currentData.oilPressureInPsi);
-//        Serial.println("Sending Oil Pressure: " + (String)currentData.oilPressureInPsi);
+        //        Serial.println("Sending Oil Pressure: " + (String)currentData.oilPressureInPsi);
     }
 #endif
 
@@ -316,27 +324,34 @@ void opcm::loop() {
     lastMillis = thisMillis;
     // if (count > 500000 && count % 500000 == 0) Serial.println("Average Microseconds Per Loop: " + (String)(micros() / count));
 
-    while (Serial.available()) {
+    while (Serial.available())
+    {
         int newData = Serial.read();
-        if (newData == ';') {
+        if (newData == ';')
+        {
             Serial.println("Execute!" + serialBuffer);
-            if (serialBuffer == "resetTripA") {
+            if (serialBuffer == "resetTripA")
+            {
                 Serial.println("reset trip A!");
                 memory::setTripA(0);
                 currentData.tripA = 0;
-            } else if (serialBuffer.indexOf("setOdometer") > 0) {
+            }
+            else if (serialBuffer.indexOf("setOdometer") > 0)
+            {
                 double newOdometerReading = atof(
                     serialBuffer.substring(
-                        serialBuffer.indexOf("=") + 1,
-                        serialBuffer.indexOf(";")
-                        ).c_str()
-                        );
+                                    serialBuffer.indexOf("=") + 1,
+                                    serialBuffer.indexOf(";"))
+                        .c_str());
                 memory::setOdometer(newOdometerReading);
                 currentData.odometer = newOdometerReading;
-                Serial.print("Set Odometer = "); Serial.println(currentData.odometer);
+                Serial.print("Set Odometer = ");
+                Serial.println(currentData.odometer);
             }
             serialBuffer = "";
-        } else {
+        }
+        else
+        {
             serialBuffer += (char)newData;
         }
     }

@@ -8,8 +8,10 @@ private:
     String sdCardData;
     StaticJsonDocument<400> inputDoc;
     StaticJsonDocument<400> outputDoc;
+
 public:
     sdCard(/* args */);
     ~sdCard();
-    void saveData(AppData* currentData);
+    void saveData(AppData *currentData);
+    AppData loadData();
 };

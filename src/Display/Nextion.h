@@ -9,14 +9,15 @@
 #include "Arduino.h"
 #include "AppData.h"
 
-class Nextion {
+class Nextion
+{
 public:
     static void initialize();
-    static void updateDisplayData(AppData* currentData);
+    static void updateDisplayData(AppData *currentData);
+
 private:
     static void sendCmd(String cmd);
 };
 
-
-#endif //NPCM_NEXTION_H
-#endif //NEXTION
+#endif // NPCM_NEXTION_H
+#endif // NEXTION

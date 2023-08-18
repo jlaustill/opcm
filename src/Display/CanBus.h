@@ -5,8 +5,8 @@
 #ifndef NPCM_CANBUS_H
 #define NPCM_CANBUS_H
 
-
-class CanBus {
+class CanBus
+{
 public:
     static void initialize();
     static void setRpms(int _rpms);
@@ -15,4 +15,4 @@ public:
     static void sendOilPressure(byte _oilPressure);
 };
 
-#endif //NPCM_CANBUS_H
+#endif // NPCM_CANBUS_H
