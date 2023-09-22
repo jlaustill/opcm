@@ -1,175 +1,118 @@
 //
 // Created by jlaustill on 7/18/21.
+// Recreated by jlaustill on 9/22/23.
 //
 #include "Configuration.h"
 #ifdef ODB2
-#include "OBD2.h"
-
 #include <FlexCAN_T4.h>
-FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can2;
 
-// void sendCanMessage (int dataSize, const byte *dataToSend) {
-// //    int dataSizeBits = CHAR_BIT * dataSize;
-// //    Serial.println("sending data size: " + (String)dataSize);
-// //    Serial.println("data size in bits: " + (String)dataSizeBits);
-//     CAN.sendMsgBuf(CAN_ID_PID, 0, dataSize, dataToSend);
-// }
+#include "../../../include/AppData.h"
+#include "./responses.h"
+#include "OBD2.h"
+FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can2;
+unsigned long runtime;
+unsigned long boost;
 
 // byte mphToKph(int mph) {
 //     double kph = mph * 1.60934;
 //     return (byte)round(kph);
 // }
 
-// unsigned long canId = 0x000;
+AppData *OBD2::appData;
 
-// unsigned char len = 0;
-// unsigned char buf[8];
+void OBD2::initialize(AppData *currentData) {
+  Serial.println("ODB2 initializing");
 
-// String BuildMessage="";
-// String SupportedPIDsRequested = "2,1,0,0,0,0,0,0"; // 00
-// String SupportedPIDs21to40Requested = "2,1,32,0,0,0,0,0"; // 32
-// String SupportedPIDs41to60Requested = "2,1,64,0,0,0,0,0"; // 64
-// String SupportedPIDs61to80Requested = "2,1,96,0,0,0,0,0"; // 96
+  appData = currentData;
 
-// String CheckEngineLightClearRequested = "2,1,1,0,0,0,0,0"; // 01
-// String CoolantTempRequested = "2,1,5,0,0,0,0,0"; // 05
-// String RpmRequested = "2,1,12,0,0,0,0,0"; // 0C
-// String SpeedoRequested = "2,1,13,0,0,0,0,0"; // 0D
-// String FuelPressureControlSystemRequested = "2,1,109,0,0,0,0,0";
-// //String TransmissionTemperatureRequested = "3,34,22,116,0,0,0,0";
-// String TransmissionTemperatureRequested = "3,34,17,189,0,0,0,0";
-
-// //GENERAL ROUTINE
-// byte SupportedPID[8] =                {0x06,  0x41,  0x00,  B10001000, B00011000, B00000000, B00000001, 0x00};
-// //                                                          33-40      41-48      49-56      57-64
-// byte SupportedPID21to40[8] =          {0x06,  0x41,  0x20,  B00000000, B00010000, B00000000, B00000001, 0x00};
-// //                                                          65-72      73-80      81-88      89-96
-// byte SupportedPID41to60[8] =          {0x06,  0x41,  0x40,  B00000000, B00000000, B00000000, B00000001, 0x00};
-// //                                                          97-104     105-112    113-120    121-128
-// byte SupportedPID61to80[8] =          {0x06,  0x41,  0x60,  B00000000, B00001000, B00000000, B00000000, 0x00};
-
-// unsigned char MilCleared[7] =         {4, 65, 63, 34, 224, 185, 147};
-
-// unsigned char rpmMessage[7] = {4, 65, 12, 0, 0, 0, 0 };
-// unsigned char vspeedMessage[7] = {4, 65, 13, 0, 224, 185, 147};
-
-void OBD2::initialize() {
-    Serial.println("ODB2 initializing");
-
-    Can2.begin();
-    Can2.setBaudRate(500 * 1000);
-    Can2.setMaxMB(16);
-    Can2.enableFIFO();
-    Can2.enableFIFOInterrupt();
-    Can2.onReceive(sendData);
-    Can2.mailboxStatus();
+  Can2.begin();
+  Can2.setBaudRate(500 * 1000);
+  Can2.setMaxMB(16);
+  Can2.enableFIFO();
+  Can2.enableFIFOInterrupt();
+  Can2.onReceive(sendData);
+  Can2.mailboxStatus();
 }
 
-
-// int only16 = 0;
 void OBD2::sendData(const CAN_message_t &msg) {
-    if (msg.buf[2] == 0) {
-        CAN_message_t msg;
-        msg.id = CAN2_ID;
-        msg.buf[0] = 0x6;
-        msg.buf[1] = 0x41;
-        msg.buf[2] = B00000000;
-        msg.buf[3] = B00000000;
-        msg.buf[4] = B00000000;
-        msg.buf[5] = B00000001;
-        msg.buf[6] = 0x0;
-        Can2.write(msg);
+  if (msg.id == 2015 && msg.buf[1] == 1) {
+    switch (msg.buf[2]) {
+      case 0:
+        Serial.println("ODB2 pids 1-40 requested from " + (String)msg.id);
+        Can2.write(supportedPidsOneToThirtyTwoResponse);
+        break;
+      case 1:
+        Can2.write(monitorStatusResponse);
+        break;
+      case 4:
+        engineLoadTempResponse.buf[3] = OBD2::appData->load * 2.55;
+        Can2.write(engineLoadTempResponse);
+        break;
+      case 5:
+        waterTempResponse.buf[3] = OBD2::appData->coolantTemp;
+        Can2.write(waterTempResponse);
+        break;
+      case 12:
+        rpmResponse.buf[3] = highByte(OBD2::appData->rpm << 2);
+        rpmResponse.buf[4] = lowByte(OBD2::appData->rpm << 2);
+        Can2.write(rpmResponse);
+        break;
+      case 13:
+        speedResponse.buf[3] = OBD2::appData->speedInMph;
+        Can2.write(speedResponse);
+        break;
+      case 14:
+        timingResponse.buf[3] = (OBD2::appData->timing + 64) * 2;
+        Can2.write(timingResponse);
+        break;
+      case 17:
+        throttleResponse.buf[3] = OBD2::appData->throttlePercentage * 2.55;
+        Can2.write(throttleResponse);
+        break;
+      case 28:
+        Serial.println("ODB2 standard requested");
+        Can2.write(obdStandardResponse);
+        break;
+      case 31:
+        // I don't have code to determine engine start time yet, so just using
+        // the time the app started
+        runtime = millis() / 1000;
+        runtimeResponse.buf[3] = highByte(runtime);
+        runtimeResponse.buf[4] = lowByte(runtime);
+        Can2.write(runtimeResponse);
+        break;
+      case 32:
+        Serial.println("ODB2 pids 33-64 requested");
+        Can2.write(supportedPidsThirtyThreeToSixtyFourResponse);
+        break;
+      case 64:
+        Serial.println("ODB2 pids 65-96 requested");
+        Can2.write(supportedPidsSixtyFiveToNinetySixResponse);
+        break;
+      case 81:
+        Serial.println("ODB2 fuel type requested");
+        Can2.write(fuelTypeResponse);
+        break;
+      case 92:
+        oilTempResponse.buf[3] = OBD2::appData->oilTempC + 40;
+        Can2.write(oilTempResponse);
+        break;
+      case 96:
+        Serial.println("ODB2 pids 97-128 requested");
+        Can2.write(supportedPidsNinetySevenToOneHundredTwentyEightResponse);
+        break;
+      case 112:
+        boost = OBD2::appData->boost;
+        boost *= 220;
+        boost -= 10;
+        boostResponse.buf[6] = highByte(boost);
+        boostResponse.buf[7] = lowByte(boost);
+        Can2.write(boostResponse);
+        break;
+      default:
+        Serial.println("ODB2 unknown request" + (String)msg.buf[2]);
+        break;
     }
-// //    //SENSORS
-// //    unsigned char fuelPressureControlSystem[8] =    {16, 65, 209, 225, 100, 25, 50, 50};
-// //
-//     while(CAN_MSGAVAIL == CAN.checkReceive() && only16++ < 16)
-//     {
-// ////        Serial.println("CAN_MSGAVAIL");
-//         CAN.readMsgBuf(&len, buf);
-//         canId = CAN.getCanId();
-// //        if (canId != 2015) {
-// //            Serial.print("<");
-// //            Serial.print(canId);
-// //            Serial.print(">{");
-// //        }
-// //
-//         for(int i = 0; i<len; i++)
-//         {
-//             BuildMessage = BuildMessage + buf[i] + (i == len - 1 ? "" : ",");
-//         }
-// //        if (canId != 2015) {
-// //            Serial.println(BuildMessage + "}");
-// //        }
-// //
-// //        Serial.println(BuildMessage);
-//         //Check which message was received.
-//         if(BuildMessage == SupportedPIDsRequested) {
-//             Serial.println("PIDs requested");
-//             sendCanMessage(sizeof(SupportedPID), SupportedPID);
-//         }
-// //
-//         if(BuildMessage == SupportedPIDs21to40Requested) {
-// //            Serial.println("requested the 21 to 40!!!!!");
-//             sendCanMessage(sizeof(SupportedPID21to40), SupportedPID21to40);
-//         }
-// //
-//         if(BuildMessage == SupportedPIDs41to60Requested) {
-// //            Serial.println("requested the 41 to 60!!!!!");
-//             sendCanMessage(sizeof(SupportedPID41to60), SupportedPID41to60);
-//         }
-// //
-//         if(BuildMessage == SupportedPIDs61to80Requested) {
-//             Serial.println("requested the 61 to 80!!!!!");
-//             sendCanMessage(sizeof(SupportedPID61to80), SupportedPID61to80);
-//         }
-// //
-//         if(BuildMessage == CheckEngineLightClearRequested) {
-//             Serial.println("sending CIL cleared");
-//             sendCanMessage(sizeof(MilCleared), MilCleared);
-//         }
-// //
-// //        //SEND SENSOR STATUSES
-// //        if(BuildMessage == CoolantTempRequested) {
-// //            unsigned char CoolantTemp[7] = {4, 65, 5,  currentData.coolantTemp, 0, 185, 147};
-// ////            Serial.println("sending coolant temp " + (String)currentData.coolantTemp);
-// ////            Serial.println("message received " + CoolantTempRequested);
-// //            sendCanMessage(sizeof(CoolantTemp), CoolantTemp);
-// //        }
-// //
-// //        if(BuildMessage == TransmissionTemperatureRequested) {
-// ////            unsigned char TransmissionTemperatureData[7] = {5,98,22,116,5,5,0}; // doesn't work :(
-// //            unsigned char TransmissionTemperatureData[7] = {5,98,17,189,5,5,0}; // doesn't work :(
-// ////            Serial.println("Sending Transmission Temperature " + (String)currentData.transmissionTempC + " " + sizeof(TransmissionTemperatureData));
-// //            sendCanMessage(7, TransmissionTemperatureData);
-// //        }
-// //
-//         if(BuildMessage == RpmRequested){
-//             Serial.println("RPM requested via ODB2");
-//             rpmMessage[3] = highByte(currentData.rpm << 2);
-//             rpmMessage[4] = lowByte(currentData.rpm << 2);
-//             sendCanMessage(sizeof(rpmMessage), rpmMessage);
-//         }
-// //
-//         if(BuildMessage == SpeedoRequested){
-// //            Serial.println("sending speedo " + (String)currentData.speedInMph);
-
-//             vspeedMessage[3] = mphToKph(currentData.speedInMph);
-//             sendCanMessage(sizeof(vspeedMessage), vspeedMessage);
-//         }
-// //        if(BuildMessage == FuelPressureControlSystemRequested) {
-// ////            Serial.println("sending FuelPressureControlSystemRequested 50");
-// //            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
-// ////            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
-// ////            sendCanMessage(sizeof(fuelPressureControlSystem), fuelPressureControlSystem);
-// //        }
-//         BuildMessage="";
-//     }
-// //
-// //    byte canCheckError = CAN.checkError();
-// //    if(canCheckError != 0){
-// //        Serial.println("CAN.checkError != 0" + (String)canCheckError);
-// //    }
-// only16 = 0;
+  }
 }
 #endif

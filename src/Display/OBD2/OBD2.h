@@ -9,8 +9,11 @@
 
 class OBD2 {
 public:
-    static void initialize();
+    static void initialize(AppData *currentData);
     static void sendData(const CAN_message_t &msg);
+
+private:
+    static AppData *appData;
 };
 
 
