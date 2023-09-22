@@ -106,8 +106,8 @@ void OBD2::sendData(const CAN_message_t &msg) {
         boost *= 1.003;
         boost *= 220;
         boost -= 10;
-        boostResponse.buf[6] = highByte((long)boost);
-        boostResponse.buf[7] = lowByte((long)boost);
+        boostResponse.buf[6] = boost < 0 ? 0 : highByte((long)boost);
+        boostResponse.buf[7] = boost < 0 ? 0 : lowByte((long)boost);
         Can2.write(boostResponse);
         break;
       default:
