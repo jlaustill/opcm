@@ -11,7 +11,7 @@
 #include "OBD2.h"
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can2;
 unsigned long runtime;
-unsigned long boost;
+double boost;
 
 // byte mphToKph(int mph) {
 //     double kph = mph * 1.60934;
@@ -103,10 +103,11 @@ void OBD2::sendData(const CAN_message_t &msg) {
         break;
       case 112:
         boost = OBD2::appData->boost;
+        boost *= 1.003;
         boost *= 220;
         boost -= 10;
-        boostResponse.buf[6] = highByte(boost);
-        boostResponse.buf[7] = lowByte(boost);
+        boostResponse.buf[6] = highByte((long)boost);
+        boostResponse.buf[7] = lowByte((long)boost);
         Can2.write(boostResponse);
         break;
       default:
