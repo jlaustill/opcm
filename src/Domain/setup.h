@@ -1,22 +1,22 @@
-#include "Configuration.h"
 #include <AppData.h>
-
-#include <TempSensor.h>
 #include <PressureSensor.h>
+#include <TempSensor.h>
+
+#include "Configuration.h"
 // #include <Wire.h>
 
-#ifdef CAN_BUS
-#include "Display/CanBus.h"
-#endif
 #ifdef CUMMINS_BUS_INPUT
 #include "Data/CumminsBus.h"
 #endif
+
 #ifdef SPEEDOMETER_INPUT
 #include "Data/SpeedometerInput.h"
 #endif
+
 #ifdef TACHOMETER_INPUT_60_MINUS_2
 #include "Data/TachometerInput60Minus2.h"
 #endif
+
 #ifdef TRANSMISSION_PRESSURE_INPUT
 PressureSensor TransPresSensor;
 #endif
@@ -56,10 +56,9 @@ AppData currentData;
 
 String serialBuffer;
 
-float roundToTwo(float var)
-{
-    float value = (int)(var * 100 + .5);
-    return (float)value / 100.0;
+float roundToTwo(float var) {
+  float value = (int)(var * 100 + .5);
+  return (float)value / 100.0;
 }
 
 #ifdef TACHOMETER_OUTPUT

@@ -15,15 +15,8 @@
 #include <Arduino.h>
 #include <TempSensor.h>
 
-// #define ODB2
-#ifdef ODB2
-#define CAN2_ID 0x7E8
-#endif
-// #define CAN_BUS
-#ifdef CAN_BUS
-#define CAN_BUS_INT_PIN 2
-#define CAN_BUS_CS_PIN 5
-#endif
+#define ODB2
+
 // The Cummins bus provides rpms, so don't enable both at the same time
 #define CUMMINS_BUS_INPUT
 

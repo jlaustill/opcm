@@ -40,14 +40,6 @@ void opcm::setup() {
   lastOdometerUpdate = 0;
   thisDuration = 0;
   thisMileage = 0;
-  // pinMode(LEFT_BLINKER_PIN, INPUT_PULLUP);
-  // pinMode(RIGHT_BLINKER_PIN, INPUT_PULLUP);
-  // pinMode(HIGH_BEAMS_PIN, INPUT_PULLUP);
-  // pinMode(WAIT_TO_START_PIN, INPUT_PULLUP);
-  // pinMode(FOUR_BY_FOUR_PIN, INPUT_PULLUP);
-  // pinMode(SEAT_BELT_WARNING_PIN, INPUT_PULLUP);
-  // pinMode(DOOR_AJAR_WARNING_PIN, INPUT_PULLUP);
-  // pinMode(BRAKE_LIGHT_PIN, INPUT_PULLUP);
 
   Serial.println("Starting up...");
   SdCard = new sdCard();
@@ -91,10 +83,6 @@ void opcm::setup() {
       WATER_TEMPERATURE_INPUT_WIRING_RESISTANCE);
 #endif
 
-#ifdef CAN_BUS
-  CanBus::initialize();
-#endif
-
 #ifdef CUMMINS_BUS_INPUT
   Serial.println("CUMMINS_BUS_INPUT defined");
   CumminsBus::initialize();
@@ -121,22 +109,6 @@ void opcm::setup() {
   currentData.amt = 0;
   currentData.throttlePercentage = 0;
   currentData.load = 0;
-
-  // currentData.odometer = memory::getOdometer();
-  // currentData.tripA = memory::getTripA();
-  // currentData.tripB = memory::getTripB();
-  // currentData.odometerSaveCount = memory::getSaveCount();
-  // currentData.oilChange = memory::getOilChange();
-  // currentData.transmissionFluidChange = memory::getTransmissionFluidChange();
-  // currentData.transferCaseFluidChange = memory::getTransferCaseFluidChange();
-  // currentData.frontDifferentialFluidChange =
-  // memory::getFrontDifferentialFluidChange();
-  // currentData.rearDifferentialFluidChange =
-  // memory::getRearDifferentialFluidChange(); currentData.fuelFilterChange =
-  // memory::getFuelFilterChange(); currentData.tireRotation =
-  // memory::getTireRotation();
-
-  // SdCard->saveData(&currentData);
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
   currentData.transmissionTempC = 0;
@@ -241,24 +213,9 @@ void opcm::loop() {
 
     // We only want to save if data has changed and we have come to a stop
     SdCard->saveData(&currentData);
-
-    // memory::setOdometer(currentData.odometer);
-    // memory::setTripA(currentData.tripA);
-    // memory::setTripB(currentData.tripB);
-    // memory::setSaveCount(currentData.odometerSaveCount);
-    // memory::setOilChange(currentData.oilChange);
-    // memory::setTransmissionFluidChange(currentData.transmissionFluidChange);
-    // memory::setTransferCaseFluidChange(currentData.transferCaseFluidChange);
-    // memory::setFrontDifferentialFluidChange(currentData.frontDifferentialFluidChange);
-    // memory::setRearDifferentialFluidChange(currentData.rearDifferentialFluidChange);
-    // memory::setFuelFilterChange(currentData.fuelFilterChange);
-    // memory::setTireRotation(currentData.tireRotation);
-    //        Serial.println("odometer: " + (String)currentData.odometer + "
-    //        tripA: " + (String)currentData.tripA + " tripB: " +
-    //        (String)currentData.tripB + " saveCount: " +
-    //        (String)currentData.odometerSaveCount);
   }
 #endif
+
   // Serial.println("Transfer Case Fluid? " +
   // (String)currentData.transferCaseFluidChange);
 
@@ -294,23 +251,6 @@ void opcm::loop() {
 #endif
 #ifdef SPEEDOMETER_OUTPUT
   speedometer.SetMph(currentData.speedInMph);
-#endif
-
-#ifdef ODB2
-//    OBD2::sendData(currentData);
-#endif
-#ifdef CAN_BUS
-  //    if (count % 100 == 0)
-  //    CanBus::sendRpms(currentData.rpm);
-  CanBus::setRpms(currentData.rpm);
-  CanBus::setMph(currentData.speedInMph);
-  CanBus::setCoolantTemp(currentData.coolantTemp);
-  if (thisDuration > 50) {
-    // send unpolled data
-    CanBus::sendOilPressure(currentData.oilPressureInPsi);
-    //        Serial.println("Sending Oil Pressure: " +
-    //        (String)currentData.oilPressureInPsi);
-  }
 #endif
 
 #ifdef NEXTION
