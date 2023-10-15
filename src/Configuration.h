@@ -15,6 +15,10 @@
 #include <Arduino.h>
 #include <TempSensor.h>
 
+#define AEM_TEMP_SENSOR_A 1.485995686e-03
+#define AEM_TEMP_SENSOR_B 2.279654266e-04
+#define AEM_TEMP_SENSOR_C 1.197578033e-07
+
 #define ODB2
 
 // The Cummins bus provides rpms, so don't enable both at the same time
@@ -55,9 +59,9 @@
 #define OIL_TEMPERATURE_INPUT_PIN_NUMBER 2
 #define OIL_TEMPERATURE_INPUT_DIVIDER 2 * 1000 // defines the analog pin of the input voltage from the voltage divider
 #define OIL_TEMPERATURE_INPUT_WIRING_RESISTANCE 100.0
-#define OIL_TEMPERATURE_INPUT_A 1.511129458e-03
-#define OIL_TEMPERATURE_INPUT_B 2.497079116e-04
-#define OIL_TEMPERATURE_INPUT_C -0.03967365606e-07
+#define OIL_TEMPERATURE_INPUT_A AEM_TEMP_SENSOR_A
+#define OIL_TEMPERATURE_INPUT_B AEM_TEMP_SENSOR_B
+#define OIL_TEMPERATURE_INPUT_C AEM_TEMP_SENSOR_C
 #endif
 
 #define WATER_TEMPERATURE_INPUT
