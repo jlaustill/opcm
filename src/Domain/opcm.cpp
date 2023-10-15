@@ -31,6 +31,7 @@ long opcm::maxSweep = 50;
 int opcm::up = 1;
 
 sdCard *SdCard;
+long loopCountLastMillis = 0;
 
 void opcm::setup() {
   Serial.begin(115200);
@@ -152,7 +153,7 @@ void opcm::loop() {
   }
 
   // Debugging
-  // Serial.print(sweep);
+  // Serial.print(count);
   // Serial.print(" ");
   // Serial.println(count);
   // delay(1000);
@@ -259,8 +260,12 @@ void opcm::loop() {
 #endif
 
   lastMillis = thisMillis;
-  // if (count > 500000 && count % 500000 == 0) Serial.println("Average
-  // Microseconds Per Loop: " + (String)(micros() / count));
+
+  if (thisMillis - loopCountLastMillis > 1000) {
+    loopCountLastMillis = thisMillis;
+    Serial.println("Loop Count/Sec: " + (String)count);
+    count = 0;
+  }
 
   while (Serial.available()) {
     int newData = Serial.read();

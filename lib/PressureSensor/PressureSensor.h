@@ -23,6 +23,7 @@ public:
         if (!ads.begin(DeviceId)) {
             Serial.println("Failed to initialize ADS.");
         } else {
+            initialized = true;
             Serial.println("Succesfuly initialized ADS.");
         }
     }
@@ -36,6 +37,7 @@ public:
 private:
     uint8_t DeviceId;
     uint8_t ChannelId;
+    boolean initialized = false;
 
     float rawValue;
     float rawZero;

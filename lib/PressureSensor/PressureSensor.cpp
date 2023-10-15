@@ -10,6 +10,10 @@ void PressureSensor::updateSensor() {
 }
 
 float PressureSensor::getPressureInPsi() {
+    if (!initialized) {
+        return 0.0f;
+    }
+
     this->updateSensor();
     float zeroVoltage = .49f;
     float maxVoltage = 3.0f;
