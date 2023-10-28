@@ -12,12 +12,13 @@ struct AppData {
     byte coolantTemp2;
     int rpm;
     byte speedInMph;
-    byte oilPressureInPsi;
-    byte oilTempC;
+    float oilPressureInPsi;
+    float oilTempC;
     int transmissionPressure;
     byte transmissionTempC;
     int fuelTempF;
-    int boost;
+    float boost;
+    float manifoldTempC;
     double odometer;
     unsigned long odometerSaveCount;
     double tripA;

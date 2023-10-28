@@ -12,6 +12,21 @@
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can2;
 unsigned long runtime;
 double boost;
+double oilPres;
+double oilTemp;
+double manifoldTemp;
+double manifoldPres;
+double transTemp;
+double transPres;
+long odometer;
+long tripA;
+long tripB;
+
+byte service;
+bool requestIsFromScannerRange = false;
+
+#define thirdByte(w) ((uint8_t)((w) >> 16))
+#define fourthByte(w) ((uint8_t)((w) >> 24))
 
 // byte mphToKph(int mph) {
 //     double kph = mph * 1.60934;
@@ -35,10 +50,13 @@ void OBD2::initialize(AppData *currentData) {
 }
 
 void OBD2::sendData(const CAN_message_t &msg) {
-  if (msg.id == 2015 && msg.buf[1] == 1) {
+  service = msg.buf[1];
+  requestIsFromScannerRange = msg.id >= 2015 && msg.id <= 2023;
+
+  if (requestIsFromScannerRange && service == 1) {
     switch (msg.buf[2]) {
       case 0:
-        Serial.println("ODB2 pids 1-40 requested from " + (String)msg.id);
+        Serial.println("ODB2 pids 1-32 requested from " + (String)msg.id);
         Can2.write(supportedPidsOneToThirtyTwoResponse);
         break;
       case 1:
@@ -110,10 +128,105 @@ void OBD2::sendData(const CAN_message_t &msg) {
         boostResponse.buf[7] = boost < 0 ? 0 : lowByte((long)boost);
         Can2.write(boostResponse);
         break;
+      case 128:
+        Serial.println("ODB2 pids 129-160 requested");
+        Can2.write(
+            supportedPidsOneHundredTwentyNineToOneHundredOneHundredFiftyResponse);
+        break;
+      case 166:
+        odometer = OBD2::appData->odometer * 1.60934 * 10;
+        // Serial.println("Odometer? " + (String)(odometer / 10));
+        odometerResponse.buf[3] =
+            odometer > 16777216 ? fourthByte(odometer) : 0;
+        odometerResponse.buf[4] = odometer > 65535 ? thirdByte(odometer) : 0;
+        odometerResponse.buf[5] = odometer > 255 ? highByte(odometer) : 0;
+        odometerResponse.buf[6] = lowByte(odometer);
+        Can2.write(odometerResponse);
+        break;
+      case 251:
+        tripA = OBD2::appData->tripA * 1.60934 * 10;
+        tripAResponse.buf[3] = tripA > 16777216 ? fourthByte(tripA) : 0;
+        tripAResponse.buf[4] = tripA > 65535 ? thirdByte(tripA) : 0;
+        tripAResponse.buf[5] = tripA > 255 ? highByte(tripA) : 0;
+        tripAResponse.buf[6] = lowByte(tripA);
+        Can2.write(tripAResponse);
+        break;
+      case 252:
+        tripB = OBD2::appData->tripB * 1.60934 * 10;
+        tripBResponse.buf[3] = tripB > 16777216 ? fourthByte(tripB) : 0;
+        tripBResponse.buf[4] = tripB > 65535 ? thirdByte(tripB) : 0;
+        tripBResponse.buf[5] = tripB > 255 ? highByte(tripB) : 0;
+        tripBResponse.buf[6] = lowByte(tripB);
+        Can2.write(tripBResponse);
+        break;
+      case 253:
+        oilPres = OBD2::appData->oilPressureInPsi;
+        oilPres *= 6.895;
+        oilPres *= 10;
+        oilResponse.buf[3] = highByte((long)oilPres);
+        oilResponse.buf[4] = lowByte((long)oilPres);
+        oilTemp = OBD2::appData->oilTempC;
+        oilTemp *= 100;
+        oilTemp += 32767;
+        oilResponse.buf[5] = highByte((long)oilTemp);
+        oilResponse.buf[6] = lowByte((long)oilTemp);
+        Can2.write(oilResponse);
+        break;
+      case 254:
+        // Serial.println("ODB2 254 requested");
+        manifoldPres = OBD2::appData->boost;
+        manifoldTemp = OBD2::appData->manifoldTempC;
+        manifoldTemp *= 100;
+        manifoldTemp += 32767;
+        manifoldResponse.buf[3] = highByte((long)manifoldTemp);
+        manifoldResponse.buf[4] = lowByte((long)manifoldTemp);
+        manifoldPres *= 6.895;
+        manifoldPres *= 10;
+        manifoldResponse.buf[5] = highByte((long)manifoldPres);
+        manifoldResponse.buf[6] = lowByte((long)manifoldPres);
+        Can2.write(manifoldResponse);
+        break;
+      case 255:
+        // Serial.println("ODB2 255 requested");
+        transPres = OBD2::appData->transmissionPressure;
+        transTemp = OBD2::appData->transmissionTempC;
+        transPres *= 6.895;
+        transPres *= 10;
+        transResponse.buf[5] = highByte((long)transPres);
+        transResponse.buf[6] = lowByte((long)transPres);
+        transTemp *= 100;
+        transTemp -= 32767;
+        transResponse.buf[3] = highByte((long)transTemp);
+        transResponse.buf[4] = lowByte((long)transTemp);
+        Can2.write(transResponse);
+        break;
       default:
-        Serial.println("ODB2 unknown request" + (String)msg.buf[2]);
+        Serial.println("ODB2 unknown request ID: " + (String)msg.id + " " +
+                       (String)msg.buf[0] + " " + (String)msg.buf[1] + " " +
+                       (String)msg.buf[2] + " " + (String)msg.buf[3] + " " +
+                       (String)msg.buf[4] + " " + (String)msg.buf[5] + " " +
+                       (String)msg.buf[6] + " " + (String)msg.buf[7] + " ");
         break;
     }
+  } else if (requestIsFromScannerRange && service == 255) {
+    if (msg.buf[2] == 1) {
+      // long biggy = 987654321;
+      // Serial.println("lowByte? " + (String)lowByte(biggy) + " " +
+      //                (String)highByte(biggy) + " " + (String)thirdByte(biggy) +
+      //                " " + (String)fourthByte(biggy));
+      OBD2::appData->tripA = 0;
+      Serial.println("Reset Trip A");
+    } else if (msg.buf[2] == 2) {
+      OBD2::appData->tripB = 0;
+      Serial.println("Reset Trip B");
+    }
+
+  } else {
+    Serial.println("ODB2 unknown request ID: " + (String)msg.id + " " +
+                   (String)msg.buf[0] + " " + (String)msg.buf[1] + " " +
+                   (String)msg.buf[2] + " " + (String)msg.buf[3] + " " +
+                   (String)msg.buf[4] + " " + (String)msg.buf[5] + " " +
+                   (String)msg.buf[6] + " " + (String)msg.buf[7] + " ");
   }
 }
 #endif

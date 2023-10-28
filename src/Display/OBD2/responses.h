@@ -1,7 +1,7 @@
 #include <FlexCAN_T4.h>
 
 uint8_t emptyBytePad = 0xCC;
-uint32_t ecmResponseId = 0x7E8;
+uint32_t ecmResponseId = 2024;
 uint8_t currentDataService = 0x41;
 
 CAN_message_t supportedPidsOneToThirtyTwoResponse = {
@@ -19,7 +19,12 @@ CAN_message_t supportedPidsSixtyFiveToNinetySixResponse = {
 CAN_message_t supportedPidsNinetySevenToOneHundredTwentyEightResponse = {
     .id = ecmResponseId,
     .buf = {6, currentDataService, 96, B00000000, B00000001, B00000000,
-            B00000000, emptyBytePad}};
+            B00000001, emptyBytePad}};
+CAN_message_t supportedPidsOneHundredTwentyNineToOneHundredOneHundredFiftyResponse = {
+    .id = ecmResponseId,
+    .buf = {6, currentDataService, 96, B00000000, B00000000, B00000000,
+            B00000001, emptyBytePad}};
+
 CAN_message_t monitorStatusResponse = {
     .id = ecmResponseId,
     .buf = {7, currentDataService, 1, B00000000, B00001000, B00000000,
@@ -71,6 +76,22 @@ CAN_message_t oilTempResponse = {
             emptyBytePad, emptyBytePad}};
 
 CAN_message_t boostResponse = {
-    .id = ecmResponseId,
-    .buf = {7, currentDataService, 112, 0, 0, 0,
-            0, 0}};
+    .id = ecmResponseId, .buf = {7, currentDataService, 112, 0, 0, 0, 0, 0}};
+
+CAN_message_t oilResponse = {
+    .id = ecmResponseId, .buf = {7, currentDataService, 253, 0, 0, 0, 0, 0}};
+
+CAN_message_t manifoldResponse = {
+    .id = ecmResponseId, .buf = {7, currentDataService, 254, 0, 0, 0, 0, 0}};
+
+CAN_message_t transResponse = {
+    .id = ecmResponseId, .buf = {7, currentDataService, 255, 0, 0, 0, 0, 0}};
+
+CAN_message_t odometerResponse = {
+    .id = ecmResponseId, .buf = {7, currentDataService, 166, 0, 0, 0, 0, 0}};
+
+CAN_message_t tripAResponse = {
+    .id = ecmResponseId, .buf = {7, currentDataService, 252, 0, 0, 0, 0, 0}};
+
+CAN_message_t tripBResponse = {
+    .id = ecmResponseId, .buf = {7, currentDataService, 251, 0, 0, 0, 0, 0}};
