@@ -6,11 +6,16 @@
 #include <Arduino.h>
 #include <FlexCAN_T4.h>
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can1;
+#include <J1939.h>
+#include <bit-utils.h>
+
 #include <cstdint>
 
 #include "CumminsBus.h"
 
-volatile byte data[16];
+J1939 message;
+
+// volatile byte data[16];
 boolean warmedUp = false;
 
 struct CanMessage {
@@ -44,16 +49,16 @@ uint32_t calculateJ1939PGN(uint8_t* canMsg) {
   return pgn;
 }
 
-volatile CanMessage message419360256{
+volatile CanMessage pgn65262{
     0x67, 0x8, {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, 0};
-volatile CanMessage message419360512{};
+volatile CanMessage pgn65263{};
 volatile CanMessage message256{};
 volatile CanMessage message274{};
 volatile CanMessage x67984Message{
     0x67, 0x8, {0xFE, 0x7D, 0x7D, 0xC0, 0x1, 0xFF, 0xFF, 0xFF}, 0};
-volatile CanMessage message217056000{
+volatile CanMessage pgn61443{
     0x67, 0x8, {0xF1, 0x0, 0x0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}, 0};
-volatile CanMessage message419362304{};
+volatile CanMessage pgn65270{};
 CAN_message_t msg;
 
 // Our data, how exciting!
@@ -127,25 +132,79 @@ uint8_t calculateJ1939Destination(uint8_t* canMsg) {
 }
 
 void CumminsBusSniff(const CAN_message_t& msg) {
-  for (uint8_t i = 0; i < msg.len; i++) {
-    data[i] = msg.buf[i];
-  }
+  // for (uint8_t i = 0; i < msg.len; i++) {
+  //   data[i] = msg.buf[i];
+  // }
 
-  if (msg.id == 419360256) {
-    updateMessage(&message419360256, msg);
-  } else if (msg.id == 419360512) {
-    updateMessage(&message419360512, msg);
-  } else if (msg.id == 419362304) {
-    updateMessage(&message419362304, msg);
-  } else if (msg.id == 217056000) {
-    updateMessage(&message217056000, msg);
-  } else if (msg.id == 274) {
-    updateMessage(&message274, msg);
-  } else if (msg.id == 256) {
+  message = J1939();
+  message.setCanId(msg.id);
+  message.setData(msg.buf);
+
+  // Serial.println("ID: " + (String)msg.id + " Data: " + (String)data[0] + " "
+  // +
+  //                (String)data[1] + " " + (String)data[2] + " " +
+  //                (String)data[3] + " " + (String)data[4] + " " +
+  //                (String)data[5] + " " + (String)data[6] + " " +
+  //                (String)data[7] + " " + (String)msg.len + " " +
+  //                (String)msg.flags.extended + " " +
+  //                (String)msg.flags.remote);
+  if (message.canId == 256) {
+    // PGN: 1 ????
     updateMessage(&message256, msg);
     CAN_message_t newMsg = msg;
     CumminsBus::updateTiming(newMsg);
+  } else if (message.canId == 274) {
+    // Must come from the VP44, no messages when bench testing
+    updateMessage(&message274, msg);
+  } else if (message.pgn == 60415) {
+    // what's this?
+  } else if (message.pgn == 60671) {
+    // what's this?
+  } else if (message.pgn == 61440) {
+    // Electronic Retarder Controller 1 - ERC1 -
+  } else if (message.pgn == 61443) {
+    // PGN: 61443
+    updateMessage(&pgn61443, msg);
+  } else if (message.pgn == 61444) {
+    // Electronic Engine Controller 1 - EEC1 -
+  } else if (message.pgn == 65247) {
+    // Electronic Engine Controller 3 - EEC3 -
+  } else if (message.pgn == 65252) {
+    // Shutdown - SHUTDOWN -
+    // wait to start lamp spn 1081 (doesn't seem to work bench testing)
+  } else if (message.pgn == 65262) {
+    // PGN: 65262
+    // Engine Temperature 1 - ET1
+    // Engine coolant temperature 1 spn 110
+    // fuel temperate 2 spn 174
+    // engine oil temperature 3-4 spn 175
+    // turbo oil temperature 5-6 spn 176
+    // enginer intercooler temperature 7 spn 52
+    // engine intercooler thermostat 8 spn 1134
+    updateMessage(&pgn65262, msg);
+  } else if (message.pgn == 65263) {
+    // PGN: 65263
+    // Engine Fluid Level/Pressure 1 - EFL/P1 -
+    updateMessage(&pgn65263, msg);
+  } else if (message.pgn == 65264) {
+    // Power Takeoff Information - PTO -
+  } else if (message.pgn == 65265) {
+    // Cruise Control/Vehicle Speed - CCVS -
+  } else if (message.pgn == 65266) {
+    // Fuel Economy (Liquid) - LFE -
+  } else if (message.pgn == 65269) {
+    // Ambient Conditions - AMB -
+    // AIT air inlent temp spn 172
+  } else if (message.pgn == 65270) {
+    // PGN: 65270
+    // Inlet/Exhaust Conditions 1 - IC1 -
+    updateMessage(&pgn65270, msg);
+  } else if (message.pgn == 65271) {
+    // Vehicle Electrical Power - VEP -
+  } else if (message.pgn == 65504) {
+    // what's this?
   } else {
+    Serial.println("PGN: " + (String)message.pgn);
     // byte* idBytes = getIdBytes(msg.id);
     // int pgn = calculateJ1939PGN(idBytes);
     // uint8_t sourceAddress = calculateJ1939Source(idBytes);
@@ -257,7 +316,7 @@ float CumminsBus::getCurrentFuelPercentage() {
 }
 
 void CumminsBus::updateThrottlePercentage() {
-  throttlePercentage = message217056000.data[1] * .4f;  // looking good!
+  throttlePercentage = pgn61443.data[1] * .4f;  // looking good!
 }
 
 int CumminsBus::getCurrentThrottlePercentage() {
@@ -266,7 +325,7 @@ int CumminsBus::getCurrentThrottlePercentage() {
 }
 
 void CumminsBus::updateLoad() {
-  load = static_cast<float>(message217056000.data[2]) * 0.8f;  // looking good!
+  load = static_cast<float>(pgn61443.data[2]) * 0.8f;  // looking good!
 }
 
 int CumminsBus::getCurrentLoad() {
@@ -301,10 +360,10 @@ int CumminsBus::getCurrentRpms() {
   return (int)RPM;
 }
 
-int CumminsBus::getCurrentAMT() { return message419362304.data[2] - 40; }
+int CumminsBus::getCurrentAMT() { return pgn65270.data[2] - 40; }
 
 int CumminsBus::getCurrentBoostInPsi() {
-  double kpa = message419362304.data[1] * 2;
+  double kpa = pgn65270.data[1] * 2;
   double psi = kpa / 6.895 - 10;
   return psi;
 }
@@ -331,7 +390,7 @@ int CumminsBus::getCurrentWaterTemp() {
   // Serial.println("requesting water temp?" + (String)Can2.getTXQueueCount());
   // Can2.events();
   Can1.write(msg);
-  waterTemp = message419360256.data[0] - 40;  // Confirmed!!!
+  waterTemp = pgn65262.data[0] - 40;  // Confirmed!!!
   if (!warmedUp && waterTemp > 65) {
     warmedUp = true;
   }
@@ -361,7 +420,7 @@ bool parseCurrentEngineOilPressure(const J1939Message& msg,
 
 byte CumminsBus::getCurrentOilPressure() {
   // Compute Oil Pressure
-  oilPressure = message419360512.data[3] * 4 / 6.895;  // Confirmed!!!
+  oilPressure = pgn65263.data[3] * 4 / 6.895;  // Confirmed!!!
   return (byte)oilPressure;
 }
 

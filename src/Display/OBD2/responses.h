@@ -15,7 +15,7 @@ CAN_message_t supportedPidsThirtyThreeToSixtyFourResponse = {
 CAN_message_t supportedPidsSixtyFiveToNinetySixResponse = {
     .id = ecmResponseId,
     .buf = {6, currentDataService, 64, B00000000, B00000000, B10000000,
-            B00010001, emptyBytePad}};
+            B00000001, emptyBytePad}};
 CAN_message_t supportedPidsNinetySevenToOneHundredTwentyEightResponse = {
     .id = ecmResponseId,
     .buf = {6, currentDataService, 96, B00000000, B00000001, B00000000,
