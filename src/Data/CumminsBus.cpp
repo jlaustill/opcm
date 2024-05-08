@@ -105,32 +105,6 @@ byte* getIdBytes(uint32_t id) {
   return idBytes;
 }
 
-uint8_t calculateJ1939Source(uint8_t* canMsg) {
-  // Extract source address (SA) from the message (bits 8-15 of byte 0)
-  uint8_t sa = canMsg[0] & 0xFF;
-
-  // If the message is an RTR message, add 0x80 to the SA to indicate that it's
-  // a request message
-  if ((canMsg[0] & 0x10) == 0x10) {
-    sa += 0x80;
-  }
-
-  return sa;
-}
-
-uint8_t calculateJ1939Destination(uint8_t* canMsg) {
-  // Extract destination address (DA) from the message (bits 0-7 of byte 0)
-  uint8_t da = canMsg[0] >> 3;
-
-  // If the message is an RTR message, set DA to the global broadcast address
-  // (0xFF)
-  if ((canMsg[0] & 0x10) == 0x10) {
-    da = 0xFF;
-  }
-
-  return da;
-}
-
 void CumminsBusSniff(const CAN_message_t& msg) {
   // for (uint8_t i = 0; i < msg.len; i++) {
   //   data[i] = msg.buf[i];
