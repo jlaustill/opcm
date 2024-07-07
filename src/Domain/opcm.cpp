@@ -174,11 +174,9 @@ void opcm::loop() {
   // currentData.coolantTemp = sweep * 2;
   // currentData.load = sweep * 2;
   // currentData.throttlePercentage = sweep * 2;
-  // currentData.oilTempC = sweep;
+  // currentData.oilTempC = sweep * 2 -23;
   // currentData.timing = sweep / 3;
   // currentData.boost = sweep + sweep / 10;
-  // currentData.manifoldTempC = sweep - 40;
-  // currentData.oilPressureInPsi = (float)sweep / 2.0;
 
 #ifdef CUMMINS_BUS_INPUT
   currentData.rpm = CumminsBus::getCurrentRpms();
