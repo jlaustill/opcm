@@ -7,6 +7,10 @@
 #include "Data/sdCard.h"
 #include "setup.h"
 
+#ifdef BLINK_OUTPUT
+#include "Display/BlinkOutput.h"
+#endif
+
 void opcm::newSweepValue() {
   if (up == 1 && sweep < maxSweep) {
     sweep++;
@@ -44,6 +48,10 @@ void opcm::setup() {
 
   Serial.println("Starting up...");
   SdCard = new sdCard();
+
+#ifdef BLINK_OUTPUT
+  BlinkOutput::initialize();
+#endif
 
 #ifdef TRANSMISSION_PRESSURE_INPUT
   TransPresSensor = PressureSensor(TRANSMISSION_PRESSURE_INPUT_PSI_MAX,
@@ -150,7 +158,12 @@ void opcm::loop() {
   count++;
   if (thisMillis % 1000 == 0) {
     newSweepValue();
+    // Serial.println("New Sweep Value: " + (String)sweep);
   }
+
+#ifdef BLINK_OUTPUT
+  BlinkOutput::blink();
+#endif
 
   // Debugging
   // Serial.print(count);
@@ -158,13 +171,15 @@ void opcm::loop() {
   // Serial.println(count);
   // delay(1000);
   // currentData.speedInMph = sweep;
-  // currentData.rpm = sweep * 100;
-  // currentData.coolantTemp = sweep * 2;
-  // currentData.load = sweep * 2;
-  // currentData.throttlePercentage = sweep * 2;
-  // currentData.oilTempC = sweep * 2 -23;
-  // currentData.timing = sweep / 3;
-  // currentData.boost = sweep + sweep / 10;
+  currentData.rpm = sweep * 100;
+  currentData.coolantTemp = sweep * 2;
+  currentData.load = sweep * 2;
+  currentData.throttlePercentage = sweep * 2;
+  currentData.oilTempC = sweep;
+  currentData.timing = sweep / 3;
+  currentData.boost = sweep + sweep / 10;
+  currentData.manifoldTempC = sweep - 40;
+  currentData.oilPressureInPsi = (float)sweep / 2.0;
 
 #ifdef CUMMINS_BUS_INPUT
   currentData.rpm = CumminsBus::getCurrentRpms();
@@ -185,8 +200,9 @@ void opcm::loop() {
 
 #ifdef SPEEDOMETER_INPUT
   currentData.speedInMph =
-      SpeedometerInput::getCurrentSpeedInMph();  // map(sweep, 0, maxSweep, 0,
-                                                 // 200); // random(0,255);
+      // SpeedometerInput::getCurrentSpeedInMph();
+      map(sweep, 0, maxSweep, 0,
+          85);  // random(0,255);
   thisMileage +=
       ((float)currentData.speedInMph / 3600000.0f * (float)thisDuration);
   //    Serial.println("thisMileage? " + (String)thisMileage + " "  +
@@ -213,6 +229,7 @@ void opcm::loop() {
     thisMileage = 0;
 
     // We only want to save if data has changed and we have come to a stop
+    Serial.println("Saving data to SD card");
     SdCard->saveData(&currentData);
   }
 #endif
