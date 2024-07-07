@@ -21,18 +21,18 @@
 #define AEM_TEMP_SENSOR_B 2.279654266e-04
 #define AEM_TEMP_SENSOR_C 1.197578033e-07
 
-#define ODB2
+// #define ODB2
 
 // #define BLINK_OUTPUT
 
 // The Cummins bus provides rpms, so don't enable both at the same time
-#define CUMMINS_BUS_INPUT
+// #define CUMMINS_BUS_INPUT
 
 // This is the setup on a 24 valve cummins using a camshaft sensor, so it
 // assumes the gear is running at 1/2 the speed of the crankshaft #define
 // TACHOMETER_INPUT_60_MINUS_2 #define TACHOMETER_INPUT_2
 
-#define SPEEDOMETER_INPUT
+// #define SPEEDOMETER_INPUT
 #ifdef SPEEDOMETER_INPUT
 #define SPEEDOMETER_INPUT_CLICKS_PER_MILE 8000
 #endif
@@ -97,12 +97,12 @@
 #endif
 
 // enable if you want a speedometer out on pin 8
-#define SPEEDOMETER_OUTPUT
+// #define SPEEDOMETER_OUTPUT
 #ifdef SPEEDOMETER_OUTPUT
 #define SPEEDOMETER_OUTPUT_CLICKS_PER_MILE 8000
 #endif
 
-#define NEXTION
+// #define NEXTION
 #ifdef NEXTION
 #define nexSer \
   Serial2  // Controlling the Nextion HMI using Serial1 (pin18 of the Arduino
