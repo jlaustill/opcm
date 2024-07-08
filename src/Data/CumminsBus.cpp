@@ -6,12 +6,16 @@
 #include <Arduino.h>
 #include <FlexCAN_T4.h>
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can1;
+#include <J1939.h>
+#include <bit-utils.h>
+
 #include <cstdint>
 
 #include "CumminsBus.h"
 
 volatile byte data[16];
 boolean warmedUp = false;
+J1939 j1939Message;
 
 struct CanMessage {
   byte id;
@@ -19,30 +23,6 @@ struct CanMessage {
   byte data[8];
   unsigned count;
 };
-
-// J1939 message structure
-struct J1939Message {
-  std::uint32_t id;
-  std::uint8_t data[8];
-};
-
-uint32_t calculateJ1939PGN(uint8_t* canMsg) {
-  // Extract PDU format (PF) and PDU specific (PS) bytes
-  uint8_t pf = canMsg[0] >> 4;
-  uint8_t ps = canMsg[1];
-
-  // Calculate PGN
-  uint32_t pgn = (pf << 16) | (ps << 8);
-
-  // If PF is greater than or equal to 240, then PS contains the data page
-  // number
-  if (pf >= 0xF0) {
-    uint8_t dp = canMsg[2];
-    pgn |= (dp << 16);
-  }
-
-  return pgn;
-}
 
 volatile CanMessage message419360256{
     0x67, 0x8, {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, 0};
@@ -100,35 +80,17 @@ byte* getIdBytes(uint32_t id) {
   return idBytes;
 }
 
-uint8_t calculateJ1939Source(uint8_t* canMsg) {
-  // Extract source address (SA) from the message (bits 8-15 of byte 0)
-  uint8_t sa = canMsg[0] & 0xFF;
-
-  // If the message is an RTR message, add 0x80 to the SA to indicate that it's
-  // a request message
-  if ((canMsg[0] & 0x10) == 0x10) {
-    sa += 0x80;
-  }
-
-  return sa;
-}
-
-uint8_t calculateJ1939Destination(uint8_t* canMsg) {
-  // Extract destination address (DA) from the message (bits 0-7 of byte 0)
-  uint8_t da = canMsg[0] >> 3;
-
-  // If the message is an RTR message, set DA to the global broadcast address
-  // (0xFF)
-  if ((canMsg[0] & 0x10) == 0x10) {
-    da = 0xFF;
-  }
-
-  return da;
-}
-
 void CumminsBusSniff(const CAN_message_t& msg) {
+  j1939Message = J1939();
   for (uint8_t i = 0; i < msg.len; i++) {
     data[i] = msg.buf[i];
+  }
+
+  j1939Message.setCanId(msg.id);
+  j1939Message.setData(msg.buf);
+
+  if (j1939Message.pgn == 43655) {
+    // do a thing here...
   }
 
   if (msg.id == 419360256) {
@@ -274,22 +236,6 @@ int CumminsBus::getCurrentLoad() {
   return load;
 }
 
-float parseEngineLoad(uint8_t* canMsg) {
-  // Check that the PGN is 0xFEF1 (Engine Fluids - 1) and the SPN is 92 (Engine
-  // Load)
-  uint32_t pgn = calculateJ1939PGN(canMsg);
-  uint16_t spn = (canMsg[2] << 8) | canMsg[3];
-  if (pgn != 0xFEF1 || spn != 92) {
-    return -1.0f;  // Invalid message
-  }
-
-  // Extract engine load value (range: 0-100%)
-  uint8_t value = canMsg[5];
-  float load = static_cast<float>(value) * 0.4f;
-
-  return load;
-}
-
 void CumminsBus::updateRpms() {
   RPM = (message256.data[7] << 8) |
         message256.data[6];  // convert from little endian
@@ -309,24 +255,6 @@ int CumminsBus::getCurrentBoostInPsi() {
   return psi;
 }
 
-// Parse "engine coolant temperature" parameter from J1939 message
-bool parseEngineCoolantTemp(const J1939Message& msg, float& coolantTemp) {
-  // Check if the message is an "engine coolant temperature" message
-  if ((msg.id >> 18) != 0) {
-    return false;
-  }
-  std::uint8_t pf = (msg.id >> 8) & 0xFF;  // PDU format
-  std::uint8_t ps = msg.id & 0xFF;         // PDU specific
-  // Check if the message has the PGN 65262 (hexadecimal 0xFEEE)
-  if (pf != 240 || ps != 14) {
-    return false;
-  }
-  // Extract "engine coolant temperature" parameter from data
-  std::int16_t tempRaw = (msg.data[1] << 8) | msg.data[0];
-  coolantTemp = (float)tempRaw * 0.03125f - 273.15f;
-  return true;
-}
-
 int CumminsBus::getCurrentWaterTemp() {
   // Serial.println("requesting water temp?" + (String)Can2.getTXQueueCount());
   // Can2.events();
@@ -336,27 +264,6 @@ int CumminsBus::getCurrentWaterTemp() {
     warmedUp = true;
   }
   return static_cast<int>(waterTemp);
-}
-
-// Parse "current engine oil pressure" parameter from J1939 message and convert
-// to PSI
-bool parseCurrentEngineOilPressure(const J1939Message& msg,
-                                   float& oilPressurePsi) {
-  // Check if the message is an "engine oil pressure" message
-  if ((msg.id >> 18) != 0) {
-    return false;
-  }
-  std::uint8_t pf = (msg.id >> 8) & 0xFF;  // PDU format
-  std::uint8_t ps = msg.id & 0xFF;         // PDU specific
-  // Check if the message has the PGN 65265 (hexadecimal 0xFEF1)
-  if (pf != 240 || ps != 17) {
-    return false;
-  }
-  // Extract "current engine oil pressure" parameter from data
-  std::uint16_t pressureRaw = (msg.data[1] << 8) | msg.data[0];
-  float oilPressureKpa = (float)(pressureRaw - 10000) / 1000.0f;
-  oilPressurePsi = oilPressureKpa * 0.145038f;
-  return true;
 }
 
 byte CumminsBus::getCurrentOilPressure() {
