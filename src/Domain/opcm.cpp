@@ -7,6 +7,10 @@
 #include "Data/sdCard.h"
 #include "setup.h"
 
+#ifdef BLINK_OUTPUT
+#include "Display/BlinkOutput.h"
+#endif
+
 void opcm::newSweepValue() {
   if (up == 1 && sweep < maxSweep) {
     sweep++;
@@ -44,6 +48,10 @@ void opcm::setup() {
 
   Serial.println("Starting up...");
   SdCard = new sdCard();
+
+#ifdef BLINK_OUTPUT
+  BlinkOutput::initialize();
+#endif
 
 #ifdef TRANSMISSION_PRESSURE_INPUT
   TransPresSensor = PressureSensor(TRANSMISSION_PRESSURE_INPUT_PSI_MAX,
@@ -152,6 +160,10 @@ void opcm::loop() {
     newSweepValue();
   }
 
+#ifdef BLINK_OUTPUT
+  BlinkOutput::blink();
+#endif
+
   // Debugging
   // Serial.print(count);
   // Serial.print(" ");
@@ -184,9 +196,7 @@ void opcm::loop() {
 #endif
 
 #ifdef SPEEDOMETER_INPUT
-  currentData.speedInMph =
-      SpeedometerInput::getCurrentSpeedInMph();  // map(sweep, 0, maxSweep, 0,
-                                                 // 200); // random(0,255);
+  currentData.speedInMph = SpeedometerInput::getCurrentSpeedInMph();
   thisMileage +=
       ((float)currentData.speedInMph / 3600000.0f * (float)thisDuration);
   //    Serial.println("thisMileage? " + (String)thisMileage + " "  +
