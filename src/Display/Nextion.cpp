@@ -12,17 +12,27 @@
 
 #include "Nextion.h"
 
-void Nextion::sendCmd(String cmd) {
-  nexSer.print(cmd);
-  nexSer.write("\xFF\xFF\xFF");
+// Track last sent data
+AppData lastSentData;
+
+// Track update timings
+unsigned long last100msUpdate = 0;
+unsigned long last1sUpdate = 0;
+
+// Buffer for batching commands
+String batchCmdBuffer = "";
+
+void Nextion::sendCmd(String cmd) { batchCmdBuffer += cmd + "\xFF\xFF\xFF"; }
+
+void Nextion::sendBatch() {
+  if (batchCmdBuffer.length() > 0) {
+    nexSer.print(batchCmdBuffer);
+    batchCmdBuffer = "";
 #ifdef DEBUG
-  if (cmd.length() > 0) {
-    Serial.print("Sending command : ");
-    Serial.println(cmd);
-  } else {
-    Serial.println("Empty command issued to clear the buffer");
-  }
+    Serial.print("Sending batch command: ");
+    Serial.println(batchCmdBuffer);
 #endif
+  }
 }
 
 void Nextion::initialize() {
@@ -71,110 +81,196 @@ String formatNumber(double number) {
 }
 
 void Nextion::updateDisplayData(AppData *currentData) {
-  sendCmd("selGear.val=" + (String)currentData->selectedGear);
-  sendCmd("curGear.val=" + (String)currentData->currentGear);
-  sendCmd("reqRange.txt=\"" + (String)currentData->requestedRange + "\"");
-  sendCmd("mph.val=" + (String)currentData->speedInMph);
-  sendCmd("odometer.txt=\"" + formatNumber(currentData->odometer) + "\"");
-  sendCmd("tripA.txt=\"" + formatNumber(currentData->tripA) + "\"");
-  sendCmd("tripB.txt=\"" + formatNumber(currentData->tripB) + "\"");
-  sendCmd("oc.txt=\"" + formatNumber(currentData->oilChange) + "\"");
-  sendCmd("tfc.txt=\"" + formatNumber(currentData->transmissionFluidChange) +
-          "\"");
-  sendCmd("tcfc.txt=\"" + formatNumber(currentData->transferCaseFluidChange) +
-          "\"");
-  sendCmd("fdfc.txt=\"" +
-          formatNumber(currentData->frontDifferentialFluidChange) + "\"");
-  sendCmd("rdfc.txt=\"" +
-          formatNumber(currentData->rearDifferentialFluidChange) + "\"");
-  sendCmd("ffc.txt=\"" + formatNumber(currentData->fuelFilterChange) + "\"");
-  sendCmd("tr.txt=\"" + formatNumber(currentData->tireRotation) + "\"");
+  unsigned long currentMillis = millis();
 
-  sendCmd("egt.val=" + (String)(int)currentData->egt);
+  // Update the display every 100ms
+  if (currentMillis - last100msUpdate >= 100) {
+    last100msUpdate = currentMillis;
 
-  // double transPressureDegrees = 360.0 -
-  // (double)currentData->transmissionPressure * 30 / 400;
-  sendCmd("transPres.val=" + (String)(int)currentData->transmissionPressure);
-  // sendCmd("transprestxt.txt=\"" + (String)currentData->transmissionPressure +
-  // " PSI\""); Serial.println("trans pres? " +
-  // (String)currentData->transmissionPressure);
+    // Check if the data has changed
+    if (memcmp(currentData, &lastSentData, sizeof(AppData)) != 0) {
+      // Send the updated data to the display
+      if (currentData->speedInMph != lastSentData.speedInMph) {
+        sendCmd("mph.val=" + (String)currentData->speedInMph);
+        lastSentData.speedInMph = currentData->speedInMph;
+      }
+      if (currentData->rpm != lastSentData.rpm) {
+        sendCmd("rpm.val=" + (String)currentData->rpm);
+        lastSentData.rpm = currentData->rpm;
+      }
+      if (currentData->egt != lastSentData.egt) {
+        sendCmd("egt.val=" + (String)(int)currentData->egt);
+        lastSentData.egt = currentData->egt;
+      }
+      if (currentData->throttlePercentage != lastSentData.throttlePercentage) {
+        sendCmd("throttle.val=" + (String)(int)currentData->throttlePercentage);
+        lastSentData.throttlePercentage = currentData->throttlePercentage;
+      }
+      if (currentData->selectedGear != lastSentData.selectedGear) {
+        sendCmd("selGear.val=" + (String)currentData->selectedGear);
+        lastSentData.selectedGear = currentData->selectedGear;
+      }
+      if (currentData->currentGear != lastSentData.currentGear) {
+        sendCmd("curGear.val=" + (String)currentData->currentGear);
+        lastSentData.currentGear = currentData->currentGear;
+      }
+      if (currentData->load != lastSentData.load) {
+        sendCmd("load.val=" + (String)(int)currentData->load);
+        lastSentData.load = currentData->load;
+      }
+    }
+    last100msUpdate = currentMillis;
+  }
 
-  double coolTempF = ((double)currentData->coolantTemp * 9 / 5) + 32;
-  sendCmd("h20t.val=" + (String)(int)coolTempF);
+  // Update slow data every 1 second
+  if (currentMillis - last1sUpdate >= 1000) {
+    last1sUpdate = currentMillis;
+    if (currentData->requestedRange != lastSentData.requestedRange) {
+      sendCmd("reqRange.txt=\"" + (String)currentData->requestedRange + "\"");
+      lastSentData.requestedRange = currentData->requestedRange;
+    }
+    if (currentData->odometer != lastSentData.odometer) {
+      sendCmd("odometer.txt=\"" + formatNumber(currentData->odometer) + "\"");
+      lastSentData.odometer = currentData->odometer;
+    }
+    if (currentData->tripA != lastSentData.tripA) {
+      sendCmd("tripA.txt=\"" + formatNumber(currentData->tripA) + "\"");
+      lastSentData.tripA = currentData->tripA;
+    }
+    if (currentData->tripB != lastSentData.tripB) {
+      sendCmd("tripB.txt=\"" + formatNumber(currentData->tripB) + "\"");
+      lastSentData.tripB = currentData->tripB;
+    }
+    if (currentData->oilChange != lastSentData.oilChange) {
+      sendCmd("oc.txt=\"" + formatNumber(currentData->oilChange) + "\"");
+      lastSentData.oilChange = currentData->oilChange;
+    }
+    if (currentData->transmissionFluidChange !=
+        lastSentData.transmissionFluidChange) {
+      sendCmd("tfc.txt=\"" +
+              formatNumber(currentData->transmissionFluidChange) + "\"");
+      lastSentData.transmissionFluidChange =
+          currentData->transmissionFluidChange;
+    }
+    if (currentData->transferCaseFluidChange !=
+        lastSentData.transferCaseFluidChange) {
+      sendCmd("tcfc.txt=\"" +
+              formatNumber(currentData->transferCaseFluidChange) + "\"");
+      lastSentData.transferCaseFluidChange =
+          currentData->transferCaseFluidChange;
+    }
+    if (currentData->frontDifferentialFluidChange !=
+        lastSentData.frontDifferentialFluidChange) {
+      sendCmd("fdfc.txt=\"" +
+              formatNumber(currentData->frontDifferentialFluidChange) + "\"");
+      lastSentData.frontDifferentialFluidChange =
+          currentData->frontDifferentialFluidChange;
+    }
+    if (currentData->rearDifferentialFluidChange !=
+        lastSentData.rearDifferentialFluidChange) {
+      sendCmd("rdfc.txt=\"" +
+              formatNumber(currentData->rearDifferentialFluidChange) + "\"");
+      lastSentData.rearDifferentialFluidChange =
+          currentData->rearDifferentialFluidChange;
+    }
+    if (currentData->fuelFilterChange != lastSentData.fuelFilterChange) {
+      sendCmd("ffc.txt=\"" + formatNumber(currentData->fuelFilterChange) +
+              "\"");
+      lastSentData.fuelFilterChange = currentData->fuelFilterChange;
+    }
+    if (currentData->tireRotation != lastSentData.tireRotation) {
+      sendCmd("tr.txt=\"" + formatNumber(currentData->tireRotation) + "\"");
+      lastSentData.tireRotation = currentData->tireRotation;
+    }
+    if (currentData->transmissionPressure) {
+      sendCmd("transPres.val=" +
+              (String)(int)currentData->transmissionPressure);
+      lastSentData.transmissionPressure = currentData->transmissionPressure;
+    }
+    if (currentData->coolantTemp != lastSentData.coolantTemp) {
+      double coolTempF = ((double)currentData->coolantTemp * 9 / 5) + 32;
+      sendCmd("h20t.val=" + (String)(int)coolTempF);
+      lastSentData.coolantTemp = currentData->coolantTemp;
+    }
+    if (currentData->coolantTemp2 != lastSentData.coolantTemp2) {
+      double coolTemp2F = ((double)currentData->coolantTemp2 * 9 / 5) + 32;
+      sendCmd("h20t2.val=" + (String)(int)coolTemp2F);
+      lastSentData.coolantTemp2 = currentData->coolantTemp2;
+    }
+    if (currentData->oilTempC != lastSentData.oilTempC) {
+      double oilTempF = ((double)currentData->oilTempC * 9 / 5) + 32;
+      sendCmd("ot.val=" + (String)(int)oilTempF);
+      lastSentData.oilTempC = currentData->oilTempC;
+    }
+    if (currentData->fuelTempF != lastSentData.fuelTempF) {
+      sendCmd("fueltmp.val=" + (String)currentData->fuelTempF);
+      lastSentData.fuelTempF = currentData->fuelTempF;
+    }
 
-  double coolTemp2F = ((double)currentData->coolantTemp2 * 9 / 5) + 32;
-  sendCmd("h20t2.val=" + (String)(int)coolTemp2F);
+    if (currentData->transmissionTempC != lastSentData.transmissionTempC) {
+      double transmissionTemperateDegrees =
+          (((double)currentData->transmissionTempC * 9 / 5) + 32);
+      sendCmd("trantemp.val=" + (String)(int)transmissionTemperateDegrees);
+      lastSentData.transmissionTempC = currentData->transmissionTempC;
+    }
+    if (currentData->oilPressureInPsi != lastSentData.oilPressureInPsi) {
+      sendCmd("oilPres.val=" + (String)(int)currentData->oilPressureInPsi);
+      lastSentData.oilPressureInPsi = currentData->oilPressureInPsi;
+    }
+  }
 
-  double oilTempF = ((double)currentData->oilTempC * 9 / 5) + 32;
-  sendCmd("ot.val=" + (String)(int)oilTempF);
+  // Send batch commands
+  sendBatch();
 
-  sendCmd("fueltmp.val=" + (String)currentData->fuelTempF);
+  // Process incoming commands
+  processCommands(currentData);
+}
 
-  sendCmd("rpm.val=" + (String)currentData->rpm);
-
-  double transmissionTemperateDegrees =
-      (((double)currentData->transmissionTempC * 9 / 5) + 32);
-  sendCmd("trantemp.val=" + (String)(int)transmissionTemperateDegrees);
-
-  sendCmd("oilPres.val=" + (String)(int)currentData->oilPressureInPsi);
-
-  sendCmd("load.val=" + (String)(int)currentData->load);
-  sendCmd("throttle.val=" + (String)(int)currentData->throttlePercentage);
-
-  String serialBuffer;
+void Nextion::processCommands(AppData *currentData) {
+  static String serialBuffer;
   while (nexSer.available()) {
     int newData = nexSer.read();
     if (newData == ';') {
       Serial.println("Execute!" + serialBuffer);
       if (serialBuffer.indexOf("resetTripA") > 0) {
         Serial.println("reset trip A!");
-        double zero = 0;
-        currentData->tripA = zero;
+        currentData->tripA = 0;
       }
       if (serialBuffer.indexOf("resetTripB") > 0) {
         Serial.println("reset trip B!");
-        double zero = 0;
-        currentData->tripB = zero;
+        currentData->tripB = 0;
       }
       if (serialBuffer.indexOf("resetOC") > 0) {
         Serial.println("reset Oil Change Mileage!");
-        double zero = 0;
-        currentData->oilChange = zero;
+        currentData->oilChange = 0;
       }
       if (serialBuffer.indexOf("resetTFC") > 0) {
         Serial.println("reset Transmission Fluid Change Mileage!");
-        double zero = 0;
-        currentData->transmissionFluidChange = zero;
+        currentData->transmissionFluidChange = 0;
       }
       if (serialBuffer.indexOf("resetTCFC") > 0) {
         Serial.println("reset Transfer Case Fluid Change Mileage!");
-        double zero = 0;
-        currentData->transferCaseFluidChange = zero;
+        currentData->transferCaseFluidChange = 0;
       }
       if (serialBuffer.indexOf("resetFDFC") > 0) {
         Serial.println("reset Front Differential Fluid Change Mileage!");
-        double zero = 0;
-        currentData->frontDifferentialFluidChange = zero;
+        currentData->frontDifferentialFluidChange = 0;
       }
       if (serialBuffer.indexOf("resetRDFC") > 0) {
         Serial.println("reset Rear Differential Fluid Change Mileage!");
-        double zero = 0;
-        currentData->rearDifferentialFluidChange = zero;
+        currentData->rearDifferentialFluidChange = 0;
       }
       if (serialBuffer.indexOf("resetFFC") > 0) {
         Serial.println("reset Fuel Filter Change Mileage!");
-        double zero = 0;
-        currentData->fuelFilterChange = zero;
+        currentData->fuelFilterChange = 0;
       }
       if (serialBuffer.indexOf("resetTR") > 0) {
         Serial.println("reset Tire Rotation Mileage!");
-        double zero = 0;
-        currentData->tireRotation = zero;
+        currentData->tireRotation = 0;
       }
       serialBuffer = "";
     } else {
       serialBuffer += (char)newData;
-      // Serial.println(serialBuffer);
     }
   }
 }

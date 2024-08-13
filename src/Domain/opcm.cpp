@@ -159,9 +159,7 @@ void opcm::loop() {
   thisMillis = millis();
   thisDuration = thisMillis - lastMillis;
   count++;
-  if (thisMillis % 1000 == 0) {
-    newSweepValue();
-  }
+  newSweepValue();
 
 #ifdef BLINK_OUTPUT
   BlinkOutput::blink();
@@ -172,14 +170,71 @@ void opcm::loop() {
   // Serial.print(" ");
   // Serial.println(count);
   // delay(1000);
-  // currentData.speedInMph = sweep;
-  // currentData.rpm = sweep * 100;
-  // currentData.coolantTemp = sweep * 2;
-  // currentData.load = sweep * 2;
-  // currentData.throttlePercentage = sweep * 2;
-  // currentData.oilTempC = sweep * 2 -23;
-  // currentData.timing = sweep / 3;
-  // currentData.boost = sweep + sweep / 10;
+#ifdef DEBUG
+  currentData.speedInMph = sweep;
+  currentData.rpm = sweep * 100;
+  currentData.coolantTemp = sweep * 2;
+  currentData.load = sweep * 2;
+  currentData.throttlePercentage = sweep * 2;
+  currentData.oilTempC = sweep * 2 - 23;
+  currentData.timing = sweep / 3;
+  currentData.boost = sweep + sweep / 10;
+  currentData.transmissionTempC = sweep;
+  currentData.transmissionPressure = sweep;
+  currentData.fuelTempF = sweep;
+  currentData.fuelPercentage = sweep;
+  currentData.amt = sweep;
+  currentData.odometer = sweep * 100;
+  currentData.tripA = sweep * 100;
+  currentData.tripB = sweep * 100;
+  currentData.oilChange = sweep * 100;
+  currentData.transmissionFluidChange = sweep * 100;
+  currentData.transferCaseFluidChange = sweep * 100;
+  currentData.frontDifferentialFluidChange = sweep * 100;
+  currentData.rearDifferentialFluidChange = sweep * 100;
+  currentData.fuelFilterChange = sweep * 100;
+  currentData.tireRotation = sweep * 100;
+  currentData.odometerSaveCount = sweep * 100;
+  currentData.egt = sweep * 100;
+  currentData.currentGear = sweep;
+  currentData.selectedGear = sweep;
+  currentData.requestedRange = sweep;
+  currentData.transmissionTempC = sweep;
+  currentData.transmissionPressure = sweep;
+  currentData.oilPressureInPsi = sweep;
+  currentData.fuelTempF = sweep;
+  currentData.boost = sweep;
+  currentData.timing = sweep;
+  currentData.coolantTemp2 = sweep;
+
+  uint8_t req = sweep % 7;
+  switch (req) {
+    case 1:
+      currentData.requestedRange = 'P';
+      break;
+    case 2:
+      currentData.requestedRange = 'R';
+      break;
+    case 3:
+      currentData.requestedRange = 'N';
+      break;
+    case 4:
+      currentData.requestedRange = 'D';
+      break;
+    case 5:
+      currentData.requestedRange = '5';
+      break;
+    case 6:
+      currentData.requestedRange = '4';
+      break;
+    case 7:
+      currentData.requestedRange = '3';
+      break;
+
+    default:
+      break;
+  }
+#endif
 
 #ifdef CUMMINS_BUS_INPUT
   currentData.rpm = CumminsBus::getCurrentRpms();
