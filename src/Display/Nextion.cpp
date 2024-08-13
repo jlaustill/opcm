@@ -26,12 +26,12 @@ void Nextion::sendCmd(String cmd) { batchCmdBuffer += cmd + "\xFF\xFF\xFF"; }
 
 void Nextion::sendBatch() {
   if (batchCmdBuffer.length() > 0) {
-    nexSer.print(batchCmdBuffer);
-    batchCmdBuffer = "";
-#ifdef DEBUG
+#ifdef NEXTION_DEBUG
     Serial.print("Sending batch command: ");
     Serial.println(batchCmdBuffer);
 #endif
+    nexSer.print(batchCmdBuffer);
+    batchCmdBuffer = "";
   }
 }
 
@@ -88,36 +88,34 @@ void Nextion::updateDisplayData(AppData *currentData) {
     last100msUpdate = currentMillis;
 
     // Check if the data has changed
-    if (memcmp(currentData, &lastSentData, sizeof(AppData)) != 0) {
-      // Send the updated data to the display
-      if (currentData->speedInMph != lastSentData.speedInMph) {
-        sendCmd("mph.val=" + (String)currentData->speedInMph);
-        lastSentData.speedInMph = currentData->speedInMph;
-      }
-      if (currentData->rpm != lastSentData.rpm) {
-        sendCmd("rpm.val=" + (String)currentData->rpm);
-        lastSentData.rpm = currentData->rpm;
-      }
-      if (currentData->egt != lastSentData.egt) {
-        sendCmd("egt.val=" + (String)(int)currentData->egt);
-        lastSentData.egt = currentData->egt;
-      }
-      if (currentData->throttlePercentage != lastSentData.throttlePercentage) {
-        sendCmd("throttle.val=" + (String)(int)currentData->throttlePercentage);
-        lastSentData.throttlePercentage = currentData->throttlePercentage;
-      }
-      if (currentData->selectedGear != lastSentData.selectedGear) {
-        sendCmd("selGear.val=" + (String)currentData->selectedGear);
-        lastSentData.selectedGear = currentData->selectedGear;
-      }
-      if (currentData->currentGear != lastSentData.currentGear) {
-        sendCmd("curGear.val=" + (String)currentData->currentGear);
-        lastSentData.currentGear = currentData->currentGear;
-      }
-      if (currentData->load != lastSentData.load) {
-        sendCmd("load.val=" + (String)(int)currentData->load);
-        lastSentData.load = currentData->load;
-      }
+    // Send the updated data to the display
+    if (currentData->speedInMph != lastSentData.speedInMph) {
+      sendCmd("mph.val=" + (String)currentData->speedInMph);
+      lastSentData.speedInMph = currentData->speedInMph;
+    }
+    if (currentData->rpm != lastSentData.rpm) {
+      sendCmd("rpm.val=" + (String)currentData->rpm);
+      lastSentData.rpm = currentData->rpm;
+    }
+    if (currentData->egt != lastSentData.egt) {
+      sendCmd("egt.val=" + (String)(int)currentData->egt);
+      lastSentData.egt = currentData->egt;
+    }
+    if (currentData->throttlePercentage != lastSentData.throttlePercentage) {
+      sendCmd("throttle.val=" + (String)(int)currentData->throttlePercentage);
+      lastSentData.throttlePercentage = currentData->throttlePercentage;
+    }
+    if (currentData->selectedGear != lastSentData.selectedGear) {
+      sendCmd("selGear.val=" + (String)currentData->selectedGear);
+      lastSentData.selectedGear = currentData->selectedGear;
+    }
+    if (currentData->currentGear != lastSentData.currentGear) {
+      sendCmd("curGear.val=" + (String)currentData->currentGear);
+      lastSentData.currentGear = currentData->currentGear;
+    }
+    if (currentData->load != lastSentData.load) {
+      sendCmd("load.val=" + (String)(int)currentData->load);
+      lastSentData.load = currentData->load;
     }
     last100msUpdate = currentMillis;
   }

@@ -22,6 +22,7 @@
 #define AEM_TEMP_SENSOR_C 1.197578033e-07
 
 // #define ODB2
+// #define NEXTION_DEBUG
 
 // #define BLINK_OUTPUT
 
