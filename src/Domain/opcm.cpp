@@ -260,8 +260,11 @@ void opcm::loop() {
 
 #ifdef SPEEDOMETER_INPUT
   currentData.speedInMph = SpeedometerInput::getCurrentSpeedInMph();
-  thisMileage +=
-      ((float)currentData.speedInMph / 3600000.0f * (float)thisDuration);
+
+#endif
+
+  thisMileage += (static_cast<float>(currentData.speedInMph) / 3600000.0f *
+                  static_cast<float>(thisDuration));
   //    Serial.println("thisMileage? " + (String)thisMileage + " "  +
   //    (thisMillis) + " "  + (lastOdometerUpdate) + " "  + (thisMillis -
   //    lastOdometerUpdate));
@@ -286,9 +289,8 @@ void opcm::loop() {
     thisMileage = 0;
 
     // We only want to save if data has changed and we have come to a stop
-    SdCard->saveData(&currentData);
+    if (currentData.speedInMph <= 0.5) SdCard->saveData(&currentData);
   }
-#endif
 
   // Serial.println("Transfer Case Fluid? " +
   // (String)currentData.transferCaseFluidChange);
@@ -359,7 +361,7 @@ void opcm::loop() {
       }
       serialBuffer = "";
     } else {
-      serialBuffer += (char)newData;
+      serialBuffer += static_cast<char>(newData);
     }
   }
 }
