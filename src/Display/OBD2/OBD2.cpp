@@ -25,8 +25,6 @@ long tripB;
 byte service;
 bool requestIsFromScannerRange = false;
 
-#define thirdByte(w) ((uint8_t)((w) >> 16))
-#define fourthByte(w) ((uint8_t)((w) >> 24))
 
 // byte mphToKph(int mph) {
 //     double kph = mph * 1.60934;

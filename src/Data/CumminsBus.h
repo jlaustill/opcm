@@ -24,6 +24,11 @@ public:
     static void updateTiming();
     static float getCurrentTiming();
     static void updateTiming(CAN_message_t &msg);
+    static byte getTransmissionTempC();
+    static byte getVehicleSpeed();
+    static char getRequestedRange();
+    static int8_t getCurrentGear();
+    static int8_t getSelectedGear();
 };
 
 

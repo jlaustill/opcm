@@ -71,6 +71,9 @@ String formatNumber(double number) {
 }
 
 void Nextion::updateDisplayData(AppData *currentData) {
+  sendCmd("selGear.val=" + (String)currentData->selectedGear);
+  sendCmd("curGear.val=" + (String)currentData->currentGear);
+  sendCmd("reqRange.txt=\"" + (String)currentData->requestedRange + "\"");
   sendCmd("mph.val=" + (String)currentData->speedInMph);
   sendCmd("odometer.txt=\"" + formatNumber(currentData->odometer) + "\"");
   sendCmd("tripA.txt=\"" + formatNumber(currentData->tripA) + "\"");

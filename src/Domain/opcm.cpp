@@ -1,3 +1,6 @@
+#define thirdByte(w) ((uint8_t)((w) >> 16))
+#define fourthByte(w) ((uint8_t)((w) >> 24))
+
 #include "opcm.h"
 
 #include <AppData.h>
@@ -190,6 +193,11 @@ void opcm::loop() {
   currentData.amt = CumminsBus::getCurrentAMT();
   currentData.throttlePercentage = CumminsBus::getCurrentThrottlePercentage();
   currentData.load = CumminsBus::getCurrentLoad();
+  currentData.transmissionTempC = CumminsBus::getTransmissionTempC();
+  currentData.speedInMph = CumminsBus::getVehicleSpeed();
+  currentData.requestedRange = CumminsBus::getRequestedRange();
+  currentData.currentGear = CumminsBus::getCurrentGear();
+  currentData.selectedGear = CumminsBus::getSelectedGear();
 #endif
 #ifdef TACHOMETER_INPUT_60_MINUS_2
   currentData.rpm = TachometerInput60Minus2::getCurrentRpm();

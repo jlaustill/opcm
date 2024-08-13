@@ -1,6 +1,9 @@
 //
 // Created by jlaustill on 8/21/21.
 //
+
+#define thirdByte(w) ((uint8_t)((w) >> 16))
+#define fourthByte(w) ((uint8_t)((w) >> 24))
 #include "Configuration.h"
 #ifdef CUMMINS_BUS_INPUT
 #include <Arduino.h>
@@ -52,6 +55,9 @@ uint32_t calculateJ1939PGN(uint8_t* canMsg) {
 volatile CanMessage pgn65262{
     0x67, 0x8, {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, 0};
 volatile CanMessage pgn65263{};
+volatile CanMessage pgn65272{};
+volatile CanMessage pgn61442{};
+volatile CanMessage pgn61445{};
 volatile CanMessage message256{};
 volatile CanMessage message274{};
 volatile CanMessage x67984Message{
@@ -103,6 +109,17 @@ byte* getIdBytes(uint32_t id) {
   idBytes[3] = id;
 
   return idBytes;
+}
+
+void requestPgn(uint32_t pgn) {
+  // pgn to request water temp pgn :)
+  msg.flags.extended = 1;
+  msg.id = 2364145912;
+  msg.len = 3;
+  msg.buf[0] = lowByte(pgn);
+  msg.buf[1] = highByte(pgn);
+  msg.buf[2] = thirdByte(pgn);
+  Can1.write(msg);  // 59640 sa 0
 }
 
 void CumminsBusSniff(const CAN_message_t& msg) {
@@ -177,8 +194,68 @@ void CumminsBusSniff(const CAN_message_t& msg) {
     // Vehicle Electrical Power - VEP -
   } else if (message.pgn == 65504) {
     // what's this?
+  } else if (message.pgn == 65272) {
+    // Transmission Fluids, not sure how much of this data is useful except temp
+    updateMessage(&pgn65272, msg);
+    // Serial.println(
+    //     "PGN: " + (String)message.pgn + " Data: " + (String)message.data[0] +
+    //     " " + (String)message.data[1] + " " + (String)message.data[2] + " " +
+    //     (String)message.data[3] + " " + (String)message.data[4] + " " +
+    //     (String)message.data[5] + " " + (String)message.data[6] + " " +
+    //     (String)message.data[7]);
+    // std::uint16_t tempRaw = (message.data[5] << 8) | message.data[4];
+    // float coolantTemp = (float)tempRaw * 0.03125f - 273.15f;
+    // Serial.println("Coolant Temp: " + (String)coolantTemp);
+
+  } else if (message.pgn == 61442) {
+    // Electronic Tranmission COntroller 1 - ETC1 -
+    // 1.1 2 bits driveline engaged spn 560
+    // 1.3 2 bits converter lockeup engaged spn 573
+    // 1.5 2 bits shift in progress spn 574
+    // 2-3 output shaft speed spn 191
+    // 4 percent clutch slip spn 522
+    // 5.1 2 bits momentary engine overspeed enable spn 606
+    // 5.3 2 bits progressive shift disable spn 607
+    // 6-7 input shaft speed spn 160
+    // 8 source address of controlling device for transmission control spn 1482
+    updateMessage(&pgn61442, msg);
+  } else if (message.pgn == 61452) {
+    // no idea what this one is, and neither does AI lol
+  } else if (message.pgn == 65098) {
+    // information about transmission modes, not sure we need this?
+  } else if (message.pgn == 61445) {
+    updateMessage(&pgn61445, msg);
+    // All about our gears, we want this data!
+    // uint8_t selectedGear = message.data[0] - 125;  // spn 524
+    // float actualGearRatio =
+    //     ((message.data[2] << 8) | message.data[1]) * 0.001;  // spn 526
+    // uint8_t currentGear = message.data[3] - 125;             // spn 523
+    // uint8_t requestedRange1 = message.data[4];
+    // uint8_t requestedRange2 = message.data[5];  // spn 162
+    // uint8_t currentRange1 = message.data[6];    // spn 163
+    // uint8_t currentRange2 = message.data[7];    // spn 163
+    // Serial.println("Selected Gear: " + (String)selectedGear +
+    //                " Actual Gear Ratio: " + (String)actualGearRatio +
+    //                " Current Gear: " + (String)currentGear +
+    //                " Requested Range: " + (char)requestedRange1 + " " +
+    //                (char)requestedRange2 + " Current Range: " +
+    //                (char)currentRange1 + " " + (char)currentRange2);
+  } else if (message.pgn == 5) {
+  } else if (message.pgn == 65099) {
+    // Transmission configuration 2
+    // Transmit torque limit, so we can ignore
+  } else if (message.pgn == 60159) {
+    // This is a DTC message
+    uint8_t spn = message.data[0];
+    spn |= message.data[1] << 8;
+    spn |= ((message.data[2] & (~0x1F)) << 11);
+    byte fmi = message.data[2] & 0x1F;
+    byte oc = (message.data[3] & 0x7F);
+    Serial.println("DTC: SPN: " + (String)spn + " Failure Mode Indicator: " +
+                   (String)fmi + " Occurence Count: " + (String)oc);
   } else {
-    Serial.println("PGN: " + (String)message.pgn);
+    Serial.println("PGN: " + (String)message.pgn +
+                   " From source address: " + (String)message.sourceAddress);
     // byte* idBytes = getIdBytes(msg.id);
     // int pgn = calculateJ1939PGN(idBytes);
     // uint8_t sourceAddress = calculateJ1939Source(idBytes);
@@ -281,6 +358,12 @@ float CumminsBus::getCurrentTiming() {
   return Timing;
 }
 
+byte CumminsBus::getTransmissionTempC() {
+  std::uint16_t tempRaw = (pgn65272.data[5] << 8) | pgn65272.data[4];
+  float transmissionTemp = static_cast<float>(tempRaw) * 0.03125f - 273.15f;
+  return static_cast<byte>(transmissionTemp);
+}
+
 float CumminsBus::getCurrentFuelPercentage() {
   // Fuel compute
   FuelPercentage = ((message256.data[1] << 8) | message256.data[0]);
@@ -361,9 +444,7 @@ bool parseEngineCoolantTemp(const J1939Message& msg, float& coolantTemp) {
 }
 
 int CumminsBus::getCurrentWaterTemp() {
-  // Serial.println("requesting water temp?" + (String)Can2.getTXQueueCount());
-  // Can2.events();
-  Can1.write(msg);
+  requestPgn(65262);
   waterTemp = pgn65262.data[0] - 40;  // Confirmed!!!
   if (!warmedUp && waterTemp > 65) {
     warmedUp = true;
@@ -408,6 +489,30 @@ int CumminsBus::getCurrentFuelTemp() {
   return fuelTemp;
 }
 
+char CumminsBus::getRequestedRange() {
+  return static_cast<char>(pgn61445.data[4]);
+}
+
+int8_t CumminsBus::getCurrentGear() {
+  return static_cast<int8_t>(pgn61445.data[3] - 125);
+}
+
+int8_t CumminsBus::getSelectedGear() {
+  return static_cast<int8_t>(pgn61445.data[0] - 125);
+}
+
+byte CumminsBus::getVehicleSpeed() {
+  requestPgn(65265);
+  // Compute Vehicle Speed
+  uint32_t speedRaw = (pgn61442.data[2] << 8) | pgn61442.data[1];
+  uint32_t outputShaftRpm = speedRaw * .125;
+  float wheelRpm = outputShaftRpm / 3.73;
+  float inchesPerMinute = wheelRpm * 100.11;
+  float milesPerHour = inchesPerMinute * 60 / 63360;
+
+  return static_cast<byte>(milesPerHour);
+}
+
 void CumminsBus::initialize() {
   Serial.println("Cummins Bus initializing");
 
@@ -420,12 +525,7 @@ void CumminsBus::initialize() {
   Can1.mailboxStatus();
 
   // pgn to request water temp pgn :)
-  msg.flags.extended = 1;
-  msg.id = 2364145912;
-  msg.len = 3;
-  msg.buf[0] = 238;
-  msg.buf[1] = 254;
-  msg.buf[2] = 0;
+  requestPgn(65262);
 }
 
 #endif

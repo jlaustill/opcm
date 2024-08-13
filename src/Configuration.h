@@ -26,7 +26,7 @@
 // #define BLINK_OUTPUT
 
 // The Cummins bus provides rpms, so don't enable both at the same time
-// #define CUMMINS_BUS_INPUT
+#define CUMMINS_BUS_INPUT
 
 // This is the setup on a 24 valve cummins using a camshaft sensor, so it
 // assumes the gear is running at 1/2 the speed of the crankshaft #define
@@ -102,7 +102,7 @@
 #define SPEEDOMETER_OUTPUT_CLICKS_PER_MILE 8000
 #endif
 
-// #define NEXTION
+#define NEXTION
 #ifdef NEXTION
 #define nexSer \
   Serial2  // Controlling the Nextion HMI using Serial1 (pin18 of the Arduino
