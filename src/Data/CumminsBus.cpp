@@ -18,6 +18,9 @@ FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can1;
 
 J1939 message;
 
+// Track update timings
+unsigned long lastJ1939Request = 0;
+
 // volatile byte data[16];
 boolean warmedUp = false;
 
@@ -130,15 +133,18 @@ void CumminsBusSniff(const CAN_message_t& msg) {
   message = J1939();
   message.setCanId(msg.id);
   message.setData(msg.buf);
+  unsigned long currentMillis = millis();
 
-  // Serial.println("ID: " + (String)msg.id + " Data: " + (String)data[0] + " "
-  // +
-  //                (String)data[1] + " " + (String)data[2] + " " +
-  //                (String)data[3] + " " + (String)data[4] + " " +
-  //                (String)data[5] + " " + (String)data[6] + " " +
-  //                (String)data[7] + " " + (String)msg.len + " " +
-  //                (String)msg.flags.extended + " " +
-  //                (String)msg.flags.remote);
+  // request PGN's every 100ms
+  if (currentMillis - lastJ1939Request >= 100) {
+    requestPgn(65262);
+    requestPgn(65265);
+    lastJ1939Request = currentMillis;
+  }
+
+  // Serial.println("PGN: " + (String)message.pgn +
+  //                " From source address: " + (String)message.sourceAddress);
+
   if (message.canId == 256) {
     // PGN: 1 ????
     updateMessage(&message256, msg);
@@ -180,6 +186,16 @@ void CumminsBusSniff(const CAN_message_t& msg) {
   } else if (message.pgn == 65264) {
     // Power Takeoff Information - PTO -
   } else if (message.pgn == 65265) {
+    // don't appear to be getting anything useful at all blah
+    // coming from ECU, interesting
+    // PN 65265, SA:0 243 0 0 16 0 0 31 255
+    // 31 means cruise control not available, sad panda
+    // Serial.println("PN 65265, SA:" + (String)message.sourceAddress + " " +
+    //                message.data[0] + " " + message.data[1] + " " +
+    //                message.data[2] + " " + message.data[3] + " " +
+    //                message.data[4] + " " + message.data[5] + " " +
+    //                message.data[6] + " " + message.data[7]);
+
     // Cruise Control/Vehicle Speed - CCVS -
   } else if (message.pgn == 65266) {
     // Fuel Economy (Liquid) - LFE -
@@ -444,7 +460,6 @@ bool parseEngineCoolantTemp(const J1939Message& msg, float& coolantTemp) {
 }
 
 int CumminsBus::getCurrentWaterTemp() {
-  requestPgn(65262);
   waterTemp = pgn65262.data[0] - 40;  // Confirmed!!!
   if (!warmedUp && waterTemp > 65) {
     warmedUp = true;
@@ -502,7 +517,6 @@ int8_t CumminsBus::getSelectedGear() {
 }
 
 byte CumminsBus::getVehicleSpeed() {
-  requestPgn(65265);
   // Compute Vehicle Speed
   uint32_t speedRaw = (pgn61442.data[2] << 8) | pgn61442.data[1];
   uint32_t outputShaftRpm = speedRaw * .125;

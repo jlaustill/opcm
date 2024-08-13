@@ -253,6 +253,7 @@ void opcm::loop() {
   currentData.requestedRange = CumminsBus::getRequestedRange();
   currentData.currentGear = CumminsBus::getCurrentGear();
   currentData.selectedGear = CumminsBus::getSelectedGear();
+
 #endif
 #ifdef TACHOMETER_INPUT_60_MINUS_2
   currentData.rpm = TachometerInput60Minus2::getCurrentRpm();
