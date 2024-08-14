@@ -222,6 +222,14 @@ void CumminsBusSniff(const CAN_message_t& msg) {
     // std::uint16_t tempRaw = (message.data[5] << 8) | message.data[4];
     // float coolantTemp = (float)tempRaw * 0.03125f - 273.15f;
     // Serial.println("Coolant Temp: " + (String)coolantTemp);
+    uint16_t clutchPressure = message.data[0] * 16;
+    uint16_t transmissionFilterDifferentialPressure = message.data[2] * 2;
+    uint16_t transmissionOilPressure = message.data[3] * 16;
+    Serial.println("Clutch Pressure: " + (String)clutchPressure +
+                   "kPa Transmission Filter Differential Pressure: " +
+                   (String)transmissionFilterDifferentialPressure +
+                   "kPa Transmission Oil Pressure: " +
+                   (String)transmissionOilPressure + "kPa");
 
   } else if (message.pgn == 61442) {
     // Electronic Tranmission COntroller 1 - ETC1 -
