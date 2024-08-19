@@ -28,7 +28,12 @@
   0 commanded id: 419368960 len: 8 buf: 0 0 1 0 0 0 0 0
 
 419368960 10ms 
+  byte 3 lowByte
+  byte 4 highByte
+  scale 10x
+  values 0 to 1000 equal 0cm to 10cm in .1cm increments, amazing
 
  id: 419351040 len: 8 buf: 0 255 0 0 0 0 255 255
 
  419351040 1000ms
+  Seems to be a DTC error code because it's not detecting the actuator?
