@@ -237,6 +237,7 @@ void opcm::loop() {
 #endif
 
 #ifdef CUMMINS_BUS_INPUT
+  CumminsBus::loop();
   currentData.rpm = CumminsBus::getCurrentRpms();
   currentData.coolantTemp = CumminsBus::getCurrentWaterTemp();
   currentData.oilPressureInPsi = CumminsBus::getCurrentOilPressure();

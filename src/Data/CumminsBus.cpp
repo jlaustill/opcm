@@ -12,6 +12,7 @@ FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can1;
 #include <J1939.h>
 #include <bit-utils.h>
 
+#include <SeaDash.hpp>
 #include <cstdint>
 
 #include "CumminsBus.h"
@@ -539,7 +540,7 @@ void CumminsBus::initialize() {
   Serial.println("Cummins Bus initializing");
 
   Can1.begin();
-  Can1.setBaudRate(250000);
+  Can1.setBaudRate(250 * 1000);
   Can1.setMaxMB(16);
   Can1.enableFIFO();
   Can1.enableFIFOInterrupt();
@@ -549,5 +550,7 @@ void CumminsBus::initialize() {
   // pgn to request water temp pgn :)
   requestPgn(65262);
 }
+
+void CumminsBus::loop() {}
 
 #endif
