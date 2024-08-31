@@ -2,6 +2,9 @@
 // Created by jlaustill on 8/21/21.
 //
 
+#ifndef J1939_CPP
+#define J1939_CPP
+
 #define thirdByte(w) ((uint8_t)((w) >> 16))
 #define fourthByte(w) ((uint8_t)((w) >> 24))
 #include "Configuration.h"
@@ -28,13 +31,6 @@ unsigned long lastJ1939Request = 0;
 
 // volatile byte data[16];
 boolean warmedUp = false;
-
-struct CanMessage {
-  byte id;
-  byte length;
-  byte data[8];
-  unsigned count;
-};
 
 // J1939 message structure
 struct J1939Message {
@@ -64,8 +60,8 @@ volatile CanMessage pgn65262{
     0x67, 0x8, {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, 0};
 volatile CanMessage pgn65263{};
 volatile CanMessage pgn65272{};
-volatile CanMessage pgn61442{};
 volatile CanMessage pgn61445{};
+volatile CanMessage CumminsBus::pgn61442{};
 volatile CanMessage message256{};
 volatile CanMessage message274{};
 volatile CanMessage x67984Message{
@@ -233,7 +229,7 @@ void CumminsBusSniff(const CAN_message_t& msg) {
     // 5.3 2 bits progressive shift disable spn 607
     // 6-7 input shaft speed spn 160
     // 8 source address of controlling device for transmission control spn 1482
-    updateMessage(&pgn61442, msg);
+    updateMessage(&CumminsBus::pgn61442, msg);
   } else if (message.pgn == 61452) {
     // no idea what this one is, and neither does AI lol
   } else if (message.pgn == 65098) {
@@ -562,3 +558,4 @@ void CumminsBus::loop() {  // request PGN's every 1 second
 }
 
 #endif
+#endif  // J1939_CPP
