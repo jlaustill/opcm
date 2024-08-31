@@ -132,24 +132,9 @@ void requestPgn(uint32_t pgn) {
 }
 
 void CumminsBusSniff(const CAN_message_t& msg) {
-  // for (uint8_t i = 0; i < msg.len; i++) {
-  //   data[i] = msg.buf[i];
-  // }
-
   message = J1939();
   message.setCanId(msg.id);
   message.setData(msg.buf);
-  unsigned long currentMillis = millis();
-
-  // request PGN's every 100ms
-  if (currentMillis - lastJ1939Request >= 100) {
-    requestPgn(ENGINE_TEMP_1_PGN);
-    requestPgn(DM1_DTCS_PGN);
-    lastJ1939Request = currentMillis;
-  }
-
-  // Serial.println("PGN: " + (String)message.pgn +
-  //                " From source address: " + (String)message.sourceAddress);
 
   if (message.canId == 256) {
     // PGN: 1 ????
@@ -315,14 +300,6 @@ void CumminsBusSniff(const CAN_message_t& msg) {
                    (String)message.data[3] + " " + (String)message.data[4] +
                    " " + (String)message.data[5] + " " +
                    (String)message.data[6] + " " + (String)message.data[7]);
-    // byte* idBytes = getIdBytes(msg.id);
-    // int pgn = calculateJ1939PGN(idBytes);
-    // uint8_t sourceAddress = calculateJ1939Source(idBytes);
-    // uint8_t destinationAddress = calculateJ1939Destination(idBytes);
-    // Serial.println("unknow PGN: " + (String)pgn
-    //     + " Source Address: " + (String)sourceAddress
-    //     + " Destination Address: " + (String)destinationAddress
-    // );
     ids[idsP++] = msg.id;
     if (idsP >= 8) idsP = 0;
   }
@@ -586,6 +563,13 @@ void CumminsBus::initialize() {
   requestPgn(DM1_DTCS_PGN);
 }
 
-void CumminsBus::loop() {}
+void CumminsBus::loop() {  // request PGN's every 1 second
+  uint32_t currentMillis = millis();
+  if (currentMillis - lastJ1939Request >= 1000) {
+    requestPgn(ENGINE_TEMP_1_PGN);
+    requestPgn(DM1_DTCS_PGN);
+    lastJ1939Request = currentMillis;
+  }
+}
 
 #endif
