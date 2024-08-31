@@ -17,10 +17,12 @@ FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can1;
 
 #include <SeaDash.hpp>
 #include <cstdint>
+#include <unordered_set>
 
 #include "CumminsBus.h"
 
 J1939 message;
+std::unordered_set<uint8_t> sourceAddresses;
 
 #define DM1_DTCS_PGN 65226
 #define ENGINE_TEMP_1_PGN 65262
@@ -132,6 +134,8 @@ void CumminsBusSniff(const CAN_message_t& msg) {
   message = J1939();
   message.setCanId(msg.id);
   message.setData(msg.buf);
+
+  sourceAddresses.insert(message.sourceAddress);
 
   if (message.canId == 256) {
     // PGN: 1 ????
@@ -556,6 +560,17 @@ void CumminsBus::loop() {  // request PGN's every 1 second
     requestPgn(DM1_DTCS_PGN);
     requestPgn(DM2_DTCS_PGN);
     lastJ1939Request = currentMillis;
+
+    Serial.print("Seen SA's [");
+
+    for (auto it = sourceAddresses.begin(); it != sourceAddresses.end(); ++it) {
+      if (it != sourceAddresses.begin()) {
+        Serial.print(",");  // Add a comma before each element except the first
+      }
+      Serial.print(*it);
+    }
+
+    Serial.println("]");  // Close the bracket and move to the next line
   }
 }
 
