@@ -25,6 +25,7 @@ J1939 message;
 #define DM1_DTCS_PGN 65226
 #define ENGINE_TEMP_1_PGN 65262
 #define CRUISE_CONTROL_PGN 65265
+#define DM2_DTCS_PGN 65227
 
 // Track update timings
 unsigned long lastJ1939Request = 0;
@@ -553,6 +554,7 @@ void CumminsBus::loop() {  // request PGN's every 1 second
   if (currentMillis - lastJ1939Request >= 1000) {
     requestPgn(ENGINE_TEMP_1_PGN);
     requestPgn(DM1_DTCS_PGN);
+    requestPgn(DM2_DTCS_PGN);
     lastJ1939Request = currentMillis;
   }
 }
