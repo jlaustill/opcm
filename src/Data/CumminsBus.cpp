@@ -19,6 +19,10 @@ FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can1;
 
 J1939 message;
 
+#define DM1_DTCS_PGN 65226
+#define ENGINE_TEMP_1_PGN 65262
+#define CRUISE_CONTROL_PGN 65265
+
 // Track update timings
 unsigned long lastJ1939Request = 0;
 
@@ -118,6 +122,7 @@ byte* getIdBytes(uint32_t id) {
 void requestPgn(uint32_t pgn) {
   // pgn to request water temp pgn :)
   msg.flags.extended = 1;
+
   msg.id = 2364145912;
   msg.len = 3;
   msg.buf[0] = lowByte(pgn);
@@ -127,24 +132,9 @@ void requestPgn(uint32_t pgn) {
 }
 
 void CumminsBusSniff(const CAN_message_t& msg) {
-  // for (uint8_t i = 0; i < msg.len; i++) {
-  //   data[i] = msg.buf[i];
-  // }
-
   message = J1939();
   message.setCanId(msg.id);
   message.setData(msg.buf);
-  unsigned long currentMillis = millis();
-
-  // request PGN's every 100ms
-  if (currentMillis - lastJ1939Request >= 100) {
-    requestPgn(65262);
-    requestPgn(65265);
-    lastJ1939Request = currentMillis;
-  }
-
-  // Serial.println("PGN: " + (String)message.pgn +
-  //                " From source address: " + (String)message.sourceAddress);
 
   if (message.canId == 256) {
     // PGN: 1 ????
@@ -170,7 +160,7 @@ void CumminsBusSniff(const CAN_message_t& msg) {
   } else if (message.pgn == 65252) {
     // Shutdown - SHUTDOWN -
     // wait to start lamp spn 1081 (doesn't seem to work bench testing)
-  } else if (message.pgn == 65262) {
+  } else if (message.pgn == ENGINE_TEMP_1_PGN) {
     // PGN: 65262
     // Engine Temperature 1 - ET1
     // Engine coolant temperature 1 spn 110
@@ -186,7 +176,7 @@ void CumminsBusSniff(const CAN_message_t& msg) {
     updateMessage(&pgn65263, msg);
   } else if (message.pgn == 65264) {
     // Power Takeoff Information - PTO -
-  } else if (message.pgn == 65265) {
+  } else if (message.pgn == CRUISE_CONTROL_PGN) {
     // don't appear to be getting anything useful at all blah
     // coming from ECU, interesting
     // PN 65265, SA:0 243 0 0 16 0 0 31 255
@@ -226,11 +216,11 @@ void CumminsBusSniff(const CAN_message_t& msg) {
     uint16_t clutchPressure = message.data[0] * 16;
     uint16_t transmissionFilterDifferentialPressure = message.data[2] * 2;
     uint16_t transmissionOilPressure = message.data[3] * 16;
-    Serial.println("Clutch Pressure: " + (String)clutchPressure +
-                   "kPa Transmission Filter Differential Pressure: " +
-                   (String)transmissionFilterDifferentialPressure +
-                   "kPa Transmission Oil Pressure: " +
-                   (String)transmissionOilPressure + "kPa");
+    // Serial.println("Clutch Pressure: " + (String)clutchPressure +
+    //                "kPa Transmission Filter Differential Pressure: " +
+    //                (String)transmissionFilterDifferentialPressure +
+    //                "kPa Transmission Oil Pressure: " +
+    //                (String)transmissionOilPressure + "kPa");
 
   } else if (message.pgn == 61442) {
     // Electronic Tranmission COntroller 1 - ETC1 -
@@ -248,6 +238,7 @@ void CumminsBusSniff(const CAN_message_t& msg) {
     // no idea what this one is, and neither does AI lol
   } else if (message.pgn == 65098) {
     // information about transmission modes, not sure we need this?
+  } else if (message.pgn == 59640) {
   } else if (message.pgn == 61445) {
     updateMessage(&pgn61445, msg);
     // All about our gears, we want this data!
@@ -270,25 +261,45 @@ void CumminsBusSniff(const CAN_message_t& msg) {
     // Transmission configuration 2
     // Transmit torque limit, so we can ignore
   } else if (message.pgn == 60159) {
+    // No idea what this is
+  } else if (message.pgn == DM1_DTCS_PGN) {
     // This is a DTC message
-    uint8_t spn = message.data[0];
-    spn |= message.data[1] << 8;
-    spn |= ((message.data[2] & (~0x1F)) << 11);
-    byte fmi = message.data[2] & 0x1F;
-    byte oc = (message.data[3] & 0x7F);
-    Serial.println("DTC: SPN: " + (String)spn + " Failure Mode Indicator: " +
-                   (String)fmi + " Occurence Count: " + (String)oc);
+    uint8_t mil = SeaDash::Bits::getNBits(message.data[0], 6, 2);
+    uint8_t rsl = SeaDash::Bits::getNBits(message.data[0], 4, 2);
+    uint8_t awl = SeaDash::Bits::getNBits(message.data[0], 2, 2);
+    uint8_t pls = SeaDash::Bits::getNBits(message.data[0], 0, 2);
+    uint8_t milBlink = SeaDash::Bits::getNBits(message.data[1], 6, 2);
+    uint8_t rslBlink = SeaDash::Bits::getNBits(message.data[1], 4, 2);
+    uint8_t awlBlink = SeaDash::Bits::getNBits(message.data[1], 2, 2);
+    uint8_t plsBlink = SeaDash::Bits::getNBits(message.data[1], 0, 2);
+    uint32_t spn = 0;
+    spn = SeaDash::Bits::setNBitsAt(spn, message.data[2], 11, 8);
+    spn = SeaDash::Bits::setNBitsAt(spn, message.data[3], 7, 0);
+    uint8_t spnLeastSignificantBits =
+        SeaDash::Bits::getNBits(message.data[4], 5, 3);
+    spn = SeaDash::Bits::setNBitsAt(spn, spnLeastSignificantBits, 0, 3);
+    uint8_t fmi = SeaDash::Bits::getNBits(message.data[4], 0, 5);
+    uint8_t oc = SeaDash::Bits::getNBits(message.data[5], 0, 7);
+    Serial.println(
+        "DM1 DTC: SPN: " + (String)spn +
+        " Failure Mode Indicator: " + (String)fmi +
+        " Occurence Count: " + (String)oc + " " + " MIL " + (String)mil + " " +
+        " RSL " + (String)rsl + " " + " AWL " + (String)awl + " " + " PLS " +
+        (String)pls + " MIL Blink " + (String)milBlink + " " + " RSL Blink" +
+        (String)rslBlink + " " + " AWL Blink" + (String)awlBlink + " " +
+        " PLS Blink" + (String)plsBlink + " Data: " + (String)message.data[0] +
+        " " + (String)message.data[1] + " " + (String)message.data[2] + " " +
+        (String)message.data[3] + " " + (String)message.data[4] + " " +
+        (String)message.data[5] + " " + (String)message.data[6] + " " +
+        (String)message.data[7]);
   } else {
     Serial.println("PGN: " + (String)message.pgn +
-                   " From source address: " + (String)message.sourceAddress);
-    // byte* idBytes = getIdBytes(msg.id);
-    // int pgn = calculateJ1939PGN(idBytes);
-    // uint8_t sourceAddress = calculateJ1939Source(idBytes);
-    // uint8_t destinationAddress = calculateJ1939Destination(idBytes);
-    // Serial.println("unknow PGN: " + (String)pgn
-    //     + " Source Address: " + (String)sourceAddress
-    //     + " Destination Address: " + (String)destinationAddress
-    // );
+                   " From source address: " + (String)message.sourceAddress +
+                   (String)message.data[0] + " " + (String)message.data[1] +
+                   " " + (String)message.data[2] + " " +
+                   (String)message.data[3] + " " + (String)message.data[4] +
+                   " " + (String)message.data[5] + " " +
+                   (String)message.data[6] + " " + (String)message.data[7]);
     ids[idsP++] = msg.id;
     if (idsP >= 8) idsP = 0;
   }
@@ -537,9 +548,17 @@ void CumminsBus::initialize() {
   Can1.mailboxStatus();
 
   // pgn to request water temp pgn :)
-  requestPgn(65262);
+  requestPgn(ENGINE_TEMP_1_PGN);
+  requestPgn(DM1_DTCS_PGN);
 }
 
-void CumminsBus::loop() {}
+void CumminsBus::loop() {  // request PGN's every 1 second
+  uint32_t currentMillis = millis();
+  if (currentMillis - lastJ1939Request >= 1000) {
+    requestPgn(ENGINE_TEMP_1_PGN);
+    requestPgn(DM1_DTCS_PGN);
+    lastJ1939Request = currentMillis;
+  }
+}
 
 #endif
