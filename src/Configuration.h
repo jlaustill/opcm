@@ -14,6 +14,10 @@
  * you want it at all
  *
  * */
+
+#ifndef OPCM_CONFIGURATION_H
+#define OPCM_CONFIGURATION_H
+
 #include <Arduino.h>
 #include <TempSensor.h>
 
@@ -117,3 +121,5 @@
 #ifdef THERMOCOUPLE
 #define MAXCS 40
 #endif
+
+#endif  // OPCM_CONFIGURATION_H
