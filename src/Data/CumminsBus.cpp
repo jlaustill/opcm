@@ -574,7 +574,7 @@ void CumminsBus::initialize() {
   Serial.println("Cummins Bus initializing");
 
   Can1.begin();
-  Can1.setBaudRate(250000);
+  Can1.setBaudRate(250 * 1000);
   Can1.setMaxMB(16);
   Can1.enableFIFO();
   Can1.enableFIFOInterrupt();
@@ -585,5 +585,7 @@ void CumminsBus::initialize() {
   requestPgn(ENGINE_TEMP_1_PGN);
   requestPgn(DM1_DTCS_PGN);
 }
+
+void CumminsBus::loop() {}
 
 #endif

@@ -9,6 +9,7 @@
 class CumminsBus {
 public:
     static void initialize();
+    static void loop();
     static void updateRpms();
     static int getCurrentRpms();
     static int getCurrentWaterTemp();
