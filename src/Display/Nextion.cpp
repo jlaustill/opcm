@@ -113,6 +113,10 @@ void Nextion::updateDisplayData(AppData *currentData) {
       sendCmd("curGear.val=" + (String)currentData->currentGear);
       lastSentData.currentGear = currentData->currentGear;
     }
+    if (currentData->requestedRange != lastSentData.requestedRange) {
+      sendCmd("reqRange.txt=\"" + (String)currentData->requestedRange + "\"");
+      lastSentData.requestedRange = currentData->requestedRange;
+    }
     if (currentData->load != lastSentData.load) {
       sendCmd("load.val=" + (String)(int)currentData->load);
       lastSentData.load = currentData->load;
@@ -123,10 +127,6 @@ void Nextion::updateDisplayData(AppData *currentData) {
   // Update slow data every 1 second
   if (currentMillis - last1sUpdate >= 1000) {
     last1sUpdate = currentMillis;
-    if (currentData->requestedRange != lastSentData.requestedRange) {
-      sendCmd("reqRange.txt=\"" + (String)currentData->requestedRange + "\"");
-      lastSentData.requestedRange = currentData->requestedRange;
-    }
     if (currentData->odometer != lastSentData.odometer) {
       sendCmd("odometer.txt=\"" + formatNumber(currentData->odometer) + "\"");
       lastSentData.odometer = currentData->odometer;
