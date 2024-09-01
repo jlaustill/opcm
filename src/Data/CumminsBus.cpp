@@ -34,12 +34,15 @@ struct J1939Message {
   std::uint8_t data[8];
 };
 
+// methods that have been moved to the CumminsBus class
+J1939 CumminsBus::ElectronicTransmissionController1Pgn{};
+
+// methods that need to be moved to the CumminsBus class
 volatile CanMessage pgn65262{
     0x67, 0x8, {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, 0};
 volatile CanMessage pgn65263{};
 volatile CanMessage pgn65272{};
 volatile CanMessage pgn61445{};
-volatile CanMessage CumminsBus::pgn61442{};
 volatile CanMessage message256{};
 volatile CanMessage message274{};
 volatile CanMessage x67984Message{
@@ -68,6 +71,11 @@ volatile unsigned short shortTimingValue = 0;
 volatile int ids[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 volatile int idsP = 0;
 
+void updateJ1939Message(J1939* _messageToUpdate, const CAN_message_t msg) {
+  _messageToUpdate->setCanId(msg.id);
+  _messageToUpdate->setData(msg.buf);
+}
+
 void updateMessage(volatile CanMessage* _messageToUpdate, CAN_message_t msg) {
   _messageToUpdate->id = msg.id;
   _messageToUpdate->length = msg.len;
@@ -80,17 +88,6 @@ void updateMessage(volatile CanMessage* _messageToUpdate, CAN_message_t msg) {
   _messageToUpdate->data[6] = msg.buf[6];
   _messageToUpdate->data[7] = msg.buf[7];
   _messageToUpdate->count++;
-}
-
-byte* getIdBytes(uint32_t id) {
-  byte* idBytes = new byte[4];
-
-  idBytes[0] = id >> 24;
-  idBytes[1] = id >> 16;
-  idBytes[2] = id >> 8;
-  idBytes[3] = id;
-
-  return idBytes;
 }
 
 void requestPgn(uint32_t pgn) {
@@ -119,173 +116,156 @@ void CumminsBusSniff(const CAN_message_t& msg) {
 
   sourceAddresses.insert(message.sourceAddress);
 
-  if (message.canId == 256) {
-    // PGN: 1 ????
-    updateMessage(&message256, msg);
-    CAN_message_t newMsg = msg;
-    CumminsBus::updateTiming(newMsg);
-  } else if (message.canId == 274) {
-    // Must come from the VP44, no messages when bench testing
-    updateMessage(&message274, msg);
-  } else if (message.pgn == 60415) {
-    // what's this?
-  } else if (message.pgn == 60671) {
-    // what's this?
-  } else if (message.pgn == 61440) {
-    // Electronic Retarder Controller 1 - ERC1 -
-  } else if (message.pgn == 61443) {
-    // PGN: 61443
-    updateMessage(&pgn61443, msg);
-  } else if (message.pgn == 61444) {
-    // Electronic Engine Controller 1 - EEC1 -
-  } else if (message.pgn == 65247) {
-    // Electronic Engine Controller 3 - EEC3 -
-  } else if (message.pgn == 65252) {
-    // Shutdown - SHUTDOWN -
-    // wait to start lamp spn 1081 (doesn't seem to work bench testing)
-  } else if (message.pgn == ENGINE_TEMP_1_PGN) {
-    // PGN: 65262
-    // Engine Temperature 1 - ET1
-    // Engine coolant temperature 1 spn 110
-    // fuel temperate 2 spn 174
-    // engine oil temperature 3-4 spn 175
-    // turbo oil temperature 5-6 spn 176
-    // enginer intercooler temperature 7 spn 52
-    // engine intercooler thermostat 8 spn 1134
-    updateMessage(&pgn65262, msg);
-  } else if (message.pgn == 65263) {
-    // PGN: 65263
-    // Engine Fluid Level/Pressure 1 - EFL/P1 -
-    updateMessage(&pgn65263, msg);
-  } else if (message.pgn == 65264) {
-    // Power Takeoff Information - PTO -
-  } else if (message.pgn == CRUISE_CONTROL_PGN) {
-    // don't appear to be getting anything useful at all blah
-    // coming from ECU, interesting
-    // PN 65265, SA:0 243 0 0 16 0 0 31 255
-    // 31 means cruise control not available, sad panda
-    // Serial.println("PN 65265, SA:" + (String)message.sourceAddress + " " +
-    //                message.data[0] + " " + message.data[1] + " " +
-    //                message.data[2] + " " + message.data[3] + " " +
-    //                message.data[4] + " " + message.data[5] + " " +
-    //                message.data[6] + " " + message.data[7]);
+  // First switch statement for message.canId
+  switch (message.canId) {
+    case 256:
+      // PGN: 1 ????
+      updateMessage(&message256, msg);
+      {
+        CAN_message_t newMsg = msg;
+        CumminsBus::updateTiming(newMsg);
+      }
+      return;
 
-    // Cruise Control/Vehicle Speed - CCVS -
-  } else if (message.pgn == 65266) {
-    // Fuel Economy (Liquid) - LFE -
-  } else if (message.pgn == 65269) {
-    // Ambient Conditions - AMB -
-    // AIT air inlent temp spn 172
-  } else if (message.pgn == 65270) {
-    // PGN: 65270
-    // Inlet/Exhaust Conditions 1 - IC1 -
-    updateMessage(&pgn65270, msg);
-  } else if (message.pgn == 65271) {
-    // Vehicle Electrical Power - VEP -
-  } else if (message.pgn == 65504) {
-    // what's this?
-  } else if (message.pgn == 65272) {
-    // Transmission Fluids, not sure how much of this data is useful except temp
-    updateMessage(&pgn65272, msg);
-    // Serial.println(
-    //     "PGN: " + (String)message.pgn + " Data: " + (String)message.data[0] +
-    //     " " + (String)message.data[1] + " " + (String)message.data[2] + " " +
-    //     (String)message.data[3] + " " + (String)message.data[4] + " " +
-    //     (String)message.data[5] + " " + (String)message.data[6] + " " +
-    //     (String)message.data[7]);
-    // std::uint16_t tempRaw = (message.data[5] << 8) | message.data[4];
-    // float coolantTemp = (float)tempRaw * 0.03125f - 273.15f;
-    // Serial.println("Coolant Temp: " + (String)coolantTemp);
-    uint16_t clutchPressure = message.data[0] * 16;
-    uint16_t transmissionFilterDifferentialPressure = message.data[2] * 2;
-    uint16_t transmissionOilPressure = message.data[3] * 16;
-    // Serial.println("Clutch Pressure: " + (String)clutchPressure +
-    //                "kPa Transmission Filter Differential Pressure: " +
-    //                (String)transmissionFilterDifferentialPressure +
-    //                "kPa Transmission Oil Pressure: " +
-    //                (String)transmissionOilPressure + "kPa");
+    case 274:
+      // Must come from the VP44, no messages when bench testing
+      updateMessage(&message274, msg);
+      return;
 
-  } else if (message.pgn == 61442) {
-    // Electronic Tranmission COntroller 1 - ETC1 -
-    // 1.1 2 bits driveline engaged spn 560
-    // 1.3 2 bits converter lockeup engaged spn 573
-    // 1.5 2 bits shift in progress spn 574
-    // 2-3 output shaft speed spn 191
-    // 4 percent clutch slip spn 522
-    // 5.1 2 bits momentary engine overspeed enable spn 606
-    // 5.3 2 bits progressive shift disable spn 607
-    // 6-7 input shaft speed spn 160
-    // 8 source address of controlling device for transmission control spn 1482
-    updateMessage(&CumminsBus::pgn61442, msg);
-  } else if (message.pgn == 61452) {
-    // no idea what this one is, and neither does AI lol
-  } else if (message.pgn == 65098) {
-    // information about transmission modes, not sure we need this?
-  } else if (message.pgn == 59640) {
-  } else if (message.pgn == 61445) {
-    updateMessage(&pgn61445, msg);
-    // All about our gears, we want this data!
-    // uint8_t selectedGear = message.data[0] - 125;  // spn 524
-    // float actualGearRatio =
-    //     ((message.data[2] << 8) | message.data[1]) * 0.001;  // spn 526
-    // uint8_t currentGear = message.data[3] - 125;             // spn 523
-    // uint8_t requestedRange1 = message.data[4];
-    // uint8_t requestedRange2 = message.data[5];  // spn 162
-    // uint8_t currentRange1 = message.data[6];    // spn 163
-    // uint8_t currentRange2 = message.data[7];    // spn 163
-    // Serial.println("Selected Gear: " + (String)selectedGear +
-    //                " Actual Gear Ratio: " + (String)actualGearRatio +
-    //                " Current Gear: " + (String)currentGear +
-    //                " Requested Range: " + (char)requestedRange1 + " " +
-    //                (char)requestedRange2 + " Current Range: " +
-    //                (char)currentRange1 + " " + (char)currentRange2);
-  } else if (message.pgn == 5) {
-  } else if (message.pgn == 65099) {
-    // Transmission configuration 2
-    // Transmit torque limit, so we can ignore
-  } else if (message.pgn == 60159) {
-    // No idea what this is
-  } else if (message.pgn == DM1_DTCS_PGN) {
-    // This is a DTC message
-    uint8_t mil = SeaDash::Bits::getNBits(message.data[0], 6, 2);
-    uint8_t rsl = SeaDash::Bits::getNBits(message.data[0], 4, 2);
-    uint8_t awl = SeaDash::Bits::getNBits(message.data[0], 2, 2);
-    uint8_t pls = SeaDash::Bits::getNBits(message.data[0], 0, 2);
-    uint8_t milBlink = SeaDash::Bits::getNBits(message.data[1], 6, 2);
-    uint8_t rslBlink = SeaDash::Bits::getNBits(message.data[1], 4, 2);
-    uint8_t awlBlink = SeaDash::Bits::getNBits(message.data[1], 2, 2);
-    uint8_t plsBlink = SeaDash::Bits::getNBits(message.data[1], 0, 2);
-    uint32_t spn = 0;
-    spn = SeaDash::Bits::setNBitsAt<uint32_t>(spn, message.data[2], 11, 8);
-    spn = SeaDash::Bits::setNBitsAt<uint32_t>(spn, message.data[3], 7, 0);
-    uint8_t spnLeastSignificantBits =
-        SeaDash::Bits::getNBits<uint8_t>(message.data[4], 5, 3);
-    spn =
-        SeaDash::Bits::setNBitsAt<uint32_t>(spn, spnLeastSignificantBits, 0, 3);
-    uint8_t fmi = SeaDash::Bits::getNBits(message.data[4], 0, 5);
-    uint8_t oc = SeaDash::Bits::getNBits(message.data[5], 0, 7);
-    Serial.println(
-        "DM1 DTC: SPN: " + (String)spn +
-        " Failure Mode Indicator: " + (String)fmi +
-        " Occurence Count: " + (String)oc + " " + " MIL " + (String)mil + " " +
-        " RSL " + (String)rsl + " " + " AWL " + (String)awl + " " + " PLS " +
-        (String)pls + " MIL Blink " + (String)milBlink + " " + " RSL Blink" +
-        (String)rslBlink + " " + " AWL Blink" + (String)awlBlink + " " +
-        " PLS Blink" + (String)plsBlink + " Data: " + (String)message.data[0] +
-        " " + (String)message.data[1] + " " + (String)message.data[2] + " " +
-        (String)message.data[3] + " " + (String)message.data[4] + " " +
-        (String)message.data[5] + " " + (String)message.data[6] + " " +
-        (String)message.data[7]);
-  } else {
-    Serial.println("PGN: " + (String)message.pgn +
-                   " From source address: " + (String)message.sourceAddress +
-                   (String)message.data[0] + " " + (String)message.data[1] +
-                   " " + (String)message.data[2] + " " +
-                   (String)message.data[3] + " " + (String)message.data[4] +
-                   " " + (String)message.data[5] + " " +
-                   (String)message.data[6] + " " + (String)message.data[7]);
-    ids[idsP++] = msg.id;
-    if (idsP >= 8) idsP = 0;
+    default:
+      // Handle other canId cases if necessary
+      break;
+  }
+
+  // Second switch statement for message.pgn
+  switch (message.pgn) {
+    case 60415:
+      // what's this?
+      break;
+
+    case 60671:
+      // what's this?
+      break;
+
+    case 61440:
+      // Electronic Retarder Controller 1 - ERC1 -
+      break;
+
+    case 61443:
+      // PGN: 61443
+      updateMessage(&pgn61443, msg);
+      break;
+
+    case 61444:
+      // Electronic Engine Controller 1 - EEC1 -
+      break;
+
+    case 65247:
+      // Electronic Engine Controller 3 - EEC3 -
+      break;
+
+    case 65252:
+      // Shutdown - SHUTDOWN -
+      break;
+
+    case ENGINE_TEMP_1_PGN:
+      // PGN: 65262
+      updateMessage(&pgn65262, msg);
+      break;
+
+    case 65263:
+      // PGN: 65263
+      updateMessage(&pgn65263, msg);
+      break;
+
+    case 65264:
+      // Power Takeoff Information - PTO -
+      break;
+
+    case CRUISE_CONTROL_PGN:
+      // Cruise Control/Vehicle Speed - CCVS -
+      break;
+
+    case 65266:
+      // Fuel Economy (Liquid) - LFE -
+      break;
+
+    case 65269:
+      // Ambient Conditions - AMB -
+      break;
+
+    case 65270:
+      // PGN: 65270
+      updateMessage(&pgn65270, msg);
+      break;
+
+    case 65271:
+      // Vehicle Electrical Power - VEP -
+      break;
+
+    case 65504:
+      // what's this?
+      break;
+
+    case 65272:
+      // Transmission Fluids
+      updateMessage(&pgn65272, msg);
+      break;
+
+    case 61442:
+      // Electronic Transmission Controller 1 - ETC1 -
+      updateJ1939Message(&CumminsBus::ElectronicTransmissionController1Pgn,
+                         msg);
+      break;
+
+    case 61445:
+      updateMessage(&pgn61445, msg);
+      break;
+
+    case DM1_DTCS_PGN: {
+      // This is a DTC message
+      uint8_t mil = SeaDash::Bits::getNBits(message.data[0], 6, 2);
+      uint8_t rsl = SeaDash::Bits::getNBits(message.data[0], 4, 2);
+      uint8_t awl = SeaDash::Bits::getNBits(message.data[0], 2, 2);
+      uint8_t pls = SeaDash::Bits::getNBits(message.data[0], 0, 2);
+      uint8_t milBlink = SeaDash::Bits::getNBits(message.data[1], 6, 2);
+      uint8_t rslBlink = SeaDash::Bits::getNBits(message.data[1], 4, 2);
+      uint8_t awlBlink = SeaDash::Bits::getNBits(message.data[1], 2, 2);
+      uint8_t plsBlink = SeaDash::Bits::getNBits(message.data[1], 0, 2);
+      uint32_t spn = 0;
+      spn = SeaDash::Bits::setNBitsAt<uint32_t>(spn, message.data[2], 11, 8);
+      spn = SeaDash::Bits::setNBitsAt<uint32_t>(spn, message.data[3], 7, 0);
+      uint8_t spnLeastSignificantBits =
+          SeaDash::Bits::getNBits<uint8_t>(message.data[4], 5, 3);
+      spn = SeaDash::Bits::setNBitsAt<uint32_t>(spn, spnLeastSignificantBits, 0,
+                                                3);
+      uint8_t fmi = SeaDash::Bits::getNBits(message.data[4], 0, 5);
+      uint8_t oc = SeaDash::Bits::getNBits(message.data[5], 0, 7);
+      Serial.println(
+          "DM1 DTC: SPN: " + (String)spn +
+          " Failure Mode Indicator: " + (String)fmi +
+          " Occurence Count: " + (String)oc + " " + " MIL " + (String)mil +
+          " " + " RSL " + (String)rsl + " " + " AWL " + (String)awl + " " +
+          " PLS " + (String)pls + " MIL Blink " + (String)milBlink + " " +
+          " RSL Blink" + (String)rslBlink + " " + " AWL Blink" +
+          (String)awlBlink + " " + " PLS Blink" + (String)plsBlink +
+          " Data: " + (String)message.data[0] + " " + (String)message.data[1] +
+          " " + (String)message.data[2] + " " + (String)message.data[3] + " " +
+          (String)message.data[4] + " " + (String)message.data[5] + " " +
+          (String)message.data[6] + " " + (String)message.data[7]);
+    } break;
+
+    default:
+      Serial.println("PGN: " + (String)message.pgn +
+                     " From source address: " + (String)message.sourceAddress +
+                     (String)message.data[0] + " " + (String)message.data[1] +
+                     " " + (String)message.data[2] + " " +
+                     (String)message.data[3] + " " + (String)message.data[4] +
+                     " " + (String)message.data[5] + " " +
+                     (String)message.data[6] + " " + (String)message.data[7]);
+      ids[idsP++] = msg.id;
+      if (idsP >= 8) idsP = 0;
+      break;
   }
 }  // ISR done
 

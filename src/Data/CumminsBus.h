@@ -4,6 +4,7 @@
 #ifndef NPCM_CUMMINSBUS_H
 #define NPCM_CUMMINSBUS_H
 #include <FlexCAN_T4.h>
+#include <J1939.h>
 
 struct CanMessage {
   byte id;
@@ -37,10 +38,8 @@ class CumminsBus {
   static char getRequestedRange();
   static int8_t getCurrentGear();
   static int8_t getSelectedGear();
-  static volatile CanMessage pgn61442;
+  static J1939 ElectronicTransmissionController1Pgn;
 };
-
-
 
 #endif  // NPCM_CUMMINSBUS_H
 #endif
