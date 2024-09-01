@@ -29,7 +29,7 @@ std::unordered_set<uint8_t> sourceAddresses;
 #define DM2_DTCS_PGN 65227
 
 // Track update timings
-unsigned long lastJ1939Request = 0;
+uint32_t lastJ1939Request = 0;
 
 // volatile byte data[16];
 boolean warmedUp = false;
@@ -39,24 +39,6 @@ struct J1939Message {
   std::uint32_t id;
   std::uint8_t data[8];
 };
-
-uint32_t calculateJ1939PGN(uint8_t* canMsg) {
-  // Extract PDU format (PF) and PDU specific (PS) bytes
-  uint8_t pf = canMsg[0] >> 4;
-  uint8_t ps = canMsg[1];
-
-  // Calculate PGN
-  uint32_t pgn = (pf << 16) | (ps << 8);
-
-  // If PF is greater than or equal to 240, then PS contains the data page
-  // number
-  if (pf >= 0xF0) {
-    uint8_t dp = canMsg[2];
-    pgn |= (dp << 16);
-  }
-
-  return pgn;
-}
 
 volatile CanMessage pgn65262{
     0x67, 0x8, {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, 0};
@@ -431,22 +413,6 @@ void CumminsBus::updateLoad() {
 
 int CumminsBus::getCurrentLoad() {
   CumminsBus::updateLoad();
-  return load;
-}
-
-float parseEngineLoad(uint8_t* canMsg) {
-  // Check that the PGN is 0xFEF1 (Engine Fluids - 1) and the SPN is 92 (Engine
-  // Load)
-  uint32_t pgn = calculateJ1939PGN(canMsg);
-  uint16_t spn = (canMsg[2] << 8) | canMsg[3];
-  if (pgn != 0xFEF1 || spn != 92) {
-    return -1.0f;  // Invalid message
-  }
-
-  // Extract engine load value (range: 0-100%)
-  uint8_t value = canMsg[5];
-  float load = static_cast<float>(value) * 0.4f;
-
   return load;
 }
 
