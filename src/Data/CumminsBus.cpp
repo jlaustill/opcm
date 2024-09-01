@@ -17,14 +17,10 @@ FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can1;
 #include <unordered_set>
 
 #include "CumminsBus.h"
+#include "J1939/pgn_constants.h"
 
 J1939 message;
 std::unordered_set<uint8_t> sourceAddresses;
-
-#define DM1_DTCS_PGN 65226
-#define ENGINE_TEMP_1_PGN 65262
-#define CRUISE_CONTROL_PGN 65265
-#define DM2_DTCS_PGN 65227
 
 // Track update timings
 uint32_t lastJ1939Request = 0;
