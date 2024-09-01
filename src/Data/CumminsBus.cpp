@@ -13,7 +13,6 @@
 #include <FlexCAN_T4.h>
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can1;
 #include <J1939.h>
-#include <bit-utils.h>
 
 #include <SeaDash.hpp>
 #include <cstdint>
@@ -119,10 +118,17 @@ byte* getIdBytes(uint32_t id) {
 }
 
 void requestPgn(uint32_t pgn) {
+  J1939 tempMessage = J1939();
+  tempMessage.setPgn(pgn);
+  tempMessage.setSourceAddress(50);
+  tempMessage.setPriority(6);
+  tempMessage.setPduSpecific(255);
+
   // pgn to request water temp pgn :)
   msg.flags.extended = 1;
 
-  msg.id = 2364145912;
+  // msg.id = 2364145912;
+  msg.id = tempMessage.canId;
   msg.len = 3;
   msg.buf[0] = lowByte(pgn);
   msg.buf[1] = highByte(pgn);
@@ -274,11 +280,12 @@ void CumminsBusSniff(const CAN_message_t& msg) {
     uint8_t awlBlink = SeaDash::Bits::getNBits(message.data[1], 2, 2);
     uint8_t plsBlink = SeaDash::Bits::getNBits(message.data[1], 0, 2);
     uint32_t spn = 0;
-    spn = SeaDash::Bits::setNBitsAt(spn, message.data[2], 11, 8);
-    spn = SeaDash::Bits::setNBitsAt(spn, message.data[3], 7, 0);
+    spn = SeaDash::Bits::setNBitsAt<uint32_t>(spn, message.data[2], 11, 8);
+    spn = SeaDash::Bits::setNBitsAt<uint32_t>(spn, message.data[3], 7, 0);
     uint8_t spnLeastSignificantBits =
-        SeaDash::Bits::getNBits(message.data[4], 5, 3);
-    spn = SeaDash::Bits::setNBitsAt(spn, spnLeastSignificantBits, 0, 3);
+        SeaDash::Bits::getNBits<uint8_t>(message.data[4], 5, 3);
+    spn =
+        SeaDash::Bits::setNBitsAt<uint32_t>(spn, spnLeastSignificantBits, 0, 3);
     uint8_t fmi = SeaDash::Bits::getNBits(message.data[4], 0, 5);
     uint8_t oc = SeaDash::Bits::getNBits(message.data[5], 0, 7);
     Serial.println(
