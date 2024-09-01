@@ -5,8 +5,6 @@
 #ifndef J1939_CPP
 #define J1939_CPP
 
-#define thirdByte(w) ((uint8_t)((w) >> 16))
-#define fourthByte(w) ((uint8_t)((w) >> 24))
 #include "Configuration.h"
 #ifdef CUMMINS_BUS_INPUT
 #include <Arduino.h>
@@ -112,9 +110,9 @@ void requestPgn(uint32_t pgn) {
   // msg.id = 2364145912;
   msg.id = tempMessage.canId;
   msg.len = 3;
-  msg.buf[0] = lowByte(pgn);
-  msg.buf[1] = highByte(pgn);
-  msg.buf[2] = thirdByte(pgn);
+  msg.buf[0] = SeaDash::Bytes::getNthByte(pgn, 1);
+  msg.buf[1] = SeaDash::Bytes::getNthByte(pgn, 2);
+  msg.buf[2] = SeaDash::Bytes::getNthByte(pgn, 3);
   Can1.write(msg);  // 59640 sa 0
 }
 
