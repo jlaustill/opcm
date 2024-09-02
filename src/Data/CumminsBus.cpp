@@ -121,17 +121,22 @@ void CumminsBusSniff(const CAN_message_t& msg) {
     case 256:
       // PGN: 1 ????
       updateMessage(&message256, msg);
-      {
-        CAN_message_t newMsg = msg;
-        CumminsBus::updateTiming(newMsg);
-      }
+      // {
+      //   CAN_message_t newMsg = msg;
+      //   CumminsBus::updateTiming(newMsg);
+      // }
       return;
 
     case 274:
       // Must come from the VP44, no messages when bench testing
       updateMessage(&message274, msg);
       return;
-
+    case 1280:
+      // what is this?
+      return;
+    case 1298:
+      // what is this?
+      return;
     default:
       // Handle other canId cases if necessary
       break;
@@ -139,6 +144,15 @@ void CumminsBusSniff(const CAN_message_t& msg) {
 
   // Second switch statement for message.pgn
   switch (message.pgn) {
+    case TRANSMISSION_CONTROL_2_PGN:
+      // Transmission Control 2 - TC2 -
+      break;
+    case TRANSMISSION_CONTROL_7_PGN:
+      // Transmission Control 7 - TC7 -
+      break;
+    case TRANSMISSION_CONTROL_8_PGN:
+      // Transmission Control 8 - TC8 -
+      break;
     case 60415:
       // what's this?
       break;
@@ -232,17 +246,17 @@ void CumminsBusSniff(const CAN_message_t& msg) {
       uint8_t rslBlink = SeaDash::Bits::getNBits(message.data[1], 4, 2);
       uint8_t awlBlink = SeaDash::Bits::getNBits(message.data[1], 2, 2);
       uint8_t plsBlink = SeaDash::Bits::getNBits(message.data[1], 0, 2);
-      uint32_t spn = 0;
-      spn = SeaDash::Bits::setNBitsAt<uint32_t>(spn, message.data[2], 11, 8);
-      spn = SeaDash::Bits::setNBitsAt<uint32_t>(spn, message.data[3], 7, 0);
+      uint32_t spn = message.data[2];
+      spn = SeaDash::Bits::setNBitsAt<uint32_t>(spn, message.data[3], 8, 8);
       uint8_t spnLeastSignificantBits =
           SeaDash::Bits::getNBits<uint8_t>(message.data[4], 5, 3);
-      spn = SeaDash::Bits::setNBitsAt<uint32_t>(spn, spnLeastSignificantBits, 0,
-                                                3);
+      spn = SeaDash::Bits::setNBitsAt<uint32_t>(spn, spnLeastSignificantBits,
+                                                16, 3);
       uint8_t fmi = SeaDash::Bits::getNBits(message.data[4], 0, 5);
       uint8_t oc = SeaDash::Bits::getNBits(message.data[5], 0, 7);
       Serial.println(
-          "DM1 DTC: SPN: " + (String)spn +
+          "DM1 DTC: ID: " + (String)message.canId +
+          " SA: " + (String)message.sourceAddress + " SPN: " + (String)spn +
           " Failure Mode Indicator: " + (String)fmi +
           " Occurence Count: " + (String)oc + " " + " MIL " + (String)mil +
           " " + " RSL " + (String)rsl + " " + " AWL " + (String)awl + " " +
@@ -256,32 +270,19 @@ void CumminsBusSniff(const CAN_message_t& msg) {
     } break;
 
     default:
-      Serial.println("PGN: " + (String)message.pgn +
-                     " From source address: " + (String)message.sourceAddress +
-                     (String)message.data[0] + " " + (String)message.data[1] +
-                     " " + (String)message.data[2] + " " +
-                     (String)message.data[3] + " " + (String)message.data[4] +
-                     " " + (String)message.data[5] + " " +
-                     (String)message.data[6] + " " + (String)message.data[7]);
+      Serial.println(
+          "PGN: " + (String)message.pgn + " ID: " + (String)message.canId +
+          " Extended: " + (String)msg.flags.extended +
+          " From source address: " + (String)message.sourceAddress +
+          " Data: " + (String)message.data[0] + " " + (String)message.data[1] +
+          " " + (String)message.data[2] + " " + (String)message.data[3] + " " +
+          (String)message.data[4] + " " + (String)message.data[5] + " " +
+          (String)message.data[6] + " " + (String)message.data[7]);
       ids[idsP++] = msg.id;
       if (idsP >= 8) idsP = 0;
       break;
   }
 }  // ISR done
-
-float mapf(float x, float in_min, float in_max, float out_min, float out_max) {
-  if (in_min == in_max) {
-    // Handle division by zero error or invalid input range
-    // You can choose to return a default value or throw an exception
-    return 0.0f;  // Default value
-  }
-
-  // Compute the scaling factor
-  float scale = (out_max - out_min) / (in_max - in_min);
-
-  // Map the value to the output range
-  return (x - in_min) * scale + out_min;
-}
 
 void updateMaxTiming() {
   // 1200 => 16
@@ -294,7 +295,8 @@ void updateMaxTiming() {
     maxTiming = 30.0f;
   }
 
-  maxTiming = mapf((float)RPM, 1200.0f, 3000.0f, 16.0f, 30.0f);
+  maxTiming =
+      SeaDash::Floats::mapf<float>((float)RPM, 1200.0f, 3000.0f, 16.0f, 30.0f);
 }
 
 void CumminsBus::updateTiming(CAN_message_t& msg) {
@@ -318,8 +320,8 @@ void CumminsBus::updateTiming(CAN_message_t& msg) {
   CumminsBus::updateLoad();
   maxOfThrottleAndLoad = throttlePercentage > load ? throttlePercentage : load;
   // map between current timing and max timing based on max of throttle and load
-  newTiming =
-      mapf((float)maxOfThrottleAndLoad, 0.0f, 100.0f, Timing, maxTiming);
+  newTiming = SeaDash::Floats::mapf<float>((float)maxOfThrottleAndLoad, 0.0f,
+                                           100.0f, Timing, maxTiming);
 
   // Serial.println(
   //     "current timing -> " + (String)Timing
