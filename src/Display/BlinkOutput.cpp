@@ -1,4 +1,5 @@
 // Created by jlaustill on 7/6/24
+#include <Configuration.h>
 
 #ifdef BLINK_OUTPUT
 
