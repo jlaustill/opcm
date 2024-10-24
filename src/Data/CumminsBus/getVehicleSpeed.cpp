@@ -1,11 +1,15 @@
 
 #ifndef J1939_GET_VEHICLE_SPEED_CPP
 #define J1939_GET_VEHICLE_SPEED_CPP
+
 #include <Arduino.h>
 
 #include <SeaDash.hpp>
 
 #include "../../Configuration.h"
+
+#ifdef CUMMINS_BUS_INPUT
+
 #include "../CumminsBus.h"
 
 SeaDash::Uint32::IncrementalCircularAverage speedAverage(10);
@@ -25,4 +29,5 @@ byte CumminsBus::getVehicleSpeed() {
   return speedAverage.getAverage();
 }
 
+#endif // CUMMINS_BUS_INPUT
 #endif  // J1939_GET_VEHICLE_SPEED_CPP
