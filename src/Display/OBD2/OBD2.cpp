@@ -4,11 +4,18 @@
 //
 #include "Configuration.h"
 #ifdef ODB2
+
+#define ODD_CHECKSUM_A 0x00
+#define ODD_CHECKSUM_B 0x03
+#define EVEN_CHECKSUM_A 0x01
+#define EVEN_CHECKSUM_B 0x02
+
 #include <FlexCAN_T4.h>
 
 #include "../../../include/AppData.h"
 #include "./responses.h"
 #include "OBD2.h"
+#include <SeaDash.hpp>
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can2;
 unsigned long runtime;
 double boost;
@@ -45,6 +52,21 @@ void OBD2::initialize(AppData *currentData) {
   Can2.enableFIFOInterrupt();
   Can2.onReceive(sendData);
   Can2.mailboxStatus();
+}
+
+void OBD2::sendCumminsObd2Speed(uint8_t speedInMph) {
+        bool parity = SeaDash::Bits::parity(speedInMph);
+        byte checksum = 0;
+        
+        if (parity == 0) {
+          checksum = checksum == EVEN_CHECKSUM_A ? EVEN_CHECKSUM_B : EVEN_CHECKSUM_A;
+        } else {
+          checksum = checksum == ODD_CHECKSUM_A ? ODD_CHECKSUM_B : ODD_CHECKSUM_A;
+        }
+        cumminsSpeedResponse.buf[0] = highByte(speedInMph);
+        cumminsSpeedResponse.buf[1] = lowByte(speedInMph);
+        cumminsSpeedResponse.buf[6] = checksum;
+        Can2.write(cumminsSpeedResponse);
 }
 
 void OBD2::sendData(const CAN_message_t &msg) {
@@ -135,24 +157,24 @@ void OBD2::sendData(const CAN_message_t &msg) {
         odometer = OBD2::appData->odometer * 1.60934 * 10;
         // Serial.println("Odometer? " + (String)(odometer / 10));
         odometerResponse.buf[3] =
-            odometer > 16777216 ? fourthByte(odometer) : 0;
-        odometerResponse.buf[4] = odometer > 65535 ? thirdByte(odometer) : 0;
+            odometer > 16777216 ? SeaDash::Bytes::getNthByte(odometer, 4) : 0;
+        odometerResponse.buf[4] = odometer > 65535 ? SeaDash::Bytes::getNthByte(odometer, 3) : 0;
         odometerResponse.buf[5] = odometer > 255 ? highByte(odometer) : 0;
         odometerResponse.buf[6] = lowByte(odometer);
         Can2.write(odometerResponse);
         break;
       case 251:
         tripA = OBD2::appData->tripA * 1.60934 * 10;
-        tripAResponse.buf[3] = tripA > 16777216 ? fourthByte(tripA) : 0;
-        tripAResponse.buf[4] = tripA > 65535 ? thirdByte(tripA) : 0;
+        tripAResponse.buf[3] = tripA > 16777216 ? SeaDash::Bytes::getNthByte(tripA, 4) : 0;
+        tripAResponse.buf[4] = tripA > 65535 ? SeaDash::Bytes::getNthByte(tripA, 3) : 0;
         tripAResponse.buf[5] = tripA > 255 ? highByte(tripA) : 0;
         tripAResponse.buf[6] = lowByte(tripA);
         Can2.write(tripAResponse);
         break;
       case 252:
         tripB = OBD2::appData->tripB * 1.60934 * 10;
-        tripBResponse.buf[3] = tripB > 16777216 ? fourthByte(tripB) : 0;
-        tripBResponse.buf[4] = tripB > 65535 ? thirdByte(tripB) : 0;
+        tripBResponse.buf[3] = tripB > 16777216 ? SeaDash::Bytes::getNthByte(tripB, 4) : 0;
+        tripBResponse.buf[4] = tripB > 65535 ? SeaDash::Bytes::getNthByte(tripB, 3) : 0;
         tripBResponse.buf[5] = tripB > 255 ? highByte(tripB) : 0;
         tripBResponse.buf[6] = lowByte(tripB);
         Can2.write(tripBResponse);

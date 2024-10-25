@@ -327,6 +327,7 @@ void opcm::loop() {
 #ifdef TACHOMETER_OUTPUT
   tachometer.SetRpms(currentData.rpm);
 #endif
+  OBD2::sendCumminsObd2Speed(currentData.speedInMph);
 #ifdef SPEEDOMETER_OUTPUT
   speedometer.SetMph(currentData.speedInMph);
 #endif
@@ -340,7 +341,7 @@ void opcm::loop() {
 
   if (thisMillis - loopCountLastMillis > 1000) {
     loopCountLastMillis = thisMillis;
-    Serial.println("Loop Count/Sec: " + (String)count);
+    // Serial.println("Loop Count/Sec: " + (String)count);
     count = 0;
   }
 

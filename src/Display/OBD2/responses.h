@@ -45,6 +45,11 @@ CAN_message_t speedResponse = {
     .buf = {4, currentDataService, 13, 0, emptyBytePad, emptyBytePad,
             emptyBytePad, emptyBytePad}};
 
+CAN_message_t cumminsSpeedResponse = {
+    .id = 0x215,
+    .buf = {emptyBytePad, emptyBytePad, emptyBytePad, emptyBytePad, emptyBytePad, emptyBytePad,
+            emptyBytePad, emptyBytePad}};
+
 CAN_message_t timingResponse = {
     .id = ecmResponseId,
     .buf = {4, currentDataService, 14, 0, emptyBytePad, emptyBytePad,
