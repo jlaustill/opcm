@@ -327,7 +327,9 @@ void opcm::loop() {
 #ifdef TACHOMETER_OUTPUT
   tachometer.SetRpms(currentData.rpm);
 #endif
+#ifdef OBD2
   OBD2::sendCumminsObd2Speed(currentData.speedInMph);
+#endif
 #ifdef SPEEDOMETER_OUTPUT
   speedometer.SetMph(currentData.speedInMph);
 #endif
