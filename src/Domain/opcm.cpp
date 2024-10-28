@@ -14,6 +14,10 @@
 #include "Display/BlinkOutput.h"
 #endif
 
+#ifdef FRAM
+#include "Data/fram.h"
+#endif
+
 void opcm::newSweepValue() {
   if (up == 1 && sweep < maxSweep) {
     sweep++;
@@ -54,6 +58,10 @@ void opcm::setup() {
 
 #ifdef BLINK_OUTPUT
   BlinkOutput::initialize();
+#endif
+
+#ifdef FRAM
+  OPCM_Fram::initialize();
 #endif
 
 #ifdef TRANSMISSION_PRESSURE_INPUT
