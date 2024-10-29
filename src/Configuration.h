@@ -31,6 +31,7 @@
 #define BLINK_OUTPUT
 
 #define FRAM
+// #define SDCARD
 
 // The Cummins bus provides rpms, so don't enable both at the same time
 // #define CUMMINS_BUS_INPUT
