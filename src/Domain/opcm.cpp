@@ -271,7 +271,7 @@ void opcm::loop() {
   //    (thisMillis) + " "  + (lastOdometerUpdate) + " "  + (thisMillis -
   //    lastOdometerUpdate));
 
-  if (thisMileage >= 0.1 || (thisMillis - lastOdometerUpdate) > (10 * 1000)) {
+  if (thisMileage >= 0.1 || (thisMillis - lastOdometerUpdate) > 10) {
     lastOdometerUpdate = thisMillis;
     currentData.odometer += thisMileage;
     currentData.tripA += thisMileage;
