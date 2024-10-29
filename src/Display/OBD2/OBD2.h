@@ -11,6 +11,7 @@ class OBD2 {
 public:
     static void initialize(AppData *currentData);
     static void sendData(const CAN_message_t &msg);
+    static void sendCumminsObd2Speed(uint8_t speedInMph);
 
 private:
     static AppData *appData;

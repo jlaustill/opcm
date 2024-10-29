@@ -1,3 +1,6 @@
+#ifndef OPCM_SETUP_H
+#define OPCM_SETUP_H
+
 #include <AppData.h>
 #include <PressureSensor.h>
 #include <TempSensor.h>
@@ -72,3 +75,5 @@ Speedometer speedometer = Speedometer();
 // initialize the Thermocouple
 Adafruit_MAX31855 thermocouple(MAXCS);
 #endif
+
+#endif  // OPCM_SETUP_H

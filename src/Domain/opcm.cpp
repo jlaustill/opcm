@@ -7,11 +7,17 @@
 #include <Arduino.h>
 
 #include "Configuration.h"
+#ifdef SDCARD
 #include "Data/sdCard.h"
+#endif
 #include "setup.h"
 
 #ifdef BLINK_OUTPUT
 #include "Display/BlinkOutput.h"
+#endif
+
+#ifdef FRAM
+#include "Data/fram.h"
 #endif
 
 void opcm::newSweepValue() {
@@ -37,7 +43,9 @@ long opcm::sweep = 0;
 long opcm::maxSweep = 50;
 int opcm::up = 1;
 
+#ifdef SDCARD
 sdCard *SdCard;
+#endif
 long loopCountLastMillis = 0;
 
 void opcm::setup() {
@@ -50,10 +58,16 @@ void opcm::setup() {
   thisMileage = 0;
 
   Serial.println("Starting up...");
+#ifdef SDCARD
   SdCard = new sdCard();
+#endif
 
 #ifdef BLINK_OUTPUT
   BlinkOutput::initialize();
+#endif
+
+#ifdef FRAM
+  OPCM_Fram::initialize();
 #endif
 
 #ifdef TRANSMISSION_PRESSURE_INPUT
@@ -106,7 +120,18 @@ void opcm::setup() {
   TachometerInput60Minus2::initialize();
 #endif
 
+#ifdef FRAM
+  currentData = OPCM_Fram::loadData();
+//   Serial.print("odometer: ");
+//   Serial.print(currentData.odometer);
+//   Serial.print(" TripA: ");
+//   Serial.print(currentData.tripA);
+//   Serial.print(" TripB: ");
+//   Serial.println(currentData.tripB);
+#endif
+#ifdef SDCARD
   currentData = SdCard->loadData();
+#endif
 
   currentData.rpm = 0;
   currentData.coolantTemp = 0;
@@ -290,8 +315,18 @@ void opcm::loop() {
     //        (String)currentData.tripB);
     thisMileage = 0;
 
+    // TEMP to adjust starting state
+    // currentData.tripB = 312.1;
+    // currentData.oilChange = 312.1;
+
+#ifdef FRAM
+    // Thanks to the speed of Fram, we can save on every loop!
+    OPCM_Fram::saveData(&currentData);
+#endif
+#ifdef SDCARD
     // We only want to save if data has changed and we have come to a stop
     if (currentData.speedInMph <= 0.5) SdCard->saveData(&currentData);
+#endif
   }
 
   // Serial.println("Transfer Case Fluid? " +
@@ -326,6 +361,9 @@ void opcm::loop() {
 
 #ifdef TACHOMETER_OUTPUT
   tachometer.SetRpms(currentData.rpm);
+#endif
+#ifdef OBD2
+  OBD2::sendCumminsObd2Speed(currentData.speedInMph);
 #endif
 #ifdef SPEEDOMETER_OUTPUT
   speedometer.SetMph(currentData.speedInMph);
