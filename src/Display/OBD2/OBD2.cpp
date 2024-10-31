@@ -33,10 +33,10 @@ byte service;
 bool requestIsFromScannerRange = false;
 
 
-// byte mphToKph(int mph) {
-//     double kph = mph * 1.60934;
-//     return (byte)round(kph);
-// }
+byte mphToKph(int mph) {
+    double kph = mph * 1.60934;
+    return (byte)round(kph);
+}
 
 AppData *OBD2::appData;
 
@@ -55,7 +55,9 @@ void OBD2::initialize(AppData *currentData) {
 }
 
 void OBD2::sendCumminsObd2Speed(uint8_t speedInMph) {
-        bool parity = SeaDash::Bits::parity(speedInMph);
+        uint8_t speedInKph = mphToKph(speedInMph);
+        uint16_t multipliedSpeed = speedInKph * 128;
+        bool parity = SeaDash::Bits::parity(multipliedSpeed);
         byte checksum = 0;
         
         if (parity == 0) {
@@ -63,8 +65,8 @@ void OBD2::sendCumminsObd2Speed(uint8_t speedInMph) {
         } else {
           checksum = checksum == ODD_CHECKSUM_A ? ODD_CHECKSUM_B : ODD_CHECKSUM_A;
         }
-        cumminsSpeedResponse.buf[0] = highByte(speedInMph);
-        cumminsSpeedResponse.buf[1] = lowByte(speedInMph);
+        cumminsSpeedResponse.buf[0] = highByte(multipliedSpeed);
+        cumminsSpeedResponse.buf[1] = lowByte(multipliedSpeed);
         cumminsSpeedResponse.buf[6] = checksum;
         Can2.write(cumminsSpeedResponse);
 }
