@@ -6,14 +6,10 @@
 #ifdef NEXTION
 
 #include <Arduino.h>
-#include <EEPROM.h>
 
 #include <cctype>
 
 #include "Nextion.h"
-
-// Track last sent data
-AppData lastSentData;
 
 // Track update timings
 unsigned long last100msUpdate = 0;
@@ -85,140 +81,60 @@ void Nextion::updateDisplayData(AppData *currentData) {
 
   // Update the display every 100ms
   if (currentMillis - last100msUpdate >= 100) {
-    last100msUpdate = currentMillis;
 
-    // Check if the data has changed
-    // Send the updated data to the display
-    if (currentData->speedInMph != lastSentData.speedInMph) {
-      sendCmd("mph.val=" + (String)currentData->speedInMph);
-      lastSentData.speedInMph = currentData->speedInMph;
-    }
-    if (currentData->rpm != lastSentData.rpm) {
-      sendCmd("rpm.val=" + (String)currentData->rpm);
-      lastSentData.rpm = currentData->rpm;
-    }
-    if (currentData->egt != lastSentData.egt) {
-      sendCmd("egt.val=" + (String)(int)currentData->egt);
-      lastSentData.egt = currentData->egt;
-    }
-    if (currentData->throttlePercentage != lastSentData.throttlePercentage) {
-      sendCmd("throttle.val=" + (String)(int)currentData->throttlePercentage);
-      lastSentData.throttlePercentage = currentData->throttlePercentage;
-    }
-    if (currentData->selectedGear != lastSentData.selectedGear) {
-      sendCmd("selGear.val=" + (String)currentData->selectedGear);
-      lastSentData.selectedGear = currentData->selectedGear;
-    }
-    if (currentData->currentGear != lastSentData.currentGear) {
-      sendCmd("curGear.val=" + (String)currentData->currentGear);
-      lastSentData.currentGear = currentData->currentGear;
-    }
-    if (currentData->requestedRange != lastSentData.requestedRange) {
-      sendCmd("reqRange.txt=\"" + (String)currentData->requestedRange + "\"");
-      lastSentData.requestedRange = currentData->requestedRange;
-    }
-    if (currentData->load != lastSentData.load) {
-      sendCmd("load.val=" + (String)(int)currentData->load);
-      lastSentData.load = currentData->load;
-    }
+    sendCmd("mph.val=" + (String)currentData->speedInMph);
+    sendCmd("rpm.val=" + (String)currentData->rpm);
+    String bpt = "bp.val=" + (String)(int)currentData->boost;
+    sendCmd(bpt);
+    float boostTempF = (currentData->manifoldTempC * 9.0 / 5.0) + 32.0;
+    String btt = "bt.val=" + (String)(int)boostTempF;
+    sendCmd(btt);
+    sendCmd("throttle.val=" + (String)(int)currentData->throttlePercentage);
+    sendCmd("selGear.val=" + (String)currentData->selectedGear);
+    sendCmd("curGear.val=" + (String)currentData->currentGear);
+    sendCmd("reqRange.txt=\"" + (String)currentData->requestedRange + "\"");
+    sendCmd("load.val=" + (String)(int)currentData->load);
+    sendCmd("fuelPres.val=" + (String)(int)currentData->fuelPressure);
+      
+    sendBatch();
     last100msUpdate = currentMillis;
   }
 
   // Update slow data every 1 second
   if (currentMillis - last1sUpdate >= 1000) {
+    sendCmd("odometer.txt=\"" + formatNumber(currentData->odometer) + "\"");
+    sendCmd("tripA.txt=\"" + formatNumber(currentData->tripA) + "\"");
+    sendCmd("tripB.txt=\"" + formatNumber(currentData->tripB) + "\"");
+    sendCmd("oc.txt=\"" + formatNumber(currentData->oilChange) + "\"");
+    sendCmd("tfc.txt=\"" +
+            formatNumber(currentData->transmissionFluidChange) + "\"");
+    sendCmd("tcfc.txt=\"" +
+            formatNumber(currentData->transferCaseFluidChange) + "\"");
+    sendCmd("fdfc.txt=\"" +
+            formatNumber(currentData->frontDifferentialFluidChange) + "\"");
+    sendCmd("rdfc.txt=\"" +
+            formatNumber(currentData->rearDifferentialFluidChange) + "\"");
+    sendCmd("ffc.txt=\"" + formatNumber(currentData->fuelFilterChange) +
+            "\"");
+    sendCmd("tr.txt=\"" + formatNumber(currentData->tireRotation) + "\"");
+    sendCmd("transPres.val=" +
+            (String)(int)currentData->transmissionPressure);
+    double coolTempF = ((double)currentData->coolantTemp * 9 / 5) + 32;
+    sendCmd("h20t.val=" + (String)(int)coolTempF);
+    double coolTemp2F = ((double)currentData->coolantTemp2 * 9 / 5) + 32;
+    sendCmd("h20t2.val=" + (String)(int)coolTemp2F);
+    double oilTempF = ((double)currentData->oilTempC * 9 / 5) + 32;
+    sendCmd("ot.val=" + (String)(int)oilTempF);
+    sendCmd("fueltmp.val=" + (String)currentData->fuelTempF);
+    double transmissionTemperateDegrees =
+        (((double)currentData->transmissionTempC * 9 / 5) + 32);
+    sendCmd("trantemp.val=" + (String)(int)transmissionTemperateDegrees);
+    sendCmd("oilPres.val=" + (String)(int)currentData->oilPressureInPsi);
+
+    // Send batch commands
+    sendBatch();
     last1sUpdate = currentMillis;
-    if (currentData->odometer != lastSentData.odometer) {
-      sendCmd("odometer.txt=\"" + formatNumber(currentData->odometer) + "\"");
-      lastSentData.odometer = currentData->odometer;
-    }
-    if (currentData->tripA != lastSentData.tripA) {
-      sendCmd("tripA.txt=\"" + formatNumber(currentData->tripA) + "\"");
-      lastSentData.tripA = currentData->tripA;
-    }
-    if (currentData->tripB != lastSentData.tripB) {
-      sendCmd("tripB.txt=\"" + formatNumber(currentData->tripB) + "\"");
-      lastSentData.tripB = currentData->tripB;
-    }
-    if (currentData->oilChange != lastSentData.oilChange) {
-      sendCmd("oc.txt=\"" + formatNumber(currentData->oilChange) + "\"");
-      lastSentData.oilChange = currentData->oilChange;
-    }
-    if (currentData->transmissionFluidChange !=
-        lastSentData.transmissionFluidChange) {
-      sendCmd("tfc.txt=\"" +
-              formatNumber(currentData->transmissionFluidChange) + "\"");
-      lastSentData.transmissionFluidChange =
-          currentData->transmissionFluidChange;
-    }
-    if (currentData->transferCaseFluidChange !=
-        lastSentData.transferCaseFluidChange) {
-      sendCmd("tcfc.txt=\"" +
-              formatNumber(currentData->transferCaseFluidChange) + "\"");
-      lastSentData.transferCaseFluidChange =
-          currentData->transferCaseFluidChange;
-    }
-    if (currentData->frontDifferentialFluidChange !=
-        lastSentData.frontDifferentialFluidChange) {
-      sendCmd("fdfc.txt=\"" +
-              formatNumber(currentData->frontDifferentialFluidChange) + "\"");
-      lastSentData.frontDifferentialFluidChange =
-          currentData->frontDifferentialFluidChange;
-    }
-    if (currentData->rearDifferentialFluidChange !=
-        lastSentData.rearDifferentialFluidChange) {
-      sendCmd("rdfc.txt=\"" +
-              formatNumber(currentData->rearDifferentialFluidChange) + "\"");
-      lastSentData.rearDifferentialFluidChange =
-          currentData->rearDifferentialFluidChange;
-    }
-    if (currentData->fuelFilterChange != lastSentData.fuelFilterChange) {
-      sendCmd("ffc.txt=\"" + formatNumber(currentData->fuelFilterChange) +
-              "\"");
-      lastSentData.fuelFilterChange = currentData->fuelFilterChange;
-    }
-    if (currentData->tireRotation != lastSentData.tireRotation) {
-      sendCmd("tr.txt=\"" + formatNumber(currentData->tireRotation) + "\"");
-      lastSentData.tireRotation = currentData->tireRotation;
-    }
-    if (currentData->transmissionPressure) {
-      sendCmd("transPres.val=" +
-              (String)(int)currentData->transmissionPressure);
-      lastSentData.transmissionPressure = currentData->transmissionPressure;
-    }
-    if (currentData->coolantTemp != lastSentData.coolantTemp) {
-      double coolTempF = ((double)currentData->coolantTemp * 9 / 5) + 32;
-      sendCmd("h20t.val=" + (String)(int)coolTempF);
-      lastSentData.coolantTemp = currentData->coolantTemp;
-    }
-    if (currentData->coolantTemp2 != lastSentData.coolantTemp2) {
-      double coolTemp2F = ((double)currentData->coolantTemp2 * 9 / 5) + 32;
-      sendCmd("h20t2.val=" + (String)(int)coolTemp2F);
-      lastSentData.coolantTemp2 = currentData->coolantTemp2;
-    }
-    if (currentData->oilTempC != lastSentData.oilTempC) {
-      double oilTempF = ((double)currentData->oilTempC * 9 / 5) + 32;
-      sendCmd("ot.val=" + (String)(int)oilTempF);
-      lastSentData.oilTempC = currentData->oilTempC;
-    }
-    if (currentData->fuelTempF != lastSentData.fuelTempF) {
-      sendCmd("fueltmp.val=" + (String)currentData->fuelTempF);
-      lastSentData.fuelTempF = currentData->fuelTempF;
-    }
-
-    if (currentData->transmissionTempC != lastSentData.transmissionTempC) {
-      double transmissionTemperateDegrees =
-          (((double)currentData->transmissionTempC * 9 / 5) + 32);
-      sendCmd("trantemp.val=" + (String)(int)transmissionTemperateDegrees);
-      lastSentData.transmissionTempC = currentData->transmissionTempC;
-    }
-    if (currentData->oilPressureInPsi != lastSentData.oilPressureInPsi) {
-      sendCmd("oilPres.val=" + (String)(int)currentData->oilPressureInPsi);
-      lastSentData.oilPressureInPsi = currentData->oilPressureInPsi;
-    }
   }
-
-  // Send batch commands
-  sendBatch();
 
   // Process incoming commands
   processCommands(currentData);

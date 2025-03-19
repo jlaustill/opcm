@@ -34,6 +34,7 @@ struct AppData {
   boolean brakeLightWarning;
   float timing;
   float fuelPercentage;
+  float fuelPressure;
   float amt;
   int throttlePercentage;
   int load;
@@ -44,6 +45,9 @@ struct AppData {
   double rearDifferentialFluidChange;
   double fuelFilterChange;
   double tireRotation;
+  double milesOnEngine;
+  double milesOnTransferCase;
+  double milesOnTransmission;
   char requestedRange;
   int8_t currentGear;
   int8_t selectedGear;

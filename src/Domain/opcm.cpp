@@ -111,7 +111,7 @@ void opcm::setup() {
 
 #ifdef CUMMINS_BUS_INPUT
   Serial.println("CUMMINS_BUS_INPUT defined");
-  CumminsBus::initialize();
+  CumminsBus::initialize(&currentData);
 #endif
 #ifdef SPEEDOMETER_INPUT
   SpeedometerInput::initialize();
@@ -140,12 +140,19 @@ void opcm::setup() {
   currentData.oilPressureInPsi = 0;
   currentData.fuelTempF = 0;
   currentData.boost = 0;
+  currentData.manifoldTempC = 0;
 
   currentData.timing = 0;
   currentData.fuelPercentage = 0;
   currentData.amt = 0;
   currentData.throttlePercentage = 0;
   currentData.load = 0;
+  currentData.fuelPressure = 0.0;
+  
+  // // Temp remove after first flash
+  // currentData.milesOnEngine = 1100;
+  // currentData.milesOnTransferCase = 2000;
+  // currentData.milesOnTransmission = 80000;
 
 #ifdef TRANSMISSION_TEMPERATURE_INPUT
   currentData.transmissionTempC = 0;
@@ -268,6 +275,11 @@ void opcm::loop() {
   currentData.oilPressureInPsi = CumminsBus::getCurrentOilPressure();
   currentData.fuelTempF = CumminsBus::getCurrentFuelTemp();
   currentData.boost = CumminsBus::getCurrentBoostInPsi();
+  currentData.manifoldTempC = CumminsBus::getCurrentBoostTemp();
+  // Serial.print("boost ");
+  // Serial.print(currentData.boost);
+  // Serial.print(" boost temp ");
+  // Serial.println(currentData.manifoldTempC);
 
   currentData.timing = CumminsBus::getCurrentTiming();
   currentData.fuelPercentage = CumminsBus::getCurrentFuelPercentage();
@@ -279,6 +291,8 @@ void opcm::loop() {
   currentData.requestedRange = CumminsBus::getRequestedRange();
   currentData.currentGear = CumminsBus::getCurrentGear();
   currentData.selectedGear = CumminsBus::getSelectedGear();
+  currentData.egt = CumminsBus::getCurrentEgtTemp();
+  currentData.fuelPressure = CumminsBus::getCurrentFuelPressurePsi();
 
 #endif
 #ifdef TACHOMETER_INPUT_60_MINUS_2
@@ -308,6 +322,9 @@ void opcm::loop() {
     currentData.rearDifferentialFluidChange += thisMileage;
     currentData.fuelFilterChange += thisMileage;
     currentData.tireRotation += thisMileage;
+    currentData.milesOnEngine += thisMileage;
+    currentData.milesOnTransmission += thisMileage;
+    currentData.milesOnTransferCase += thisMileage;
     currentData.odometerSaveCount++;
 
     //        Serial.println("odometer: " + (String)currentData.odometer + "
@@ -378,7 +395,7 @@ void opcm::loop() {
 
   if (thisMillis - loopCountLastMillis > 1000) {
     loopCountLastMillis = thisMillis;
-    Serial.println("Loop Count/Sec: " + (String)count);
+    Serial.println("Loop Count/Sec: " + (String)count + " Miles On Engine: " + (String)currentData.milesOnEngine + " RPM: " + (String)currentData.rpm);
     count = 0;
   }
 

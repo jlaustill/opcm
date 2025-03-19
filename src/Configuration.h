@@ -34,7 +34,7 @@
 // #define SDCARD
 
 // The Cummins bus provides rpms, so don't enable both at the same time
-// #define CUMMINS_BUS_INPUT
+#define CUMMINS_BUS_INPUT
 
 // This is the setup on a 24 valve cummins using a camshaft sensor, so it
 // assumes the gear is running at 1/2 the speed of the crankshaft #define

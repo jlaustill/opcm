@@ -4,7 +4,8 @@
 #ifndef NPCM_CUMMINSBUS_H
 #define NPCM_CUMMINSBUS_H
 #include <FlexCAN_T4.h>
-#include <J1939.h>
+#include <J1939Message.h>
+#include <AppData.h>
 
 struct CanMessage {
   byte id;
@@ -16,7 +17,8 @@ struct CanMessage {
 #ifdef CUMMINS_BUS_INPUT
 class CumminsBus {
  public:
-  static void initialize();
+  static AppData *appData;
+  static void initialize(AppData *appData);
   static void loop();
   static void updateRpms();
   static int getCurrentRpms();
@@ -24,12 +26,15 @@ class CumminsBus {
   static byte getCurrentOilPressure();
   static int getCurrentFuelTemp();
   static int getCurrentBoostInPsi();
+  static int getCurrentBoostTemp();
   static void updateLoad();
   static int getCurrentLoad();
   static void updateThrottlePercentage();
   static int getCurrentThrottlePercentage();
   static int getCurrentAMT();
   static float getCurrentFuelPercentage();
+  static float getCurrentEgtTemp();
+  static float getCurrentFuelPressurePsi();
   static void updateTiming();
   static float getCurrentTiming();
   static void updateTiming(CAN_message_t &msg);
@@ -38,7 +43,7 @@ class CumminsBus {
   static char getRequestedRange();
   static int8_t getCurrentGear();
   static int8_t getSelectedGear();
-  static J1939 ElectronicTransmissionController1Pgn;
+  static J1939Message ElectronicTransmissionController1Pgn;
 };
 
 #endif  // NPCM_CUMMINSBUS_H

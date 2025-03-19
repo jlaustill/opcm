@@ -59,6 +59,9 @@ void OPCM_Fram::saveData(AppData *currentData) {
     OPCM_Fram::fram.write(68, (uint8_t *)&currentData->fuelFilterChange, sizeof(currentData->fuelFilterChange));
     OPCM_Fram::fram.write(76, (uint8_t *)&currentData->tireRotation, sizeof(currentData->tireRotation));
     OPCM_Fram::fram.write(84, (uint8_t *)&currentData->odometerSaveCount, sizeof(currentData->odometerSaveCount));
+    OPCM_Fram::fram.write(92, (uint8_t *)&currentData->milesOnEngine, sizeof(currentData->milesOnEngine));
+    OPCM_Fram::fram.write(100, (uint8_t *)&currentData->milesOnTransmission, sizeof(currentData->milesOnTransmission));
+    OPCM_Fram::fram.write(108, (uint8_t *)&currentData->milesOnTransferCase, sizeof(currentData->milesOnTransferCase));
 
     OPCM_Fram::fram.writeEnable(false);
 }
@@ -77,6 +80,9 @@ AppData OPCM_Fram::loadData() {
     OPCM_Fram::fram.read(68, (uint8_t *)&currentData.fuelFilterChange, sizeof(currentData.fuelFilterChange));
     OPCM_Fram::fram.read(76, (uint8_t *)&currentData.tireRotation, sizeof(currentData.tireRotation));
     OPCM_Fram::fram.read(84, (uint8_t *)&currentData.odometerSaveCount, sizeof(currentData.odometerSaveCount));
+    OPCM_Fram::fram.read(92, (uint8_t *)&currentData.milesOnEngine, sizeof(currentData.milesOnEngine));
+    OPCM_Fram::fram.read(100, (uint8_t *)&currentData.milesOnTransmission, sizeof(currentData.milesOnTransmission));
+    OPCM_Fram::fram.read(108, (uint8_t *)&currentData.milesOnTransferCase, sizeof(currentData.milesOnTransferCase));
 
     return currentData;
 }

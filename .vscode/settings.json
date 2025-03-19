@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "*.tpp": "cpp"
+        "*.tpp": "cpp",
+        "cctype": "cpp"
     },
     "cmake.configureOnOpen": false
 }

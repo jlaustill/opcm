@@ -1,7 +1,0 @@
-PGN: 60159 ID: 418053891 Extended: 1 From source address: 3 Data: 225 254 0 0 22 1 66 1
-PGN: 60159 ID: 418053891 Extended: 1 From source address: 3 Data: 225 254 0 0 247 2 24 3
-PGN: 60159 ID: 418053891 Extended: 1 From source address: 3 Data: 225 254 0 0 255 255 255 255
-
-PGN: 60159 ID: 418053891 Extended: 1 From source address: 3 Data: 225 254 0 0 22 1 66 1
-PGN: 60159 ID: 418053891 Extended: 1 From source address: 3 Data: 225 254 0 0 247 2 24 3
-PGN: 60159 ID: 418053891 Extended: 1 From source address: 3 Data: 225 254 0 0 255 255 255 255
